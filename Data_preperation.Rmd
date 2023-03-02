@@ -1,0 +1,71 @@
+---
+title: "Data Preperation"
+output: html_document
+date: "`r Sys.Date()`"
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+```
+
+## Data import
+
+```{r Data import}
+pegel_eigen <- read_csv2(file = "data/Geo-Daten_Uebersicht/Eigenschaften_Pegel.csv")
+pegel_eigen <- read.csv2("data/Geo-Daten_Uebersicht/Eigenschaften_Pegel.csv")
+hydro_summer <- read.table("data/Zielvariablen/hydro_summer.txt")
+hydro_winter <- read.table("data/Zielvariablen/hydro_winter.txt")
+
+pegel_ids <- c("20203", "11502", "10304")
+names(pegel_ids) <- c("PEG-Fraenkische-Saale-Salz", "PEG-Iller-Kempten", "PEG-Isar-Mittenwald")
+```
+
+## Overview
+
+```{r Overview, echo=FALSE}
+hydro_summer %>% count(member, sort = TRUE)
+hydro_winter %>% count(member, sort = TRUE)
+head(pegel_eigen)
+head(hydro_summer)
+head(hydro_winter)
+unique(hydro_summer$slope)
+```
+
+## Data Manipulation
+
+```{r}
+# Remove index row for pegel_eigen
+pegel_eigen  <- pegel_eigen[-1]
+
+# Filter for our 3 waterlevel
+pegel_prop <- pegel_eigen %>% filter(ID %in% pegel_ids)
+
+# Change name_waterlevel
+hydro_summer$name_waterlevel <- sub('.', '', hydro_summer$name_waterlevel)
+hydro_winter$name_waterlevel <- sub('.', '', hydro_winter$name_waterlevel)
+
+# Create subsets for hydrological half-year for each waterlevel
+hydro_summer_20203 <- hydro_summer %>% filter(name_waterlevel == "20203")
+hydro_summer_11502 <- hydro_summer %>% filter(name_waterlevel == "11502")
+hydro_summer_10304 <- hydro_summer %>% filter(name_waterlevel == "10304")
+hydro_winter_20203 <- hydro_winter %>% filter(name_waterlevel == "20203")
+hydro_winter_11502 <- hydro_winter %>% filter(name_waterlevel == "11502")
+hydro_winter_10304 <- hydro_winter %>% filter(name_waterlevel == "10304")
+```
+
+## Save data
+
+```{r}
+# Save pegel_prop
+saveRDS(object = pegel_prop, file = "data/pegel_prop.RDS")
+
+# Save subsets for hydrological half-year for each waterlevel
+saveRDS(object = hydro_summer_20203, file = "data/hydro_summer_20203.RDS")
+saveRDS(object = hydro_summer_11502, file = "data/hydro_summer_11502.RDS")
+saveRDS(object = hydro_summer_10304, file = "data/hydro_summer_10304.RDS")
+saveRDS(object = hydro_winter_20203, file = "data/hydro_winter_20203.RDS")
+saveRDS(object = hydro_winter_11502, file = "data/hydro_winter_11502.RDS")
+saveRDS(object = hydro_winter_10304, file = "data/hydro_winter_10304.RDS")
+
+```
+
