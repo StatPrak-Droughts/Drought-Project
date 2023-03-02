@@ -21,7 +21,7 @@ pegel_prop <- readRDS(file = "pegel_prop.RDS")
 ## Chris: Analysis
 
 ```{r Chris analysis}
-summary(cars)
+head(pegel_prop)
 ```
 
 ## Max: Analysis
