@@ -1,0 +1,41 @@
+---
+title: "Data analysis"
+output: html_document
+date: "`r Sys.Date()`"
+---
+
+```{r setup, include=FALSE}
+# Import packages
+library(tidyverse)
+
+# Read data
+hydro_summer_20203 <- readRDS(file = "hydro_summer_20203.RDS")
+hydro_summer_11502 <- readRDS(file = "hydro_summer_11502.RDS")
+hydro_summer_10304 <- readRDS(file = "hydro_summer_10304.RDS")
+hydro_winter_20203 <- readRDS(file = "hydro_winter_20203.RDS")
+hydro_winter_11502 <- readRDS(file = "hydro_winter_11502.RDS")
+hydro_winter_10304 <- readRDS(file = "hydro_winter_10304.RDS")
+pegel_prop <- readRDS(file = "pegel_prop.RDS")
+```
+
+## Chris: Analysis
+
+```{r Chris analysis}
+summary(cars)
+```
+
+## Max: Analysis
+
+```{r Max analysis}
+summary(cars)
+```
+## Lisa: Analysis
+
+```{r Lisa analysis}
+summary(cars)
+```
+## Jonas: Analysis
+
+```{r Jonas analysis}
+summary(cars)
+```
