@@ -9,13 +9,13 @@ date: "`r Sys.Date()`"
 library(tidyverse)
 
 # Read data
-hydro_summer_20203 <- readRDS(file = "hydro_summer_20203.RDS")
-hydro_summer_11502 <- readRDS(file = "hydro_summer_11502.RDS")
-hydro_summer_10304 <- readRDS(file = "hydro_summer_10304.RDS")
-hydro_winter_20203 <- readRDS(file = "hydro_winter_20203.RDS")
-hydro_winter_11502 <- readRDS(file = "hydro_winter_11502.RDS")
-hydro_winter_10304 <- readRDS(file = "hydro_winter_10304.RDS")
-pegel_prop <- readRDS(file = "pegel_prop.RDS")
+hydro_summer_20203 <- readRDS(file = "data/hydro_summer_20203.RDS")
+hydro_summer_11502 <- readRDS(file = "data/hydro_summer_11502.RDS")
+hydro_summer_10304 <- readRDS(file = "data/hydro_summer_10304.RDS")
+hydro_winter_20203 <- readRDS(file = "data/hydro_winter_20203.RDS")
+hydro_winter_11502 <- readRDS(file = "data/hydro_winter_11502.RDS")
+hydro_winter_10304 <- readRDS(file = "data/hydro_winter_10304.RDS")
+pegel_prop <- readRDS(file = "data/pegel_prop.RDS")
 ```
 
 ## Chris: Analysis
