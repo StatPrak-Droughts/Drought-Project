@@ -21,7 +21,7 @@ pegel_prop <- readRDS(file = "data/pegel_prop.RDS")
 ## Chris: Analysis
 
 ```{r Chris analysis}
-head(pegel_prop)
+head(hydro_summer_20203)
 ```
 
 ## Max: Analysis
