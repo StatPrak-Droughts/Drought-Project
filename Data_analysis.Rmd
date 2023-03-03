@@ -7,15 +7,39 @@ date: "`r Sys.Date()`"
 ```{r setup, include=FALSE}
 # Import packages
 library(tidyverse)
+library(sf)
 
 # Read data
-hydro_summer_20203 <- readRDS(file = "hydro_summer_20203.RDS")
-hydro_summer_11502 <- readRDS(file = "hydro_summer_11502.RDS")
-hydro_summer_10304 <- readRDS(file = "hydro_summer_10304.RDS")
-hydro_winter_20203 <- readRDS(file = "hydro_winter_20203.RDS")
-hydro_winter_11502 <- readRDS(file = "hydro_winter_11502.RDS")
-hydro_winter_10304 <- readRDS(file = "hydro_winter_10304.RDS")
-pegel_prop <- readRDS(file = "pegel_prop.RDS")
+hydro_summer_20203 <- readRDS(file = "./data/hydro_summer_20203.RDS")
+hydro_summer_11502 <- readRDS(file = "./data/hydro_summer_11502.RDS")
+hydro_summer_10304 <- readRDS(file = "./data/hydro_summer_10304.RDS")
+hydro_winter_20203 <- readRDS(file = "./data/hydro_winter_20203.RDS")
+hydro_winter_11502 <- readRDS(file = "./data/hydro_winter_11502.RDS")
+hydro_winter_10304 <- readRDS(file = "./data/hydro_winter_10304.RDS")
+pegel_prop <- readRDS(file = "./data/pegel_prop.RDS")
+```
+
+## Geo Data (Map data)
+```{r}
+# Read in shape file
+hydro_bavaria <- read_sf("./data/Geo-Daten_Uebersicht/shapefile/EZG_OHNE_Reservoir_UTM32.shp", ) 
+st_crs(hydro_bavaria) # CRS WGS 84 
+
+# Quelle Data https://hub.arcgis.com/datasets/esri-de-content::bundesl%C3%A4nder-2021-mit-einwohnerzahl/explore?location=51.947250%2C15.358806%2C5.85&showTable=true 
+admin_bavaria <- read_sf("./data/Geo-Daten_Uebersicht/added_data/LAN_ew_21.shp") %>% filter(GEN %in% c("Bayern", "Bayern (Bodensee)"))
+admin_bavaria <- st_as_sf(admin_bavaria, crs = 4326)
+pegel_prop_sf <- st_as_sf(pegel_prop, coords = c("longitude", "latitude"), crs = 4326) # crs Code for WGS 84
+
+
+# Add Pegel props
+hydro_bavaria_20203 <- hydro_bavaria %>% filter(gridcode == 20203) %>% 
+  left_join(pegel_prop, by = c("gridcode" = "ID"))
+hydro_bavaria_11502 <- hydro_bavaria %>% filter(gridcode == 11502)%>% 
+  left_join(pegel_prop, by = c("gridcode" = "ID"))
+hydro_bavaria_10304 <- hydro_bavaria %>% filter(gridcode == 10304)%>% 
+  left_join(pegel_prop, by = c("gridcode" = "ID"))
+hydro_bavaria_three <- hydro_bavaria %>% filter(gridcode %in% c(10304, 11502, 20203))%>% 
+  left_join(pegel_prop, by = c("gridcode" = "ID"))
 ```
 
 ## Chris: Analysis
@@ -27,7 +51,32 @@ head(pegel_prop)
 ## Max: Analysis
 
 ```{r Max analysis}
-summary(cars)
+theme_map <- theme_bw()+
+  theme(panel.grid.major = element_line(colour = "transparent"))
+
+plot(st_geometry(hydro_bavaria))
+
+ggplot()+
+  geom_sf(data = hydro_bavaria)
+
+
+
+# Plot with catchment points
+ggplot()+
+  geom_sf(data = hydro_bavaria, fill = "transparent") +
+  geom_sf(data = pegel_prop_sf, aes(color = as.factor(unique(ID))), size = 3)+
+  labs(color = "Catchment ID")+
+  scale_color_viridis_d()+
+  theme_map
+
+# Plot hydrobavaria and admin bavaria
+ggplot()+
+  geom_sf(data = hydro_bavaria, fill = "white")+
+  geom_sf(data = admin_bavaria, fill = "transparent", color = "red")+
+  geom_sf(data = pegel_prop_sf, aes(color = as.factor(unique(ID))), size = 3)+
+  labs(color = "Catchment ID")+
+  scale_color_viridis_d()+
+  theme_map
 ```
 ## Lisa: Analysis
 
