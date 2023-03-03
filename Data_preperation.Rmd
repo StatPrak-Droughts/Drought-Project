@@ -19,6 +19,8 @@ hydro_winter <- read.table("data/Zielvariablen/hydro_winter.txt")
 
 pegel_ids <- c("20203", "11502", "10304")
 names(pegel_ids) <- c("PEG-Fraenkische-Saale-Salz", "PEG-Iller-Kempten", "PEG-Isar-Mittenwald")
+pegel_ids_list <- list("20203", "11502", "10304")
+names(pegel_ids_list) <- c("PEG-Fraenkische-Saale-Salz", "PEG-Iller-Kempten", "PEG-Isar-Mittenwald")
 ```
 
 ## Overview
@@ -45,15 +47,20 @@ pegel_prop <- pegel_eigen %>% filter(ID %in% pegel_ids)
 hydro_summer$name_waterlevel <- sub('.', '', hydro_summer$name_waterlevel)
 hydro_winter$name_waterlevel <- sub('.', '', hydro_winter$name_waterlevel)
 
+hydro_summer$name_waterlevel <- as.factor(hydro_summer$name_waterlevel)
+hydro_winter$name_waterlevel <- as.factor(hydro_winter$name_waterlevel)
+
+hydro_summer$waterlevel <- hydro_summer$name_waterlevel
+levels(hydro_summer$waterlevel) <- pegel_ids_list
+hydro_winter$waterlevel <- hydro_winter$name_waterlevel
+levels(hydro_winter$waterlevel) <- pegel_ids_list
+
 # Adjust data types
 hydro_summer$date <- as.Date(hydro_summer$date)
 hydro_winter$date <- as.Date(hydro_winter$date)
 
 hydro_summer$member <- as.factor(hydro_summer$member)
 hydro_winter$member <- as.factor(hydro_winter$member)
-
-hydro_summer$name_waterlevel <- as.factor(hydro_summer$name_waterlevel)
-hydro_winter$name_waterlevel <- as.factor(hydro_winter$name_waterlevel)
 
 hydro_summer$river <- as.factor(hydro_summer$river)
 hydro_winter$river <- as.factor(hydro_winter$river)
@@ -84,6 +91,9 @@ hydro_summer_10304 <- hydro_summer %>% filter(name_waterlevel == "10304")
 hydro_winter_20203 <- hydro_winter %>% filter(name_waterlevel == "20203")
 hydro_winter_11502 <- hydro_winter %>% filter(name_waterlevel == "11502")
 hydro_winter_10304 <- hydro_winter %>% filter(name_waterlevel == "10304")
+
+# Create hydro total
+hydro_total <- rbind(hydro_summer, hydro_winter)
 ```
 
 ## Save data
@@ -100,5 +110,11 @@ saveRDS(object = hydro_winter_20203, file = "data/hydro_winter_20203.RDS")
 saveRDS(object = hydro_winter_11502, file = "data/hydro_winter_11502.RDS")
 saveRDS(object = hydro_winter_10304, file = "data/hydro_winter_10304.RDS")
 
+# Save hydrological half years
+saveRDS(object = hydro_summer, file = "data/hydro_summer.RDS")
+saveRDS(object = hydro_winter, file = "data/hydro_winter.RDS")
+
+# Save hydro total
+saveRDS(object = hydro_total, file = "data/hydro_total.RDS")
 ```
 
