@@ -45,6 +45,38 @@ pegel_prop <- pegel_eigen %>% filter(ID %in% pegel_ids)
 hydro_summer$name_waterlevel <- sub('.', '', hydro_summer$name_waterlevel)
 hydro_winter$name_waterlevel <- sub('.', '', hydro_winter$name_waterlevel)
 
+# Adjust data types
+hydro_summer$date <- as.Date(hydro_summer$date)
+hydro_winter$date <- as.Date(hydro_winter$date)
+
+hydro_summer$member <- as.factor(hydro_summer$member)
+hydro_winter$member <- as.factor(hydro_winter$member)
+
+hydro_summer$name_waterlevel <- as.factor(hydro_summer$name_waterlevel)
+hydro_winter$name_waterlevel <- as.factor(hydro_winter$name_waterlevel)
+
+hydro_summer$river <- as.factor(hydro_summer$river)
+hydro_winter$river <- as.factor(hydro_winter$river)
+
+hydro_summer$landuse <- as.factor(hydro_summer$landuse)
+hydro_winter$landuse <- as.factor(hydro_winter$landuse)
+
+hydro_summer$exposition <- as.factor(hydro_summer$exposition)
+hydro_winter$exposition <- as.factor(hydro_winter$exposition)
+
+hydro_summer$lowlevel_1d <- as.factor(hydro_summer$lowlevel_1d)
+levels(hydro_summer$lowlevel_1d) <- c(FALSE, TRUE)
+hydro_winter$lowlevel_1d <- as.factor(hydro_winter$lowlevel_1d)
+levels(hydro_winter$lowlevel_1d) <- c(FALSE, TRUE)
+hydro_summer$lowlevel <- as.factor(hydro_summer$lowlevel)
+levels(hydro_summer$lowlevel) <- c(FALSE, TRUE)
+hydro_winter$lowlevel <- as.factor(hydro_winter$lowlevel)
+levels(hydro_winter$lowlevel) <- c(FALSE, TRUE)
+
+hydro_summer$hydro_year <- as.factor(hydro_summer$hydro_year)
+hydro_winter$hydro_year <- as.factor(hydro_winter$hydro_year)
+
+
 # Create subsets for hydrological half-year for each waterlevel
 hydro_summer_20203 <- hydro_summer %>% filter(name_waterlevel == "20203")
 hydro_summer_11502 <- hydro_summer %>% filter(name_waterlevel == "11502")
