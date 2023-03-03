@@ -7,6 +7,8 @@ date: "`r Sys.Date()`"
 ```{r setup, include=FALSE}
 # Import packages
 library(tidyverse)
+
+# Mapping imports
 library(sf)
 
 # Read data
@@ -30,6 +32,15 @@ admin_bavaria <- read_sf("./data/Geo-Daten_Uebersicht/added_data/LAN_ew_21.shp")
 admin_bavaria <- st_as_sf(admin_bavaria, crs = 4326)
 pegel_prop_sf <- st_as_sf(pegel_prop, coords = c("longitude", "latitude"), crs = 4326) # crs Code for WGS 84
 
+# https://geoportal.bafg.de/CSWView/od.xhtml
+waterways <- read_sf("/Users/max/Desktop/germany-waterways-shape/waterways.shp") 
+
+waterways_three <- waterways %>% 
+filter(name %in% c("Isar",
+                   "Donau", 
+                   "Fränkische Saale",
+                   "Main",
+                   "Iller"))
 
 # Add Pegel props
 hydro_bavaria_20203 <- hydro_bavaria %>% filter(gridcode == 20203) %>% 
@@ -68,6 +79,7 @@ ggplot()+
   labs(color = "Catchment ID")+
   scale_color_viridis_d()+
   theme_map
+ggsave("./graphics/Max/Catchments_hydro_bavaria_dots.png", width = 12, height = 9)
 
 # Plot hydrobavaria and admin bavaria
 ggplot()+
@@ -77,7 +89,101 @@ ggplot()+
   labs(color = "Catchment ID")+
   scale_color_viridis_d()+
   theme_map
+ggsave("./graphics/Max/hydro_admin_bavaria.png", width = 12, height = 9)
+
+# Catchments with rivers and Donau/Main for orientation
+waterways_three %>% 
+  ggplot()+
+  geom_sf(data = hydro_bavaria, fill = "transparent")+
+  geom_sf(data = waterways_three, color = "blue", size = 1.5)+
+  geom_sf(data = pegel_prop_sf, aes(color = as.factor(unique(ID))), size = 3)+
+  labs(color = "Catchment ID")+
+  scale_color_viridis_d()+
+  theme_map
+
+ggsave("./graphics/Max/map_rivers_catchments.png", width = 12, height = 9)
+
 ```
+
+### Leaflet
+```{r}
+basemap <- leaflet() %>%
+  # add different provider tiles
+  addProviderTiles(
+    "OpenStreetMap",
+    # give the layer a name
+    group = "OpenStreetMap"
+  ) %>%
+  addProviderTiles(
+    "Stamen.Toner",
+    group = "Stamen.Toner"
+  ) %>%
+  addProviderTiles(
+    "Stamen.Terrain",
+    group = "Stamen.Terrain"
+  ) %>%
+  addProviderTiles(
+    "Esri.WorldStreetMap",
+    group = "Esri.WorldStreetMap"
+  ) %>%
+  addProviderTiles(
+    "Wikimedia",
+    group = "Wikimedia"
+  ) %>%
+  addProviderTiles(
+    "CartoDB.Positron",
+    group = "CartoDB.Positron"
+  ) %>%
+  addProviderTiles(
+    "Esri.WorldImagery",
+    group = "Esri.WorldImagery"
+  ) %>%
+# add a layers control
+  addLayersControl(
+    baseGroups = c(
+      "OpenStreetMap", "Stamen.Toner",
+      "Stamen.Terrain", "Esri.WorldStreetMap",
+      "Wikimedia", "CartoDB.Positron", "Esri.WorldImagery"
+    ),
+    # position it on the topleft
+    position = "topleft"
+  )
+
+
+icoLst <- awesomeIconList(
+  walk = makeAwesomeIcon(text = fa("water"))
+)
+
+icon.fa <- makeAwesomeIcon(
+  icon = "info", markerColor = "white",
+  library = "fa"
+)
+
+
+map_1 <- basemap %>%
+  addAwesomeMarkers(
+    lat = pegel_prop[1, "latitude"],
+    lng = pegel_prop[1,"longitude"],
+    label = "Catchment - Mittenwald",
+    icon = icon.fa
+  ) %>%
+  addAwesomeMarkers(
+    lat = pegel_prop[2, "latitude"],
+    lng = pegel_prop[2,"longitude"],
+    label = "Catchment - Kempten",
+    icon = icon.fa
+  ) %>%
+  addAwesomeMarkers(
+    lat = pegel_prop[3, "latitude"],
+    lng = pegel_prop[3,"longitude"],
+    label = "Catchment - Salz",
+    icon = icon.fa
+  ) 
+
+
+map_1
+```
+
 ## Lisa: Analysis
 
 ```{r Lisa analysis}
