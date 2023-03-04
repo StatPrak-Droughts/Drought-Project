@@ -10,6 +10,7 @@ library(tidyverse)
 
 # Mapping imports
 library(sf)
+library(leaflet)
 
 # Read data
 hydro_summer_20203 <- readRDS(file = "./data/hydro_summer_20203.RDS")
@@ -149,10 +150,6 @@ basemap <- leaflet() %>%
     position = "topleft"
   )
 
-
-icoLst <- awesomeIconList(
-  walk = makeAwesomeIcon(text = fa("water"))
-)
 
 icon.fa <- makeAwesomeIcon(
   icon = "info", markerColor = "white",
