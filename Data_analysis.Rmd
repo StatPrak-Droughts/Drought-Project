@@ -7,6 +7,8 @@ date: "`r Sys.Date()`"
 ```{r setup, include=FALSE}
 # Import packages
 library(tidyverse)
+library(lubridate)
+library(timetk)
 
 # Mapping imports
 library(sf)
@@ -52,12 +54,87 @@ hydro_bavaria_10304 <- hydro_bavaria %>% filter(gridcode == 10304)%>%
   left_join(pegel_prop, by = c("gridcode" = "ID"))
 hydro_bavaria_three <- hydro_bavaria %>% filter(gridcode %in% c(10304, 11502, 20203))%>% 
   left_join(pegel_prop, by = c("gridcode" = "ID"))
+
 ```
 
 ## Chris: Analysis
 
 ```{r Chris analysis}
-head(pegel_prop)
+# First visualizations
+plot_dranage <- function(dataset, year = c(2000), member_input = "kbe") {
+  dataset %>% filter(YY %in% year, member == member_input) %>%
+  ggplot(mapping = aes(x = date, y = drainage, color = waterlevel)) +
+    geom_line() +
+    scale_y_continuous(trans='log10') +
+    geom_point(data = dataset %>% filter(YY %in% year, member == member_input, lowlevel == TRUE), 
+               aes(x = date, y = drainage), color = "purple") +
+    labs(title = "Drainage für unterschiedliche Pegel über die Zeit",
+       y = "Drainage",
+       x = "Datum")
+}
+
+plot_single_dranage <- function(dataset, year = c(2000), member_input = "kbe") {
+  dataset %>% filter(YY %in% year, member == member_input) %>%
+  ggplot(mapping = aes(x = date, y = drainage)) +
+    geom_line() +
+    scale_y_continuous(trans='log10') +
+    geom_line(mapping = aes(y = nm7q), color = "red") +
+    geom_point(data = dataset %>% filter(YY %in% year, member == member_input, lowlevel == TRUE), 
+               aes(x = date, y = drainage), color = "purple") +
+    labs(title = "Drainage für einen Pegel über die Zeit",
+       y = "Drainage",
+       x = "Datum")
+}
+plot_single_dranage(hydro_total %>% filter(name_waterlevel == "10304"), year = 2000:2003)
+ggsave("Plots/Chris/analysis/single_dranage_Isar-Mittenwald_2000-2003.png", width = 12, height = 6)
+
+plot_dranage(hydro_total, year = 2000)
+ggsave("Plots/Chris/analysis/dranage_total_2000.png", width = 12, height = 6)
+
+
+# Tables for futher plots
+table_days_low_flow <- hydro_total %>%
+  group_by(waterlevel, YY) %>%
+  count(lowlevel, name = "number_low_flows") %>%
+  filter(lowlevel == TRUE) %>%
+  mutate(avg_number_low_flows = number_low_flows / length(unique(hydro_total$member)))
+
+table_days_low_flow_by_hydro_year <- hydro_total %>%
+  group_by(hydro_year, waterlevel, YY) %>%
+  count(lowlevel, name = "number_low_flows") %>%
+  filter(lowlevel == TRUE) %>%
+  mutate(avg_number_low_flows = number_low_flows / length(unique(hydro_total$member)))
+
+table_days_low_flow_summer <- hydro_summer %>%
+  group_by(waterlevel, YY) %>%
+  count(lowlevel, name = "number_low_flows") %>%
+  filter(lowlevel == TRUE) %>%
+  mutate(avg_number_low_flows = number_low_flows / length(unique(hydro_total$member)))
+
+table_days_low_flow_winter <- hydro_winter %>%
+  group_by(waterlevel, YY) %>%
+  count(lowlevel, name = "number_low_flows") %>%
+  filter(lowlevel == TRUE) %>%
+  mutate(avg_number_low_flows = number_low_flows / length(unique(hydro_total$member)))
+
+# Yearly average number of low flow days over time for the 3 waterlevels
+ggplot(data = table_days_low_flow, mapping = aes(x = YY, y = avg_number_low_flows, color = waterlevel)) +
+  geom_line() +
+  geom_point() +
+  labs(title = "Jährliche durchschnittliche Anzahl von Niedrigwasser-Tagen im Zeitverlauf",
+       y = "Jährliche durchschnittliche Anzahl von Niedrigwasser-Tagen",
+       x = "Datum")
+ggsave("Plots/Chris/analysis/yearly_avg_number_of_low_flow_days.png", width = 12, height = 6)
+
+ggplot(data = table_days_low_flow_by_hydro_year, mapping = aes(x = YY, y = avg_number_low_flows, color = waterlevel)) +
+  geom_line() +
+  geom_point() +
+  labs(title = "Jährliche durchschnittliche Anzahl von Niedrigwasser-Tagen je Jahreszeit im Zeitverlauf",
+       y = "Jährliche durchschnittliche Anzahl von Niedrigwasser-Tagen",
+       x = "Datum") +
+  facet_wrap(vars(hydro_year))
+ggsave("Plots/Chris/analysis/yearly_avg_number_of_low_flow_days_per_season.png", width = 12, height = 6)
+
 ```
 
 ## Max: Analysis
