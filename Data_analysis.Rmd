@@ -9,10 +9,14 @@ date: "`r Sys.Date()`"
 library(tidyverse)
 library(lubridate)
 library(timetk)
+library(RcppRoll)
+library(dLagM)
+library(dlnm)
 
 # Mapping imports
 library(sf)
 library(leaflet)
+library(tmap)
 
 # Read data
 hydro_summer_20203 <- readRDS(file = "./data/hydro_summer_20203.RDS")
@@ -34,6 +38,8 @@ st_crs(hydro_bavaria) # CRS WGS 84
 admin_bavaria <- read_sf("./added_data/LAN_ew_21.shp") %>% filter(GEN %in% c("Bayern", "Bayern (Bodensee)"))
 admin_bavaria <- st_as_sf(admin_bavaria, crs = 4326)
 pegel_prop_sf <- st_as_sf(pegel_prop, coords = c("longitude", "latitude"), crs = 4326) # crs Code for WGS 84
+
+pegel_prop_sf$ID <- as.factor(pegel_prop_sf$ID)
 
 # https://geoportal.bafg.de/CSWView/od.xhtml
 waterways <- read_sf("./added_data/germany-waterways-shape/waterways.shp") 
@@ -183,80 +189,63 @@ ggsave("./graphics/Max/map_rivers_catchments.png", width = 12, height = 9)
 
 ```
 
-### Leaflet
+### tmap geographical overview
 ```{r}
-basemap <- leaflet() %>%
-  # add different provider tiles
-  addProviderTiles(
-    "OpenStreetMap",
-    # give the layer a name
-    group = "OpenStreetMap"
-  ) %>%
-  addProviderTiles(
-    "Stamen.Toner",
-    group = "Stamen.Toner"
-  ) %>%
-  addProviderTiles(
-    "Stamen.Terrain",
-    group = "Stamen.Terrain"
-  ) %>%
-  addProviderTiles(
-    "Esri.WorldStreetMap",
-    group = "Esri.WorldStreetMap"
-  ) %>%
-  addProviderTiles(
-    "Wikimedia",
-    group = "Wikimedia"
-  ) %>%
-  addProviderTiles(
-    "CartoDB.Positron",
-    group = "CartoDB.Positron"
-  ) %>%
-  addProviderTiles(
-    "Esri.WorldImagery",
-    group = "Esri.WorldImagery"
-  ) %>%
-# add a layers control
-  addLayersControl(
-    baseGroups = c(
-      "OpenStreetMap", "Stamen.Toner",
-      "Stamen.Terrain", "Esri.WorldStreetMap",
-      "Wikimedia", "CartoDB.Positron", "Esri.WorldImagery"
-    ),
-    # position it on the topleft
-    position = "topleft"
-  )
-
-
-icon.fa <- makeAwesomeIcon(
-  icon = "info", markerColor = "white",
-  library = "fa"
-)
-
-
-map_1 <- basemap %>%
-  addAwesomeMarkers(
-    lat = pegel_prop[1, "latitude"],
-    lng = pegel_prop[1,"longitude"],
-    label = "Catchment - Mittenwald",
-    icon = icon.fa
-  ) %>%
-  addAwesomeMarkers(
-    lat = pegel_prop[2, "latitude"],
-    lng = pegel_prop[2,"longitude"],
-    label = "Catchment - Kempten",
-    icon = icon.fa
-  ) %>%
-  addAwesomeMarkers(
-    lat = pegel_prop[3, "latitude"],
-    lng = pegel_prop[3,"longitude"],
-    label = "Catchment - Salz",
-    icon = icon.fa
-  ) 
-
-
-map_1
+tmap_mode("view")
+tm_shape(hydro_bavaria)+
+  tm_polygons(id = "NameString")+
+  tm_shape(waterways_three)+
+  tm_lines(col = "blue")+
+  tm_shape(pegel_prop_sf)+
+  tm_markers(size = 0.3)
 ```
+
+## Average plots
+```{r}
+plot_avg_member_boxplot <- function(data, var, startYY = 1990, endYY = 2020, by = 5, ...) {
+  data %>% 
+  group_by(YY, member) %>% 
+  filter(YY %in% seq(startYY, endYY, by)) %>% 
+  summarise(avg_var= mean(get(var))) %>% 
+  mutate(YY = as.factor(YY)) %>% 
+  ggplot(aes(x = YY, y = avg_var))+
+  geom_boxplot()+
+    labs(...)
+}
+
+plot_avg_member_boxplot(hydro_winter_10304, var = "drainage", x = "Year" ,y = "Avg drainage", title = "Winter 10304 Average drainage")
+plot_avg_member_boxplot(hydro_winter_10304, var = "airtmp", x = "Year" ,y = "Avg airtmp", title = "Winter 10304 Average airtmp")
+plot_avg_member_boxplot(hydro_winter_10304, var = "soilwater", x = "Year" ,y = "Avg soilwater", title = "Winter 10304 Average soilwater")
+plot_avg_member_boxplot(hydro_winter_10304, var = "precip", x = "Year" ,y = "Avg soilwater", title = "Winter 10304 Average precip")
+
+
+plot_avg_member_boxplot(hydro_summer_10304, var = "drainage")
+plot_avg_member_boxplot(hydro_summer_10304, var = "airtmp")
+plot_avg_member_boxplot(hydro_summer_10304, var = "soilwater")
+plot_avg_member_boxplot(hydro_summer_10304, var = "precip")
+
+plot_avg_member_boxplot(hydro_winter_11502, var = "drainage")
+plot_avg_member_boxplot(hydro_winter_11502, var = "airtmp")
+plot_avg_member_boxplot(hydro_winter_11502, var = "soilwater")
+plot_avg_member_boxplot(hydro_winter_11502, var = "precip")
+
+plot_avg_member_boxplot(hydro_summer_11502, var = "drainage")
+plot_avg_member_boxplot(hydro_summer_11502, var = "airtmp")
+plot_avg_member_boxplot(hydro_summer_11502, var = "soilwater")
+plot_avg_member_boxplot(hydro_summer_11502, var = "precip")
+
+plot_avg_member_boxplot(hydro_winter_20203, var = "drainage")
+plot_avg_member_boxplot(hydro_winter_20203, var = "airtmp")
+plot_avg_member_boxplot(hydro_winter_20203, var = "soilwater")
+plot_avg_member_boxplot(hydro_winter_20203, var = "precip")
+
+plot_avg_member_boxplot(hydro_summer_20203, var = "drainage")
+plot_avg_member_boxplot(hydro_summer_20203, var = "airtmp")
+plot_avg_member_boxplot(hydro_summer_20203, var = "soilwater")
+plot_avg_member_boxplot(hydro_summer_20203, var = "precip")
+```
+
+
 
 ## Lisa: Analysis
 
