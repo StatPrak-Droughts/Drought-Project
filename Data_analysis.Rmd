@@ -31,12 +31,12 @@ hydro_bavaria <- read_sf("./data/Geo-Daten_Uebersicht/shapefile/EZG_OHNE_Reservo
 st_crs(hydro_bavaria) # CRS WGS 84 
 
 # Quelle Data https://hub.arcgis.com/datasets/esri-de-content::bundesl%C3%A4nder-2021-mit-einwohnerzahl/explore?location=51.947250%2C15.358806%2C5.85&showTable=true 
-admin_bavaria <- read_sf("./data/Geo-Daten_Uebersicht/added_data/LAN_ew_21.shp") %>% filter(GEN %in% c("Bayern", "Bayern (Bodensee)"))
+admin_bavaria <- read_sf("./added_data/LAN_ew_21.shp") %>% filter(GEN %in% c("Bayern", "Bayern (Bodensee)"))
 admin_bavaria <- st_as_sf(admin_bavaria, crs = 4326)
 pegel_prop_sf <- st_as_sf(pegel_prop, coords = c("longitude", "latitude"), crs = 4326) # crs Code for WGS 84
 
 # https://geoportal.bafg.de/CSWView/od.xhtml
-waterways <- read_sf("/Users/max/Desktop/germany-waterways-shape/waterways.shp") 
+waterways <- read_sf("./added_data/germany-waterways-shape/waterways.shp") 
 
 waterways_three <- waterways %>% 
 filter(name %in% c("Isar",
