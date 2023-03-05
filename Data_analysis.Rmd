@@ -12,7 +12,7 @@ library(timetk)
 library(RcppRoll)
 library(dLagM)
 library(dlnm)
-
+library(zoo)
 # Mapping imports
 library(sf)
 library(leaflet)
@@ -245,6 +245,23 @@ plot_avg_member_boxplot(hydro_summer_20203, var = "soilwater")
 plot_avg_member_boxplot(hydro_summer_20203, var = "precip")
 ```
 
+# Time Series analysis for member kbe and one catchment (should later be genralised)
+```{r}
+
+
+hydro_summer_10304_kbe <- hydro_summer %>% 
+  filter(member %in% "kbe") %>% 
+  filter(name_waterlevel == 10304)
+
+ts_hydro_summer_10304_kbe <- zoo(hydro_summer_10304_kbe[5:ncol(hydro_summer_10304_kbe)], hydro_summer_10304_kbe[["date"]])
+
+plot.ts(ts_hydro_summer_10304_kbe$drainage)
+plot.ts(window(ts_hydro_summer_10304_kbe$precip, start = '2015-4-01', end = '2015-09-30'))
+plot.ts(window(ts_hydro_summer_10304_kbe$soilwater, start = '2015-4-01', end = '2015-09-30'))
+plot.ts(window(ts_hydro_summer_10304_kbe$drainage, start = '2015-4-01', end = '2015-09-30'))
+
+auto.ar
+```
 
 
 ## Lisa: Analysis
