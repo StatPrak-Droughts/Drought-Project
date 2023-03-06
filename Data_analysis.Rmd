@@ -248,8 +248,6 @@ plot_avg_member_boxplot(hydro_summer_20203, var = "precip")
 
 # Time Series analysis for member kbe and one catchment (should later be genralised)
 ```{r}
-
-
 hydro_summer_10304_kbe <- hydro_summer %>% 
   filter(member %in% "kbe") %>% 
   filter(name_waterlevel == 10304)
@@ -260,12 +258,55 @@ plot.ts(ts_hydro_summer_10304_kbe$drainage)
 plot.ts(window(ts_hydro_summer_10304_kbe$precip, start = '2015-4-01', end = '2015-09-30'))
 plot.ts(window(ts_hydro_summer_10304_kbe$soilwater, start = '2015-4-01', end = '2015-09-30'))
 plot.ts(window(ts_hydro_summer_10304_kbe$drainage, start = '2015-4-01', end = '2015-09-30'))
+```
+# Several member visualization
+```{r}
+hydro_summer_10304 %>% 
+  filter(YY %in% seq(1990, 2020, 5)) %>% 
+  ggplot(aes(x = date, y = avg_airtmp,col = member)) +
+  geom_line(alpha = 0.2)+
+  facet_wrap(~ YY, scales = "free_x")
+```
 
-AR <- arima(hydro_summer_10304_kbe$drainage, order = c(1, 0, 0))
-AR_fit <- hydro_summer_10304_kbe$drainage - residuals(AR)
+```{r}
+plot_ts_facet <- function(variable, data, period = 5, ...) {
+  data %>% 
+  filter(YY %in% seq(1990, 2020, period)) %>% 
+  ggplot(aes_string(x = "date", y = variable, col = "member")) +
+  geom_path(alpha = 0.2)+
+  facet_wrap(~ YY, scales = "free_x")+
+    labs(...)
+}
+```
+ 
+# Summer
+```{r}
+plot_ts_facet("avg_airtmp", hydro_summer_10304, period = 5, title = 10304)
+plot_ts_facet("avg_airtmp", hydro_summer_11502, period = 5, title = 11502)
+plot_ts_facet("avg_airtmp", hydro_summer_20203, period = 5, title = 20203)
 
-ts.plot(hydro_summer_10304_kbe$drainage)
-points(AR_fit, type = "l", col = 2, lty = 2)
+plot_ts_facet("avg_relhum", hydro_summer_10304, period = 5, title = 10304)
+plot_ts_facet("avg_relhum", hydro_summer_11502, period = 5, title = 11502)
+plot_ts_facet("avg_relhum", hydro_summer_20203, period = 5, title = 20203)
+
+plot_ts_facet("avg_glorad", hydro_summer_10304, period = 5, title = 10304)
+plot_ts_facet("avg_glorad", hydro_summer_11502, period = 5, title = 11502)
+plot_ts_facet("avg_glorad", hydro_summer_20203, period = 5, title = 20203)
+```
+
+# Winter (needs work on the axis)
+```{r}
+plot_ts_facet("avg_airtmp", hydro_winter_10304, period = 5, title = 10304)
+plot_ts_facet("avg_airtmp", hydro_winter_11502, period = 5, title = 11502)
+plot_ts_facet("avg_airtmp", hydro_winter_20203, period = 5, title = 20203)
+
+plot_ts_facet("avg_relhum", hydro_winter_10304, period = 5, title = 10304)
+plot_ts_facet("avg_relhum", hydro_winter_11502, period = 5, title = 11502)
+plot_ts_facet("avg_relhum", hydro_winter_20203, period = 5, title = 20203)
+
+plot_ts_facet("avg_glorad", hydro_winter_10304, period = 5, title = 10304)
+plot_ts_facet("avg_glorad", hydro_winter_11502, period = 5, title = 11502)
+plot_ts_facet("avg_glorad", hydro_winter_20203, period = 5, title = 20203)
 ```
 
 ### Glm - Linear trend over time 
@@ -277,6 +318,15 @@ summary(model_1)
 model_2 <- glm(lowlevel ~ date  + avg_airtmp + avg_soilwater + avg_precip + avg_precip * avg_soilwater + avg_snowstorage + avg_glorad  + avg_infiltration, data = hydro_summer_10304_kbe, family = binomial)
 
 summary(model_2)
+```
+# GAM
+```{r}
+gam_1 <- gam(lowlevel ~ date  + s(avg_airtmp) + s(avg_soilwater) + s(avg_precip) + avg_precip * avg_soilwater + avg_snowstorage + s(avg_glorad)  + s(avg_infiltration), data = hydro_summer_10304_kbe, family = binomial(), method = "REML")
+summary(gam_1)
+
+gam_2 <- gam(lowlevel ~ date + s(airtmp) + s(soilwater) + s(precip) + s(soilwater, by = precip), data = hydro_summer_10304_kbe, family = binomial())
+
+gam_3 <- gam(lowlevel ~ date + s(airtmp) + s(soilwater) + s(precip) + s(soilwater, by = precip) + s(member, bs = "re"), data = hydro_summer_10304, family = binomial())
 ```
 
 ### Auto corr
