@@ -17,6 +17,7 @@ library(zoo)
 library(sf)
 library(leaflet)
 library(tmap)
+tmap_options(check.and.fix = TRUE)
 
 # Read data
 hydro_summer_20203 <- readRDS(file = "./data/hydro_summer_20203.RDS")
@@ -260,7 +261,37 @@ plot.ts(window(ts_hydro_summer_10304_kbe$precip, start = '2015-4-01', end = '201
 plot.ts(window(ts_hydro_summer_10304_kbe$soilwater, start = '2015-4-01', end = '2015-09-30'))
 plot.ts(window(ts_hydro_summer_10304_kbe$drainage, start = '2015-4-01', end = '2015-09-30'))
 
-auto.ar
+AR <- arima(hydro_summer_10304_kbe$drainage, order = c(1, 0, 0))
+AR_fit <- hydro_summer_10304_kbe$drainage - residuals(AR)
+
+ts.plot(hydro_summer_10304_kbe$drainage)
+points(AR_fit, type = "l", col = 2, lty = 2)
+```
+
+### Glm - Linear trend over time 
+```{r}
+model_1 <- glm(lowlevel ~ date  + avg_airtmp + avg_soilwater + avg_precip + avg_precip * avg_soilwater, data = hydro_summer_10304_kbe, family = binomial)
+
+summary(model_1)
+
+model_2 <- glm(lowlevel ~ date  + avg_airtmp + avg_soilwater + avg_precip + avg_precip * avg_soilwater + avg_snowstorage + avg_glorad  + avg_infiltration, data = hydro_summer_10304_kbe, family = binomial)
+
+summary(model_2)
+```
+
+### 
+
+# Vector Autoregressive Model
+```{r}
+indicators <- colnames(hydro_summer_10304_kbe)[c(15:24, 27:28)]
+indicators
+VARselect(hydro_summer_10304_kbe[indicators], lag.max = 10, type = "trend", season = 365)
+
+var_1 <- VAR(hydro_summer_10304_kbe[indicators], p = 8, type = "trend")
+```
+# Distributed lag
+```{r}
+dlm_1 <- dlm(formula = drainage ~ precip + soilwater + airtmp + precip * soilwater, data = hydro_summer_10304_kbe, x = hydro_summer_10304_kbe[c("precip", "soilwater", "airtmp")], q = 2)
 ```
 
 
