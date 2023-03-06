@@ -12,11 +12,12 @@ library(timetk)
 library(RcppRoll)
 library(dLagM)
 library(dlnm)
-
+library(zoo)
 # Mapping imports
 library(sf)
 library(leaflet)
 library(tmap)
+tmap_options(check.and.fix = TRUE)
 
 # Read data
 hydro_summer_20203 <- readRDS(file = "./data/hydro_summer_20203.RDS")
@@ -289,6 +290,169 @@ plot_averages_across_members(hydro_summer_20203, var = "precip", y = "Avg precip
 
 ```
 
+# Time Series analysis for member kbe and one catchment (should later be genralised)
+```{r}
+hydro_summer_10304_kbe <- hydro_summer %>% 
+  filter(member %in% "kbe") %>% 
+  filter(name_waterlevel == 10304)
+
+ts_hydro_summer_10304_kbe <- zoo(hydro_summer_10304_kbe[5:ncol(hydro_summer_10304_kbe)], hydro_summer_10304_kbe[["date"]])
+
+plot.ts(ts_hydro_summer_10304_kbe$drainage)
+plot.ts(window(ts_hydro_summer_10304_kbe$precip, start = '2015-4-01', end = '2015-09-30'))
+plot.ts(window(ts_hydro_summer_10304_kbe$soilwater, start = '2015-4-01', end = '2015-09-30'))
+plot.ts(window(ts_hydro_summer_10304_kbe$drainage, start = '2015-4-01', end = '2015-09-30'))
+```
+# Several member visualization
+```{r}
+hydro_summer_10304 %>% 
+  filter(YY %in% seq(1990, 2020, 5)) %>% 
+  ggplot(aes(x = date, y = avg_airtmp,col = member)) +
+  geom_line(alpha = 0.2)+
+  facet_wrap(~ YY, scales = "free_x")
+```
+
+```{r}
+plot_ts_facet <- function(variable, data, period = 5, ...) {
+  data %>% 
+  filter(YY %in% seq(1990, 2020, period)) %>% 
+  ggplot(aes_string(x = "date", y = variable, col = "member")) +
+  geom_path(alpha = 0.2)+
+  facet_wrap(~ YY, scales = "free_x")+
+    labs(...)
+}
+```
+ 
+# Summer
+```{r}
+plot_ts_facet("avg_airtmp", hydro_summer_10304, period = 5, title = 10304)
+plot_ts_facet("avg_airtmp", hydro_summer_11502, period = 5, title = 11502)
+plot_ts_facet("avg_airtmp", hydro_summer_20203, period = 5, title = 20203)
+
+plot_ts_facet("avg_relhum", hydro_summer_10304, period = 5, title = 10304)
+plot_ts_facet("avg_relhum", hydro_summer_11502, period = 5, title = 11502)
+plot_ts_facet("avg_relhum", hydro_summer_20203, period = 5, title = 20203)
+
+plot_ts_facet("avg_glorad", hydro_summer_10304, period = 5, title = 10304)
+plot_ts_facet("avg_glorad", hydro_summer_11502, period = 5, title = 11502)
+plot_ts_facet("avg_glorad", hydro_summer_20203, period = 5, title = 20203)
+```
+
+# Winter (needs work on the axis)
+```{r}
+plot_ts_facet("avg_airtmp", hydro_winter_10304, period = 5, title = 10304)
+plot_ts_facet("avg_airtmp", hydro_winter_11502, period = 5, title = 11502)
+plot_ts_facet("avg_airtmp", hydro_winter_20203, period = 5, title = 20203)
+
+plot_ts_facet("avg_relhum", hydro_winter_10304, period = 5, title = 10304)
+plot_ts_facet("avg_relhum", hydro_winter_11502, period = 5, title = 11502)
+plot_ts_facet("avg_relhum", hydro_winter_20203, period = 5, title = 20203)
+
+plot_ts_facet("avg_glorad", hydro_winter_10304, period = 5, title = 10304)
+plot_ts_facet("avg_glorad", hydro_winter_11502, period = 5, title = 11502)
+plot_ts_facet("avg_glorad", hydro_winter_20203, period = 5, title = 20203)
+```
+
+### Glm - Linear trend over time 
+```{r}
+model_1 <- glm(lowlevel ~ date  + avg_airtmp + avg_soilwater + avg_precip + avg_precip * avg_soilwater, data = hydro_summer_10304_kbe, family = binomial)
+
+summary(model_1)
+
+model_2 <- glm(lowlevel ~ date  + avg_airtmp + avg_soilwater + avg_precip + avg_precip * avg_soilwater + avg_snowstorage + avg_glorad  + avg_infiltration, data = hydro_summer_10304_kbe, family = binomial)
+
+summary(model_2)
+```
+# GAM
+```{r}
+gam_1 <- gam(lowlevel ~ date  + s(avg_airtmp) + s(avg_soilwater) + s(avg_precip) + avg_precip * avg_soilwater + avg_snowstorage + s(avg_glorad)  + s(avg_infiltration), data = hydro_summer_10304_kbe, family = binomial(), method = "REML")
+summary(gam_1)
+
+gam_2 <- gam(lowlevel ~ date + s(airtmp) + s(soilwater) + s(precip) + s(soilwater, by = precip), data = hydro_summer_10304_kbe, family = binomial())
+
+gam_3 <- gam(lowlevel ~ date + s(airtmp) + s(soilwater) + s(precip) + s(soilwater, by = precip) + s(member, bs = "re"), data = hydro_summer_10304, family = binomial())
+```
+
+### Auto corr
+```{r}
+acf(hydro_summer_10304_kbe$drainage)
+acf(hydro_summer_10304_kbe$airtmp)
+acf(hydro_summer_10304_kbe$soilwater)
+```
+
+
+# Vector Autoregressive Model
+```{r}
+indicators <- colnames(hydro_summer_10304_kbe)[c(15:24, 27:28)]
+indicators
+VARselect(hydro_summer_10304_kbe[indicators], lag.max = 10, type = "trend", season = 365)
+
+var_1 <- VAR(hydro_summer_10304_kbe[indicators], p = 8, type = "trend")
+```
+# Distributed lag
+```{r}
+dlm_1 <- dlm(formula = drainage ~ precip + soilwater + airtmp + precip * soilwater, data = hydro_summer_10304_kbe, x = hydro_summer_10304_kbe[c("precip", "soilwater", "airtmp")], q = 2)
+```
+
+# ARDLM
+```{r}
+ardlDlm_1 <- ardlDlm(formula = drainage ~ soilwater + precip + snowstorage + airtmp, data = hydro_summer_10304_kbe, p = 3, q = 2)
+
+summary(ardlDlm_1)
+```
+
+```{r}
+
+results_ardldlm_10304 <- list()
+i <- 1
+for (member in unique(hydro_summer_10304$member)){
+  data <- hydro_summer_10304[hydro_summer_10304["member"] == member,]
+  results_ardldlm_10304[i] <- ardlDlm(formula = drainage ~ soilwater + precip + snowstorage + airtmp, data = data, p = 3, q = 2)
+  i <- i+ 1
+}
+
+lapply(results_ardldlm_10304, summary)
+
+```
+```{r}
+results_ardldlm_11502 <- list()
+i <- 1
+for (member in unique(hydro_summer_10304$member)){
+  data <- hydro_summer_11502[hydro_summer_11502["member"] == member,]
+  results_ardldlm_11502[i] <- ardlDlm(formula = drainage ~ soilwater + precip + snowstorage + airtmp, data = data, p = 3, q = 2)
+  i <- i+ 1
+}
+
+lapply(results_ardldlm_11502, summary)
+```
+
+```{r}
+fit_ardlm_across <- function(formula, data, p, q, summary_output = TRUE) {
+  results <- list()
+i <- 1
+for (member in unique(data$member)){
+  data <- data[data["member"] == member,]
+  results[i] <- ardlDlm(formula = formula, data = data, p = p, q = q)
+  i <- i+ 1
+}
+
+lapply(results, summary)
+}
+```
+# Summer
+```{r}
+fit_ardlm_across(drainage ~ soilwater + precip + snowstorage + airtmp, data = hydro_summer_10304, p = 3, q = 2)
+fit_ardlm_across(drainage ~ soilwater + precip + snowstorage + airtmp, data = hydro_summer_11502, p = 3, q = 2)
+fit_ardlm_across(drainage ~ soilwater + precip + snowstorage + airtmp, data = hydro_summer_20203, p = 3, q = 2)
+
+lapply(fit_ardlm_across(drainage ~ soilwater + precip + snowstorage + airtmp, data = hydro_summer_10304, p = 2, q = 2), "[[", "adj.r.squared")
+```
+# Winter
+```{r}
+fit_ardlm_across(drainage ~ soilwater + precip + snowstorage + airtmp, data = hydro_winter_10304, p = 3, q = 2)
+fit_ardlm_across(drainage ~ soilwater + precip + snowstorage + airtmp, data = hydro_winter_11502, p = 3, q = 2)
+fit_ardlm_across(drainage ~ soilwater + precip + snowstorage + airtmp, data = hydro_winter_20203, p = 3, q = 2)
+```
 
 
 ## Lisa: Analysis
