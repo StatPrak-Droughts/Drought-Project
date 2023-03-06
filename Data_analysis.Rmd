@@ -365,7 +365,8 @@ summary(model_2)
 ```
 # GAM
 ```{r}
-gam_1 <- gam(lowlevel ~ date  + s(avg_airtmp) + s(avg_soilwater) + s(avg_precip) + avg_precip * avg_soilwater + avg_snowstorage + s(avg_glorad)  + s(avg_infiltration), data = hydro_summer_10304_kbe, family = binomial(), method = "REML")
+library(mgcv)
+gam_1 <- gam(lowlevel ~ date  + s(avg_airtmp) + s(avg_soilwater) + s(avg_precip) + avg_precip * avg_soilwater + avg_snowstorage + s(avg_glorad) + s(avg_infiltration), data = hydro_summer_10304_kbe, family = binomial(), method = "REML")
 summary(gam_1)
 
 gam_2 <- gam(lowlevel ~ date + s(airtmp) + s(soilwater) + s(precip) + s(soilwater, by = precip), data = hydro_summer_10304_kbe, family = binomial())
@@ -375,9 +376,25 @@ gam_3 <- gam(lowlevel ~ date + s(airtmp) + s(soilwater) + s(precip) + s(soilwate
 
 ### Auto corr
 ```{r}
-acf(hydro_summer_10304_kbe$drainage)
+acf(hydro_summer_10304_kbe$drainage, plot = FALSE)
+# Autokorrelation hier > 0.5 bis einschließlich lag = 6
+acf(hydro_summer_10304_kbe$drainage, xlab = "lag in days", ylab = "autocorrelation", main = "Autocorrelation between drainage observations")
+durbinWatsonTest(gam_1)
+# p < 0.05 -> Es scheint Autokorrelation vorzuliegen
+
+
+acf(hydro_summer_10304_kbe$airtmp, plot = FALSE)
 acf(hydro_summer_10304_kbe$airtmp)
+# -> Temperatur scheint autokorelliert zu sein
+
+acf(hydro_summer_10304_kbe$soilwater, plot = FALSE)
 acf(hydro_summer_10304_kbe$soilwater)
+# -> oberflächennahe Bodenfeuchte scheint autokorreliert zu sein
+
+acf(hydro_summer_10304_kbe$precip, plot = FALSE)
+acf(hydro_summer_10304_kbe$precip)
+# -> Niederschlag ist kaum autokorreliert
+
 ```
 
 
