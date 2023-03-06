@@ -294,7 +294,88 @@ plot_averages_across_members(hydro_summer_20203, var = "precip", y = "Avg precip
 ## Lisa: Analysis
 
 ```{r Lisa analysis}
-summary(cars)
+plot_cor_drainage <- function(data, var, ...) {
+  ggplot(data, aes(x = get(var), y = drainage)) +
+  geom_point() +
+  geom_smooth(method = "lm", col = "red") +
+  labs(...)
+}
+
+
+# Airtmp
+cor_airtmp <- numeric(length = 6)
+plot_cor_drainage(data = hydro_winter_10304, var = "airtmp", x = "airtmp", title = "Winter 10304 (Isar/Mittenwald) correlation airtmp and drainage")
+cor_airtmp[1] <- cor(hydro_winter_10304$drainage, hydro_winter_10304$airtmp)
+plot_cor_drainage(data = hydro_summer_10304, var = "airtmp", x = "airtmp", title = "Summer 10304 (Isar/Mittenwald) correlation airtmp and drainage")
+cor_airtmp[2] <- cor(hydro_summer_10304$drainage, hydro_summer_10304$airtmp)
+
+plot_cor_drainage(data = hydro_winter_11502, var = "airtmp", x = "airtmp", title = "Winter 11502 (Iller/Kempten) correlation airtmp and drainage")
+cor_airtmp[3] <- cor(hydro_winter_11502$drainage, hydro_winter_11502$airtmp)
+plot_cor_drainage(data = hydro_summer_11502, var = "airtmp", x = "airtmp", title = "Summer 11502 (Iller/Kempten) correlation airtmp and drainage")
+cor_airtmp[4] <- cor(hydro_summer_11502$drainage, hydro_summer_11502$airtmp)
+
+plot_cor_drainage(data = hydro_winter_20203, var = "airtmp", x = "airtmp", title = "Winter 20203 (Fränkische Saale/Salz) correlation airtmp and drainage")
+cor_airtmp[5] <- cor(hydro_winter_20203$drainage, hydro_winter_20203$airtmp)
+plot_cor_drainage(data = hydro_summer_20203, var = "airtmp", x = "airtmp", title = "Summer 20203 (Fränkische Saale/Salz) correlation airtmp and drainage")
+cor_airtmp[6] <- cor(hydro_summer_20203$drainage, hydro_summer_20203$airtmp)
+
+var(cor_airtmp)
+
+# Soilwater
+cor_soilwater <- numeric(length = 6)
+plot_cor_drainage(data = hydro_winter_10304, var = "soilwater", x = "soilwater", title = "Winter 10304 (Isar/Mittenwald) correlation soilwater and drainage")
+cor_soilwater[1] <- cor(hydro_winter_10304$drainage, hydro_winter_10304$soilwater)
+plot_cor_drainage(data = hydro_summer_10304, var = "soilwater", x = "soilwater", title = "Summer 10304 (Isar/Mittenwald) correlation soilwater and drainage")
+cor_soilwater[2] <- cor(hydro_summer_10304$drainage, hydro_summer_10304$soilwater)
+
+plot_cor_drainage(data = hydro_winter_11502, var = "soilwater", x = "soilwater", title = "Winter 11502 (Iller/Kempten) correlation soilwater and drainage")
+cor_soilwater[3] <- cor(hydro_winter_11502$drainage, hydro_winter_11502$soilwater)
+plot_cor_drainage(data = hydro_summer_11502, var = "soilwater", x = "soilwater", title = "Summer 11502 (Iller/Kempten) correlation soilwater and drainage")
+cor_soilwater[4] <- cor(hydro_summer_11502$drainage, hydro_summer_11502$soilwater)
+
+plot_cor_drainage(data = hydro_winter_20203, var = "soilwater", x = "soilwater", title = "Winter 20203 (Fränkische Saale/Salz) correlation soilwater and drainage")
+cor_soilwater[5] <- cor(hydro_winter_20203$drainage, hydro_winter_20203$soilwater)
+plot_cor_drainage(data = hydro_summer_20203, var = "soilwater", x = "soilwater", title = "Summer 20203 (Fränkische Saale/Salz) correlation soilwater and drainage")
+cor_soilwater[6] <- cor(hydro_summer_20203$drainage, hydro_summer_20203$soilwater)
+
+var(cor_soilwater)
+
+
+# Precip
+cor_precip <- numeric(length = 6)
+plot_cor_drainage(data = hydro_winter_10304, var = "precip", x = "precip", title = "Winter 10304 (Isar/Mittenwald) correlation precip and drainage")
+cor_precip[1] <- cor(hydro_winter_10304$drainage, hydro_winter_10304$precip)
+plot_cor_drainage(data = hydro_summer_10304, var = "precip", x = "precip", title = "Summer 10304 (Isar/Mittenwald) correlation precip and drainage")
+cor_precip[2] <- cor(hydro_summer_10304$drainage, hydro_summer_10304$precip)
+
+plot_cor_drainage(data = hydro_winter_11502, var = "precip", x = "precip", title = "Winter 11502 (Iller/Kempten) correlation precip and drainage")
+cor_precip[3] <- cor(hydro_winter_11502$drainage, hydro_winter_11502$precip)
+plot_cor_drainage(data = hydro_summer_11502, var = "precip", x = "precip", title = "Summer 11502 (Iller/Kempten) correlation precip and drainage")
+cor_precip[4] <- cor(hydro_summer_11502$drainage, hydro_summer_11502$precip)
+
+plot_cor_drainage(data = hydro_winter_20203, var = "precip", x = "precip", title = "Winter 20203 (Fränkische Saale/Salz) correlation precip and drainage")
+cor_precip[5] <- cor(hydro_winter_20203$drainage, hydro_winter_20203$precip)
+plot_cor_drainage(data = hydro_summer_20203, var = "precip", x = "precip", title = "Summer 20203 (Fränkische Saale/Salz) correlation precip and drainage")
+cor_precip[6] <- cor(hydro_summer_20203$drainage, hydro_summer_20203$precip)
+
+var(cor_precip)
+
+# not differentiated by waterlevels
+library(corrplot)
+
+# winter
+correlationm_spearman_winter <- cor(subset(hydro_winter, select = c(drainage, airtmp, soilwater, precip, glorad, relhum, snowstorage, groundwaterdepth, infiltration)), method = "spearman")
+correlationp_spearman_winter <- cor.mtest(correlationm_spearman_winter)
+# correlation with soilwater and with groundwaterdepth significant at level = 0.05
+corrplot.mixed(correlationm_spearman_winter, upper = "circle", lower = "number", lower.col = "black")
+corrplot.mixed(correlationm_spearman_winter, upper = "circle", lower = "number", lower.col = "black", p.mat = correlationp_spearman_winter$p)
+
+# summer
+correlationm_spearman_summer <- cor(subset(hydro_summer, select = c(drainage, airtmp, soilwater, precip, glorad, relhum, snowstorage, groundwaterdepth, infiltration)), method = "spearman")
+correlationp_spearman_summer <- cor.mtest(correlationm_spearman_summer)
+# correlation with airtmp, soilwater and snowstorage significant at level = 0.05
+corrplot.mixed(correlationm_spearman_summer, upper = "circle", lower = "number", lower.col = "black")
+corrplot.mixed(correlationm_spearman_summer, upper = "circle", lower = "number", lower.col = "black", p.mat = correlationp_spearman_summer$p)
 ```
 ## Jonas: Analysis
 
