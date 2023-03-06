@@ -279,7 +279,13 @@ model_2 <- glm(lowlevel ~ date  + avg_airtmp + avg_soilwater + avg_precip + avg_
 summary(model_2)
 ```
 
-### 
+### Auto corr
+```{r}
+acf(hydro_summer_10304_kbe$drainage)
+acf(hydro_summer_10304_kbe$airtmp)
+acf(hydro_summer_10304_kbe$soilwater)
+```
+
 
 # Vector Autoregressive Model
 ```{r}
@@ -292,6 +298,66 @@ var_1 <- VAR(hydro_summer_10304_kbe[indicators], p = 8, type = "trend")
 # Distributed lag
 ```{r}
 dlm_1 <- dlm(formula = drainage ~ precip + soilwater + airtmp + precip * soilwater, data = hydro_summer_10304_kbe, x = hydro_summer_10304_kbe[c("precip", "soilwater", "airtmp")], q = 2)
+```
+
+# ARDLM
+```{r}
+ardlDlm_1 <- ardlDlm(formula = drainage ~ soilwater + precip + snowstorage + airtmp, data = hydro_summer_10304_kbe, p = 3, q = 2)
+
+summary(ardlDlm_1)
+```
+
+```{r}
+
+results_ardldlm_10304 <- list()
+i <- 1
+for (member in unique(hydro_summer_10304$member)){
+  data <- hydro_summer_10304[hydro_summer_10304["member"] == member,]
+  results_ardldlm_10304[i] <- ardlDlm(formula = drainage ~ soilwater + precip + snowstorage + airtmp, data = data, p = 3, q = 2)
+  i <- i+ 1
+}
+
+lapply(results_ardldlm_10304, summary)
+
+```
+```{r}
+results_ardldlm_11502 <- list()
+i <- 1
+for (member in unique(hydro_summer_10304$member)){
+  data <- hydro_summer_11502[hydro_summer_11502["member"] == member,]
+  results_ardldlm_11502[i] <- ardlDlm(formula = drainage ~ soilwater + precip + snowstorage + airtmp, data = data, p = 3, q = 2)
+  i <- i+ 1
+}
+
+lapply(results_ardldlm_11502, summary)
+```
+
+```{r}
+fit_ardlm_across <- function(formula, data, p, q, summary_output = TRUE) {
+  results <- list()
+i <- 1
+for (member in unique(data$member)){
+  data <- data[data["member"] == member,]
+  results[i] <- ardlDlm(formula = formula, data = data, p = p, q = q)
+  i <- i+ 1
+}
+
+lapply(results, summary)
+}
+```
+# Summer
+```{r}
+fit_ardlm_across(drainage ~ soilwater + precip + snowstorage + airtmp, data = hydro_summer_10304, p = 3, q = 2)
+fit_ardlm_across(drainage ~ soilwater + precip + snowstorage + airtmp, data = hydro_summer_11502, p = 3, q = 2)
+fit_ardlm_across(drainage ~ soilwater + precip + snowstorage + airtmp, data = hydro_summer_20203, p = 3, q = 2)
+
+lapply(fit_ardlm_across(drainage ~ soilwater + precip + snowstorage + airtmp, data = hydro_summer_10304, p = 2, q = 2), "[[", "adj.r.squared")
+```
+# Winter
+```{r}
+fit_ardlm_across(drainage ~ soilwater + precip + snowstorage + airtmp, data = hydro_winter_10304, p = 3, q = 2)
+fit_ardlm_across(drainage ~ soilwater + precip + snowstorage + airtmp, data = hydro_winter_11502, p = 3, q = 2)
+fit_ardlm_across(drainage ~ soilwater + precip + snowstorage + airtmp, data = hydro_winter_20203, p = 3, q = 2)
 ```
 
 
