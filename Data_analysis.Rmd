@@ -292,7 +292,7 @@ plot_averages_across_members(hydro_summer_20203, var = "precip", y = "Avg precip
 
 # Time Series analysis for member kbe and one catchment (should later be genralised)
 ```{r}
-hydro_summer_10304_kbe <- hydro_summer %>% 
+hydro_summer_10304_kbe <- hydro_summer_10304 %>% 
   filter(member %in% "kbe") %>% 
   filter(name_waterlevel == 10304)
 
@@ -369,13 +369,23 @@ library(mgcv)
 gam_1 <- gam(lowlevel ~ date  + s(avg_airtmp) + s(avg_soilwater) + s(avg_precip) + avg_precip * avg_soilwater + avg_snowstorage + s(avg_glorad) + s(avg_infiltration), data = hydro_summer_10304_kbe, family = binomial(), method = "REML")
 summary(gam_1)
 
-gam_2 <- gam(lowlevel ~ date + s(airtmp) + s(soilwater) + s(precip) + s(soilwater, by = precip), data = hydro_summer_10304_kbe, family = binomial())
+gam_2 <- gam(lowlevel ~ date + s(airtmp) + s(soilwater) + s(precip) + s(soilwater, precip), data = hydro_summer_10304_kbe, family = binomial())
+summary(gam_2)
 
-gam_3 <- gam(lowlevel ~ date + s(airtmp) + s(soilwater) + s(precip) + s(soilwater, by = precip) + s(member, bs = "re"), data = hydro_summer_10304, family = binomial())
+```
+# P Splines
+```{r}
+gam_1_ps <- gam(lowlevel ~ date  + s(avg_airtmp, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_precip, bs = "ps") + avg_precip * avg_soilwater + avg_snowstorage + s(avg_glorad, bs = "ps")  + s(avg_infiltration, bs = "ps"), data = hydro_summer_10304_kbe, family = binomial(), method = "REML")
+summary(gam_1_ps)
+
+gam_2_ps <- gam(lowlevel ~ date + s(airtmp, bs = "ps") + s(soilwater, bs = "ps") + s(precip, bs = "ps") + s(soilwater, by = precip, bs = "ps"), data = hydro_summer_10304_kbe, family = binomial())
+
+summary(gam_2_ps)
 ```
 
 ### Auto corr
 ```{r}
+
 acf(hydro_summer_10304_kbe$drainage, plot = FALSE)
 # Autokorrelation hier > 0.5 bis einschließlich lag = 6
 acf(hydro_summer_10304_kbe$drainage, xlab = "lag in days", ylab = "autocorrelation", main = "Autocorrelation between drainage observations")
@@ -389,34 +399,42 @@ acf(hydro_summer_10304_kbe$airtmp)
 
 acf(hydro_summer_10304_kbe$soilwater, plot = FALSE)
 acf(hydro_summer_10304_kbe$soilwater)
+
 # -> oberflächennahe Bodenfeuchte scheint autokorreliert zu sein
 
 acf(hydro_summer_10304_kbe$precip, plot = FALSE)
 acf(hydro_summer_10304_kbe$precip)
 # -> Niederschlag ist kaum autokorreliert
-
 ```
 
 
-# Vector Autoregressive Model
+https://online.stat.psu.edu/stat501/book/export/html/996#:~:text=The%20order%20of%20an%20autoregression,written%20as%20AR(1)
+# Lag DF
 ```{r}
-indicators <- colnames(hydro_summer_10304_kbe)[c(15:24, 27:28)]
-indicators
-VARselect(hydro_summer_10304_kbe[indicators], lag.max = 10, type = "trend", season = 365)
+lag_df <- function(dat, lag) {
+  data.frame(unclass(dat[c(rep(NA, lag), 1:(nrow(dat)-lag)),]))
+}
 
-var_1 <- VAR(hydro_summer_10304_kbe[indicators], p = 8, type = "trend")
-```
-# Distributed lag
-```{r}
-dlm_1 <- dlm(formula = drainage ~ precip + soilwater + airtmp + precip * soilwater, data = hydro_summer_10304_kbe, x = hydro_summer_10304_kbe[c("precip", "soilwater", "airtmp")], q = 2)
+ggplot(aes(x = (lag(hydro_summer_10304_kbe$airtmp, 3)), y = hydro_summer_10304_kbe$drainage), data = hydro_summer_10304_kbe)+
+  geom_point(alpha = 0.2)
+
+ggplot(aes(x = (lag(hydro_summer_10304_kbe$soilwater, 2)), y = hydro_summer_10304_kbe$drainage), data = hydro_summer_10304_kbe)+
+  geom_point(alpha = 0.2)
+
+ggplot(aes(x = (lag(hydro_summer_10304_kbe$precip, 2)), y = hydro_summer_10304_kbe$drainage), data = hydro_summer_10304_kbe)+
+  geom_point(alpha = 0.2)
+
+ggplot(aes(x = (lag(hydro_summer_10304_kbe$avg_precip, 0)), y = hydro_summer_10304_kbe$drainage), data = hydro_summer_10304_kbe)+
+  geom_point(alpha = 0.2)
 ```
 
 # ARDLM
 ```{r}
-ardlDlm_1 <- ardlDlm(formula = drainage ~ soilwater + precip + snowstorage + airtmp, data = hydro_summer_10304_kbe, p = 3, q = 2)
+ardlDlm_1 <- ardlDlm(formula = drainage ~ soilwater + precip + snowstorage + airtmp + glorad, data = hydro_summer_10304_kbe, p = 2, q = 2)
 
 summary(ardlDlm_1)
 ```
+
 
 ```{r}
 
@@ -448,8 +466,8 @@ fit_ardlm_across <- function(formula, data, p, q, summary_output = TRUE) {
   results <- list()
 i <- 1
 for (member in unique(data$member)){
-  data <- data[data["member"] == member,]
-  results[i] <- ardlDlm(formula = formula, data = data, p = p, q = q)
+  data_loop <- data[data["member"] == member,]
+  results[i] <- ardlDlm(formula = formula, data = data_loop, p = p, q = q)
   i <- i+ 1
 }
 
@@ -458,17 +476,22 @@ lapply(results, summary)
 ```
 # Summer
 ```{r}
-fit_ardlm_across(drainage ~ soilwater + precip + snowstorage + airtmp, data = hydro_summer_10304, p = 3, q = 2)
-fit_ardlm_across(drainage ~ soilwater + precip + snowstorage + airtmp, data = hydro_summer_11502, p = 3, q = 2)
-fit_ardlm_across(drainage ~ soilwater + precip + snowstorage + airtmp, data = hydro_summer_20203, p = 3, q = 2)
+fit_ardlm_across(drainage ~ soilwater + precip + snowstorage + airtmp, data = hydro_summer_10304, p = 3, q = 4)
+fit_ardlm_across(drainage ~ soilwater + precip + snowstorage + airtmp, data = hydro_summer_11502, p = 3, q = 4)
+fit_ardlm_across(drainage ~ soilwater + precip + snowstorage + airtmp + glorad, data = hydro_summer_20203, p = 3, q = 4)
 
-lapply(fit_ardlm_across(drainage ~ soilwater + precip + snowstorage + airtmp, data = hydro_summer_10304, p = 2, q = 2), "[[", "adj.r.squared")
+
+lapply(fit_ardlm_across(drainage ~ soilwater + precip + snowstorage + airtmp, data = hydro_summer_20203, p = 2, q = 2), "[[", "adj.r.squared")
 ```
 # Winter
 ```{r}
 fit_ardlm_across(drainage ~ soilwater + precip + snowstorage + airtmp, data = hydro_winter_10304, p = 3, q = 2)
 fit_ardlm_across(drainage ~ soilwater + precip + snowstorage + airtmp, data = hydro_winter_11502, p = 3, q = 2)
 fit_ardlm_across(drainage ~ soilwater + precip + snowstorage + airtmp, data = hydro_winter_20203, p = 3, q = 2)
+```
+
+```{r}
+rolCorPlot(ts_hydro_summer_10304_kbe$
 ```
 
 
