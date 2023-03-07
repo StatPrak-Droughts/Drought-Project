@@ -203,6 +203,7 @@ tm_shape(hydro_bavaria)+
 
 ## Average plots
 ```{r}
+# boxplots for member distributions in 5 years intervals
 plot_avg_member_boxplot <- function(data, var, startYY = 1990, endYY = 2020, by = 5, ...) {
   data %>% 
   group_by(YY, member) %>% 
@@ -214,36 +215,79 @@ plot_avg_member_boxplot <- function(data, var, startYY = 1990, endYY = 2020, by 
     labs(...)
 }
 
-plot_avg_member_boxplot(hydro_winter_10304, var = "drainage", x = "Year" ,y = "Avg drainage", title = "Winter 10304 Average drainage")
-plot_avg_member_boxplot(hydro_winter_10304, var = "airtmp", x = "Year" ,y = "Avg airtmp", title = "Winter 10304 Average airtmp")
-plot_avg_member_boxplot(hydro_winter_10304, var = "soilwater", x = "Year" ,y = "Avg soilwater", title = "Winter 10304 Average soilwater")
-plot_avg_member_boxplot(hydro_winter_10304, var = "precip", x = "Year" ,y = "Avg soilwater", title = "Winter 10304 Average precip")
+plot_avg_member_boxplot(hydro_winter_10304, var = "drainage", x = "Year", y = "Avg drainage", title = "Winter 10304 (Isar/Mittenwald) Average drainage")
+plot_avg_member_boxplot(hydro_winter_10304, var = "airtmp", x = "Year", y = "Avg airtmp", title = "Winter 10304 (Isar/Mittenwald) Average airtmp")
+plot_avg_member_boxplot(hydro_winter_10304, var = "soilwater", x = "Year", y = "Avg soilwater", title = "Winter 10304 (Isar/Mittenwald) Average soilwater")
+plot_avg_member_boxplot(hydro_winter_10304, var = "precip", x = "Year", y = "Avg precip", title = "Winter 10304 (Isar/Mittenwald) Average precip")
+
+plot_avg_member_boxplot(hydro_summer_10304, var = "drainage", y = "Avg drainage", title = "Summer 10304 (Isar/Mittenwald) Average drainage")
+plot_avg_member_boxplot(hydro_summer_10304, var = "airtmp", y = "Avg airtmp", title = "Summer 10304 (Isar/Mittenwald) Average airtmp")
+plot_avg_member_boxplot(hydro_summer_10304, var = "soilwater", y = "Avg soilwater", title = "Summer 10304 (Isar/Mittenwald) Average soilwater")
+plot_avg_member_boxplot(hydro_summer_10304, var = "precip", y = "Avg precip", title = "Summerr 10304 (Isar/Mittenwald) Average precip")
+
+plot_avg_member_boxplot(hydro_winter_11502, var = "drainage", y = "Avg drainage", title = "Winter 11502 (Iller/Kempten) Average drainage")
+plot_avg_member_boxplot(hydro_winter_11502, var = "airtmp", y = "Avg airtmp", title = "Winter 11502 (Iller/Kempten) Average airtmp")
+plot_avg_member_boxplot(hydro_winter_11502, var = "soilwater", y = "Avg soilwater", title = "Winter 11502 (Iller/Kempten) Average soilwater")
+plot_avg_member_boxplot(hydro_winter_11502, var = "precip", y = "Avg precip", title = "Winter 11502 (Iller/Kempten) Average precip")
+
+plot_avg_member_boxplot(hydro_summer_11502, var = "drainage", y = "Avg drainage", title = "Summer 11502 (Iller/Kempten) Average drainage")
+plot_avg_member_boxplot(hydro_summer_11502, var = "airtmp", y = "Avg airtmp", title = "Summer 11502 (Iller/Kempten) Average airtmp")
+plot_avg_member_boxplot(hydro_summer_11502, var = "soilwater", y = "Avg soilwater", title = "Summer 11502 (Iller/Kempten) Average soilwater")
+plot_avg_member_boxplot(hydro_summer_11502, var = "precip", y = "Avg precip", title = "Summer 11502 (Iller/Kempten) Average precip")
+
+plot_avg_member_boxplot(hydro_winter_20203, var = "drainage", y = "Avg drainage", title = "Winter 20203 (Fränkische Saale/Salz) Average drainage")
+plot_avg_member_boxplot(hydro_winter_20203, var = "airtmp", y = "Avg airtmp", title = "Winter 20203 (Fränkische Saale/Salz) Average airtmp")
+plot_avg_member_boxplot(hydro_winter_20203, var = "soilwater", y = "Avg soilwater", title = "Winter 20203 (Fränkische Saale/Salz) Average soilwater")
+plot_avg_member_boxplot(hydro_winter_20203, var = "precip", y = "Avg precip", title = "Winter 20203 (Fränkische Saale/Salz) Average precip")
+
+plot_avg_member_boxplot(hydro_summer_20203, var = "drainage", y = "Avg drainage", title = "Summer 20203 (Fränkische Saale/Salz) Average drainage")
+plot_avg_member_boxplot(hydro_summer_20203, var = "airtmp", y = "Avg airtmp", title = "Summer 20203 (Fränkische Saale/Salz) Average airtmp")
+plot_avg_member_boxplot(hydro_summer_20203, var = "soilwater", y = "Avg soilwater", title = "Summer 20203 (Fränkische Saale/Salz) Average soilwater")
+plot_avg_member_boxplot(hydro_summer_20203, var = "precip", y = "Avg precip", title = "Summer 20203 (Fränkische Saale/Salz) Average precip")
 
 
-plot_avg_member_boxplot(hydro_summer_10304, var = "drainage")
-plot_avg_member_boxplot(hydro_summer_10304, var = "airtmp")
-plot_avg_member_boxplot(hydro_summer_10304, var = "soilwater")
-plot_avg_member_boxplot(hydro_summer_10304, var = "precip")
+# average of averages across all members for whole time
+plot_averages_across_members <- function(data, var, ...) {
+  data %>%
+  group_by(YY, member) %>%
+  summarise(avg_var = mean(get(var))) %>%
+  summarise(avg_var_per_year = mean(avg_var)) %>%
+  ggplot(aes(x = YY, y = avg_var_per_year)) +
+  geom_point() +
+  geom_line() +
+    labs(...)
+}
 
-plot_avg_member_boxplot(hydro_winter_11502, var = "drainage")
-plot_avg_member_boxplot(hydro_winter_11502, var = "airtmp")
-plot_avg_member_boxplot(hydro_winter_11502, var = "soilwater")
-plot_avg_member_boxplot(hydro_winter_11502, var = "precip")
+plot_averages_across_members(hydro_winter_10304, var = "drainage", y = "Avg drainage across all members", title = "Winter 10304 (Isar/Mittenwald) Avg drainage")
+plot_averages_across_members(hydro_winter_10304, var = "airtmp", y = "Avg airtmp across all members", title = "Winter 10304 (Isar/Mittenwald) Avg airtmp")
+plot_averages_across_members(hydro_winter_10304, var = "soilwater", y = "Avg soilwater across all members", title = "Winter 10304 (Isar/Mittenwald) Avg soilwater")
+plot_averages_across_members(hydro_winter_10304, var = "precip", y = "Avg precip across all members", title = "Winter 10304 (Isar/Mittenwald) Avg precip")
 
-plot_avg_member_boxplot(hydro_summer_11502, var = "drainage")
-plot_avg_member_boxplot(hydro_summer_11502, var = "airtmp")
-plot_avg_member_boxplot(hydro_summer_11502, var = "soilwater")
-plot_avg_member_boxplot(hydro_summer_11502, var = "precip")
+plot_averages_across_members(hydro_summer_10304, var = "drainage", y = "Avg drainage across all members", title = "Summer 10304 (Isar/Mittenwald) Avg drainage")
+plot_averages_across_members(hydro_summer_10304, var = "airtmp", y = "Avg airtmp across all members", title = "Summer 10304 (Isar/Mittenwald) Avg airtmp")
+plot_averages_across_members(hydro_summer_10304, var = "soilwater", y = "Avg soilwater across all members", title = "Summer 10304 (Isar/Mittenwald) Avg soilwater")
+plot_averages_across_members(hydro_summer_10304, var = "precip", y = "Avg precip across all members", title = "Summer 10304 (Isar/Mittenwald) Avg precip")
 
-plot_avg_member_boxplot(hydro_winter_20203, var = "drainage")
-plot_avg_member_boxplot(hydro_winter_20203, var = "airtmp")
-plot_avg_member_boxplot(hydro_winter_20203, var = "soilwater")
-plot_avg_member_boxplot(hydro_winter_20203, var = "precip")
+plot_averages_across_members(hydro_winter_11502, var = "drainage", y = "Avg drainage across all members", title = "Winter 11502 (Iller/Kempten) Avg drainage")
+plot_averages_across_members(hydro_winter_11502, var = "airtmp", y = "Avg airtmp across all members", title = "Winter 11502 (Iller/Kempten) Avg airtmp")
+plot_averages_across_members(hydro_winter_11502, var = "soilwater", y = "Avg soilwater across all members", title = "Winter 11502 (Iller/Kempten) Avg soilwater")
+plot_averages_across_members(hydro_winter_11502, var = "precip", y = "Avg precip across all members", title = "Winter 11502 (Iller/Kempten) Avg precip")
 
-plot_avg_member_boxplot(hydro_summer_20203, var = "drainage")
-plot_avg_member_boxplot(hydro_summer_20203, var = "airtmp")
-plot_avg_member_boxplot(hydro_summer_20203, var = "soilwater")
-plot_avg_member_boxplot(hydro_summer_20203, var = "precip")
+plot_averages_across_members(hydro_summer_11502, var = "drainage", y = "Avg drainage across all members", title = "Summer 11502 (Iller/Kempten) Avg drainage")
+plot_averages_across_members(hydro_summer_11502, var = "airtmp", y = "Avg airtmp across all members", title = "Summer 11502 (Iller/Kempten) Avg airtmp")
+plot_averages_across_members(hydro_summer_11502, var = "soilwater", y = "Avg soilwater across all members", title = "Summer 11502 (Iller/Kempten) Avg soilwater")
+plot_averages_across_members(hydro_summer_11502, var = "precip", y = "Avg precip across all members", title = "Summer 11502 (Iller/Kempten) Avg precip")
+
+plot_averages_across_members(hydro_winter_20203, var = "drainage", y = "Avg drainage across all members", title = "Winter 20203 (Fränkische Saale/Salz) Avg drainage")
+plot_averages_across_members(hydro_winter_20203, var = "airtmp", y = "Avg airtmp across all members", title = "Winter 20203 (Fränkische Saale/Salz) Avg airtmp")
+plot_averages_across_members(hydro_winter_20203, var = "soilwater", y = "Avg soilwater across all members", title = "Winter 20203 (Fränkische Saale/Salz) Avg soilwater")
+plot_averages_across_members(hydro_winter_20203, var = "precip", y = "Avg precip across all members", title = "Winter 20203 (Fränkische Saale/Salz) Avg precip")
+
+plot_averages_across_members(hydro_summer_20203, var = "drainage", y = "Avg drainage across all members", title = "Summer 20203 (Fränkische Saale/Salz) Avg drainage")
+plot_averages_across_members(hydro_summer_20203, var = "airtmp", y = "Avg airtmp across all members", title = "Summer 20203 (Fränkische Saale/Salz) Avg airtmp")
+plot_averages_across_members(hydro_summer_20203, var = "soilwater", y = "Avg soilwater across all members", title = "Summer 20203 (Fränkische Saale/Salz) Avg soilwater")
+plot_averages_across_members(hydro_summer_20203, var = "precip", y = "Avg precip across all members", title = "Summer 20203 (Fränkische Saale/Salz) Avg precip")
+
 ```
 
 # Time Series analysis for member kbe and one catchment (should later be genralised)
@@ -321,7 +365,8 @@ summary(model_2)
 ```
 # GAM
 ```{r}
-gam_1 <- gam(lowlevel ~ date  + s(avg_airtmp) + s(avg_soilwater) + s(avg_precip) + avg_precip * avg_soilwater + avg_snowstorage + s(avg_glorad)  + s(avg_infiltration), data = hydro_summer_10304_kbe, family = binomial(), method = "REML")
+library(mgcv)
+gam_1 <- gam(lowlevel ~ date  + s(avg_airtmp) + s(avg_soilwater) + s(avg_precip) + avg_precip * avg_soilwater + avg_snowstorage + s(avg_glorad) + s(avg_infiltration), data = hydro_summer_10304_kbe, family = binomial(), method = "REML")
 summary(gam_1)
 
 gam_2 <- gam(lowlevel ~ date + s(airtmp) + s(soilwater) + s(precip) + s(soilwater, precip), data = hydro_summer_10304_kbe, family = binomial())
@@ -340,13 +385,26 @@ summary(gam_2_ps)
 
 ### Auto corr
 ```{r}
-acf(hydro_summer_10304_kbe$drainage, type = "correlation")
+
+acf(hydro_summer_10304_kbe$drainage, plot = FALSE)
+# Autokorrelation hier > 0.5 bis einschließlich lag = 6
+acf(hydro_summer_10304_kbe$drainage, xlab = "lag in days", ylab = "autocorrelation", main = "Autocorrelation between drainage observations")
+durbinWatsonTest(gam_1)
+# p < 0.05 -> Es scheint Autokorrelation vorzuliegen
+
+
+acf(hydro_summer_10304_kbe$airtmp, plot = FALSE)
 acf(hydro_summer_10304_kbe$airtmp)
+# -> Temperatur scheint autokorelliert zu sein
+
+acf(hydro_summer_10304_kbe$soilwater, plot = FALSE)
 acf(hydro_summer_10304_kbe$soilwater)
 
-acf(hydro_summer_10304_kbe$drainage, type = "partial")
-acf(hydro_summer_10304_kbe$airtmp, type = "partial")
-acf(hydro_summer_10304_kbe$soilwater, type = "partial")
+# -> oberflächennahe Bodenfeuchte scheint autokorreliert zu sein
+
+acf(hydro_summer_10304_kbe$precip, plot = FALSE)
+acf(hydro_summer_10304_kbe$precip)
+# -> Niederschlag ist kaum autokorreliert
 ```
 
 
@@ -440,7 +498,117 @@ rolCorPlot(ts_hydro_summer_10304_kbe$
 ## Lisa: Analysis
 
 ```{r Lisa analysis}
-summary(cars)
+hydro_winter <- readRDS(file = "./data/hydro_winter.RDS")
+hydro_summer <- readRDS(file = "./data/hydro_summer.RDS")
+ 
+  
+plot_cor_drainage <- function(data, var, ...) {
+  ggplot(data, aes(x = get(var), y = drainage)) +
+  geom_point(alpha = 0.1) +
+  geom_smooth(method = "lm", col = "red") +
+  labs(...)
+}
+
+
+# Airtmp
+cor_airtmp <- numeric(length = 6)
+plot_cor_drainage(data = hydro_winter_10304, var = "airtmp", x = "airtmp", title = "Winter 10304 (Isar/Mittenwald) correlation airtmp and drainage")
+cor_airtmp[1] <- cor(hydro_winter_10304$drainage, hydro_winter_10304$airtmp)
+plot_cor_drainage(data = hydro_summer_10304, var = "airtmp", x = "airtmp", title = "Summer 10304 (Isar/Mittenwald) correlation airtmp and drainage")
+cor_airtmp[2] <- cor(hydro_summer_10304$drainage, hydro_summer_10304$airtmp)
+
+plot_cor_drainage(data = hydro_winter_11502, var = "airtmp", x = "airtmp", title = "Winter 11502 (Iller/Kempten) correlation airtmp and drainage")
+cor_airtmp[3] <- cor(hydro_winter_11502$drainage, hydro_winter_11502$airtmp)
+plot_cor_drainage(data = hydro_summer_11502, var = "airtmp", x = "airtmp", title = "Summer 11502 (Iller/Kempten) correlation airtmp and drainage")
+cor_airtmp[4] <- cor(hydro_summer_11502$drainage, hydro_summer_11502$airtmp)
+
+plot_cor_drainage(data = hydro_winter_20203, var = "airtmp", x = "airtmp", title = "Winter 20203 (Fränkische Saale/Salz) correlation airtmp and drainage")
+cor_airtmp[5] <- cor(hydro_winter_20203$drainage, hydro_winter_20203$airtmp)
+plot_cor_drainage(data = hydro_summer_20203, var = "airtmp", x = "airtmp", title = "Summer 20203 (Fränkische Saale/Salz) correlation airtmp and drainage")
+cor_airtmp[6] <- cor(hydro_summer_20203$drainage, hydro_summer_20203$airtmp)
+
+var(cor_airtmp)
+
+# Soilwater
+cor_soilwater <- numeric(length = 6)
+plot_cor_drainage(data = hydro_winter_10304, var = "soilwater", x = "soilwater", title = "Winter 10304 (Isar/Mittenwald) correlation soilwater and drainage")
+cor_soilwater[1] <- cor(hydro_winter_10304$drainage, hydro_winter_10304$soilwater)
+plot_cor_drainage(data = hydro_summer_10304, var = "soilwater", x = "soilwater", title = "Summer 10304 (Isar/Mittenwald) correlation soilwater and drainage")
+cor_soilwater[2] <- cor(hydro_summer_10304$drainage, hydro_summer_10304$soilwater)
+
+plot_cor_drainage(data = hydro_winter_11502, var = "soilwater", x = "soilwater", title = "Winter 11502 (Iller/Kempten) correlation soilwater and drainage")
+cor_soilwater[3] <- cor(hydro_winter_11502$drainage, hydro_winter_11502$soilwater)
+plot_cor_drainage(data = hydro_summer_11502, var = "soilwater", x = "soilwater", title = "Summer 11502 (Iller/Kempten) correlation soilwater and drainage")
+cor_soilwater[4] <- cor(hydro_summer_11502$drainage, hydro_summer_11502$soilwater)
+
+plot_cor_drainage(data = hydro_winter_20203, var = "soilwater", x = "soilwater", title = "Winter 20203 (Fränkische Saale/Salz) correlation soilwater and drainage")
+cor_soilwater[5] <- cor(hydro_winter_20203$drainage, hydro_winter_20203$soilwater)
+plot_cor_drainage(data = hydro_summer_20203, var = "soilwater", x = "soilwater", title = "Summer 20203 (Fränkische Saale/Salz) correlation soilwater and drainage")
+cor_soilwater[6] <- cor(hydro_summer_20203$drainage, hydro_summer_20203$soilwater)
+
+var(cor_soilwater)
+
+
+# Precip
+cor_precip <- numeric(length = 6)
+plot_cor_drainage(data = hydro_winter_10304, var = "precip", x = "precip", title = "Winter 10304 (Isar/Mittenwald) correlation precip and drainage")
+cor_precip[1] <- cor(hydro_winter_10304$drainage, hydro_winter_10304$precip)
+plot_cor_drainage(data = hydro_summer_10304, var = "precip", x = "precip", title = "Summer 10304 (Isar/Mittenwald) correlation precip and drainage")
+cor_precip[2] <- cor(hydro_summer_10304$drainage, hydro_summer_10304$precip)
+
+plot_cor_drainage(data = hydro_winter_11502, var = "precip", x = "precip", title = "Winter 11502 (Iller/Kempten) correlation precip and drainage")
+cor_precip[3] <- cor(hydro_winter_11502$drainage, hydro_winter_11502$precip)
+plot_cor_drainage(data = hydro_summer_11502, var = "precip", x = "precip", title = "Summer 11502 (Iller/Kempten) correlation precip and drainage")
+cor_precip[4] <- cor(hydro_summer_11502$drainage, hydro_summer_11502$precip)
+
+plot_cor_drainage(data = hydro_winter_20203, var = "precip", x = "precip", title = "Winter 20203 (Fränkische Saale/Salz) correlation precip and drainage")
+cor_precip[5] <- cor(hydro_winter_20203$drainage, hydro_winter_20203$precip)
+plot_cor_drainage(data = hydro_summer_20203, var = "precip", x = "precip", title = "Summer 20203 (Fränkische Saale/Salz) correlation precip and drainage")
+cor_precip[6] <- cor(hydro_summer_20203$drainage, hydro_summer_20203$precip)
+
+var(cor_precip)
+
+# not differentiated by waterlevels
+library(corrplot)
+
+# winter
+correlationm_spearman_winter <- cor(subset(hydro_winter, select = c(drainage, airtmp, soilwater, precip, glorad, relhum, snowstorage, groundwaterdepth, infiltration)), method = "spearman")
+correlationp_spearman_winter <- cor.mtest(correlationm_spearman_winter)
+# correlation with soilwater and with groundwaterdepth significant at level = 0.05
+corrplot.mixed(correlationm_spearman_winter, upper = "circle", lower = "number", lower.col = "black")
+corrplot.mixed(correlationm_spearman_winter, upper = "circle", lower = "number", lower.col = "black", p.mat = correlationp_spearman_winter$p)
+
+# summer
+correlationm_spearman_summer <- cor(subset(hydro_summer, select = c(drainage, airtmp, soilwater, precip, glorad, relhum, snowstorage, groundwaterdepth, infiltration)), method = "spearman")
+correlationp_spearman_summer <- cor.mtest(correlationm_spearman_summer)
+# correlation with airtmp, soilwater and snowstorage significant at level = 0.05
+corrplot.mixed(correlationm_spearman_summer, upper = "circle", lower = "number", lower.col = "black")
+corrplot.mixed(correlationm_spearman_summer, upper = "circle", lower = "number", lower.col = "black", p.mat = correlationp_spearman_summer$p)
+
+
+# plots drainage and drivers over time
+plot_single_drainage_and_driver <- function(dataset, var, per_year = TRUE, years = 1990:2020, member_input = "kbe") {
+  data <- dataset %>% filter(member == member_input, YY %in% years) %>% group_by(YY)
+  if (per_year == TRUE) {
+    data <- data %>% summarise(avg_drainage = mean(drainage), avg_var = mean(get(var)))
+    plot <- data %>% ggplot() +
+      geom_line(mapping = aes(x = YY, y = avg_drainage), col = "blue") +
+      geom_point(aes(x = YY, y = avg_drainage), col = "blue") +
+      geom_point(aes(x = YY, y = avg_var), col = "red") +
+      geom_line(aes(x = YY, y = avg_var), col = "red") +
+      scale_y_continuous("drainage in blue", sec.axis = sec_axis(trans = ~., name = paste(as.character(var), "in red")))
+  } else {
+    plot <- data %>% ggplot() +
+      geom_line(mapping = aes(x = date, y = drainage), col = "blue") +
+      geom_point(aes(x = date, y = drainage), col = "blue") +
+      geom_point(aes(x = date, y = get(var)), col = "red") +
+      geom_line(aes(x = date, y = get(var)), col = "red") +
+      scale_y_continuous("drainage in blue", sec.axis = sec_axis(trans = ~., name = paste(as.character(var), "in red")))
+  }
+  plot
+}
+
+plot_single_drainage_and_driver(hydro_total %>% filter(name_waterlevel == 10304), var = "avg_airtmp", year = 2000:2003, per_year = FALSE)
 ```
 ## Jonas: Analysis
 
