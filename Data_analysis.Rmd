@@ -385,12 +385,80 @@ summary(gam_2_ps)
 
 ### Auto corr
 ```{r}
+# separate datasets for each member
+# winter
+for (i in pegel_ids) {
+  for (j in levels(hydro_total$member)) {
+    assign(paste0("hydro_winter_", i, "_", j), hydro_winter %>% filter(name_waterlevel %in% i) %>% filter(member %in% j))
+  }
+}
 
-acf(hydro_summer_10304_kbe$drainage, plot = FALSE)
-# Autokorrelation hier > 0.5 bis einschließlich lag = 6
-acf(hydro_summer_10304_kbe$drainage, xlab = "lag in days", ylab = "autocorrelation", main = "Autocorrelation between drainage observations")
+# summer
+for (i in pegel_ids) {
+  for (j in levels(hydro_total$member)) {
+    assign(paste0("hydro_summer_", i, "_", j), hydro_summer %>% filter(name_waterlevel %in% i) %>% filter(member %in% j))
+  }
+}
+
+# autocorrelation function
+library(car)
+# mean acf (across all members) separated by each waterlevel and season
+for (k in c("winter", "summer")) {
+  for (i in pegel_ids) {
+    assign(paste0("df_acf_", k, "_", i), data.frame(Names = 1:38))
+    for (j in levels(hydro_total$member)) {
+      assign(paste0("acf_", k, "_", i, "_", j), as.data.frame(acf(get(paste0("hydro_", k, "_", i, "_", j))$drainage, plot = FALSE)$acf))
+      assign(paste0("df_acf_", k, "_", i), bind_cols(get(paste0("df_acf_", k, "_", i)), get(paste0("acf_", k, "_", i, "_", j))))
+    }
+    assign(paste0("acf_mean_", k, "_", i), rowMeans(get(paste0("df_acf_", k, "_", i))[, 2:11]))
+  }
+}
+# 10304, Winter: Autokorrelation > 0.5 bis einschließlich lag = 9
+# 10304, Summer: Autokorrelation > 0.5 bis einschließlich lag = 8
+# 11502, Winter: Autokorrelation > 0.5 bis einschließlich lag = 3
+# 11502, Summer: Autokorrelation > 0.5 bis einschließlich lag = 3
+# 20203, Winter: Autokorrelation > 0.5 bis einschließlich lag = 4
+# 20203, Summer: Autokorrelation > 0.5 bis einschließlich lag = 3
+
+# ACF-Plots for member kbe separated by each waterlevel and season
+acf(hydro_winter_10304_kbe$drainage, xlab = "lag in days", main = "Autocorrelation between drainage observations for 10304, winter")
+acf(hydro_summer_10304_kbe$drainage, xlab = "lag in days", main = "Autocorrelation between drainage observations for 10304, summer")
+acf(hydro_winter_11502_kbe$drainage, xlab = "lag in days", main = "Autocorrelation between drainage observations for 11502, winter")
+acf(hydro_summer_11502_kbe$drainage, xlab = "lag in days", main = "Autocorrelation between drainage observations for 11502, summer")
+acf(hydro_winter_20203_kbe$drainage, xlab = "lag in days", main = "Autocorrelation between drainage observations for 20203, winter")
+acf(hydro_summer_20203_kbe$drainage, xlab = "lag in days", main = "Autocorrelation between drainage observations for 20203, summer")
+
+# Partial autocorrelation function, mean pacf (across all members) seperated by each waterlevel and season
+for (k in c("winter", "summer")) {
+  for (i in pegel_ids) {
+    assign(paste0("df_pacf_", k, "_", i), data.frame(Names = 1:37))
+    for (j in levels(hydro_total$member)) {
+      assign(paste0("pacf_", k, "_", i, "_", j), as.data.frame(pacf(get(paste0("hydro_", k, "_", i, "_", j))$drainage, plot = FALSE)$acf))
+      assign(paste0("df_pacf_", k, "_", i), bind_cols(get(paste0("df_pacf_", k, "_", i)), get(paste0("pacf_", k, "_", i, "_", j))))
+    }
+    assign(paste0("pacf_mean_", k, "_", i), rowMeans(get(paste0("df_pacf_", k, "_", i))[, 2:11]))
+  }
+}
+# 10304, Winter: Autokorrelationskoeffizient bis lag = 2 (durchgängig) signifikant
+# 10304, Summer: Autokorrelationskoeffizient bis lag = 3 (durchgängig) signifikant
+# 11502, Winter: Autokorrelationskoeffizient bis lag = 5 (nicht durchgängig), bis lag = 3 (durchgängig) signifikant
+# 11502, Summer: Autokorrelationskoeffizient bis lag = 3 (nicht durchgängig), bis lag = 1 (durchgängig) signifikant
+# 20203, Winter: Autokorrelationskoeffizient bis lag = 5 (nicht durchgängig), bis lag = 3 (durchgängig) signifikant
+# 20203, Summer: Autokorrelationskoeffizient bis lag = 5 (nicht durchgängig), bis lag = 3 (durchgängig) signifikant
+
+# PACF-Plots for member kbe seperated by each waterlevel and season
+pacf(hydro_winter_10304_kbe$drainage, xlab = "lag in days", main = "Autocorrelation between drainage observations for 10304, winter")
+pacf(hydro_summer_10304_kbe$drainage, xlab = "lag in days", main = "Autocorrelation between drainage observations for 10304, summer")
+pacf(hydro_winter_11502_kbe$drainage, xlab = "lag in days", main = "Autocorrelation between drainage observations for 11502, winter")
+pacf(hydro_summer_11502_kbe$drainage, xlab = "lag in days", main = "Autocorrelation between drainage observations for 11502, summer")
+pacf(hydro_winter_20203_kbe$drainage, xlab = "lag in days", main = "Autocorrelation between drainage observations for 20203, winter")
+pacf(hydro_summer_20203_kbe$drainage, xlab = "lag in days", main = "Autocorrelation between drainage observations for 20203, summer")
+
+
+# DurbinWatsonTest für GAM auf Datensatz hydro_winter_10304_kbe
 durbinWatsonTest(gam_1)
-# p < 0.05 -> Es scheint Autokorrelation vorzuliegen
+# p < 0.05, Wert der Teststatistik: 0.3839 -> Es scheint positive Autokorrelation vorzuliegen
+
 
 
 acf(hydro_summer_10304_kbe$airtmp, plot = FALSE)
