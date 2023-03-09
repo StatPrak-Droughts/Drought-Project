@@ -385,7 +385,7 @@ summary(gam_2_ps)
 
 ### Auto corr
 ```{r}
-# separate datasets for each member
+# separate datasets for each waterlevel, season and member
 # winter
 for (i in pegel_ids) {
   for (j in levels(hydro_total$member)) {
@@ -400,43 +400,42 @@ for (i in pegel_ids) {
   }
 }
 
-# autocorrelation function
+
 library(car)
-# mean acf (across all members) separated by each waterlevel and season
+
+## drainage
+# autocorrelation function, mean acf for drainage (across all members) separated by each waterlevel and season
 for (k in c("winter", "summer")) {
   for (i in pegel_ids) {
-    assign(paste0("df_acf_", k, "_", i), data.frame(Names = 1:38))
+    assign(paste0("df_acf_drainage_", k, "_", i), data.frame(Names = 1:38))
     for (j in levels(hydro_total$member)) {
-      assign(paste0("acf_", k, "_", i, "_", j), as.data.frame(acf(get(paste0("hydro_", k, "_", i, "_", j))$drainage, plot = FALSE)$acf))
-      assign(paste0("df_acf_", k, "_", i), bind_cols(get(paste0("df_acf_", k, "_", i)), get(paste0("acf_", k, "_", i, "_", j))))
+      assign(paste0("acf_drainage_", k, "_", i, "_", j), as.data.frame(acf(get(paste0("hydro_", k, "_", i, "_", j))$drainage, plot = FALSE)$acf))
+      assign(paste0("df_acf_drainage_", k, "_", i), bind_cols(get(paste0("df_acf_drainage_", k, "_", i)), get(paste0("acf_", k, "_", i, "_", j))))
     }
-    assign(paste0("acf_mean_", k, "_", i), rowMeans(get(paste0("df_acf_", k, "_", i))[, 2:11]))
+    assign(paste0("acf_mean_drainage_", k, "_", i), rowMeans(get(paste0("df_acf_drainage_", k, "_", i))[, 2:11]))
   }
 }
-# 10304, Winter: Autokorrelation > 0.5 bis einschließlich lag = 9
-# 10304, Summer: Autokorrelation > 0.5 bis einschließlich lag = 8
-# 11502, Winter: Autokorrelation > 0.5 bis einschließlich lag = 3
-# 11502, Summer: Autokorrelation > 0.5 bis einschließlich lag = 3
-# 20203, Winter: Autokorrelation > 0.5 bis einschließlich lag = 4
-# 20203, Summer: Autokorrelation > 0.5 bis einschließlich lag = 3
+# -> Drainage ist in allen Teildatensätzen positiv autokorreliert -> Modell, das diese Autokorrelation berücksichtigt, nötig
 
-# ACF-Plots for member kbe separated by each waterlevel and season
-acf(hydro_winter_10304_kbe$drainage, xlab = "lag in days", main = "Autocorrelation between drainage observations for 10304, winter")
-acf(hydro_summer_10304_kbe$drainage, xlab = "lag in days", main = "Autocorrelation between drainage observations for 10304, summer")
-acf(hydro_winter_11502_kbe$drainage, xlab = "lag in days", main = "Autocorrelation between drainage observations for 11502, winter")
-acf(hydro_summer_11502_kbe$drainage, xlab = "lag in days", main = "Autocorrelation between drainage observations for 11502, summer")
-acf(hydro_winter_20203_kbe$drainage, xlab = "lag in days", main = "Autocorrelation between drainage observations for 20203, winter")
-acf(hydro_summer_20203_kbe$drainage, xlab = "lag in days", main = "Autocorrelation between drainage observations for 20203, summer")
+# ACF-Plots for drainage (across all members) separated by each waterlevel and season
+plot(x = 0:37, y = acf_mean_drainage_winter_10304, ylim = c(-0.1, 1), type = "h", xlab = "lag in days", ylab = "ACF", main = "Autocorrelation between drainage observations for 10304, winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 0:37, y = acf_mean_drainage_summer_10304, ylim = c(-0.1, 1), type = "h", xlab = "lag in days", ylab = "ACF", main = "Autocorrelation between drainage observations for 10304, summer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 0:37, y = acf_mean_drainage_winter_11502, ylim = c(-0.1, 1), type = "h", xlab = "lag in days", ylab = "ACF", main = "Autocorrelation between drainage observations for 11502, winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 0:37, y = acf_mean_drainage_summer_11502, ylim = c(-0.1, 1), type = "h", xlab = "lag in days", ylab = "ACF", main = "Autocorrelation between drainage observations for 11502, summer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 0:37, y = acf_mean_drainage_winter_20203, ylim = c(-0.1, 1), type = "h", xlab = "lag in days", ylab = "ACF", main = "Autocorrelation between drainage observations for 20203, winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 0:37, y = acf_mean_drainage_summer_20203, ylim = c(-0.1, 1), type = "h", xlab = "lag in days", ylab = "ACF", main = "Autocorrelation between drainage observations for 20203, summer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
 
-# Partial autocorrelation function, mean pacf (across all members) seperated by each waterlevel and season
+# Partial autocorrelation function, mean pacf for drainage (across all members) separated by each waterlevel and season
 for (k in c("winter", "summer")) {
   for (i in pegel_ids) {
-    assign(paste0("df_pacf_", k, "_", i), data.frame(Names = 1:37))
+    assign(paste0("df_pacf_drainage_", k, "_", i), data.frame(Names = 1:37))
     for (j in levels(hydro_total$member)) {
-      assign(paste0("pacf_", k, "_", i, "_", j), as.data.frame(pacf(get(paste0("hydro_", k, "_", i, "_", j))$drainage, plot = FALSE)$acf))
-      assign(paste0("df_pacf_", k, "_", i), bind_cols(get(paste0("df_pacf_", k, "_", i)), get(paste0("pacf_", k, "_", i, "_", j))))
+      assign(paste0("pacf_drainage_", k, "_", i, "_", j),
+             as.data.frame(pacf(get(paste0("hydro_", k, "_", i, "_", j))$drainage, plot = FALSE)$acf))
+      assign(paste0("df_pacf_drainage_", k, "_", i),
+             bind_cols(get(paste0("df_pacf_drainage_", k, "_", i)), get(paste0("pacf_drainage_", k, "_", i, "_", j))))
     }
-    assign(paste0("pacf_mean_", k, "_", i), rowMeans(get(paste0("df_pacf_", k, "_", i))[, 2:11]))
+    assign(paste0("pacf_mean_drainage_", k, "_", i), rowMeans(get(paste0("df_pacf_drainage_", k, "_", i))[, 2:11]))
   }
 }
 # 10304, Winter: Autokorrelationskoeffizient bis lag = 2 (durchgängig) signifikant
@@ -446,33 +445,491 @@ for (k in c("winter", "summer")) {
 # 20203, Winter: Autokorrelationskoeffizient bis lag = 5 (nicht durchgängig), bis lag = 3 (durchgängig) signifikant
 # 20203, Summer: Autokorrelationskoeffizient bis lag = 5 (nicht durchgängig), bis lag = 3 (durchgängig) signifikant
 
-# PACF-Plots for member kbe seperated by each waterlevel and season
-pacf(hydro_winter_10304_kbe$drainage, xlab = "lag in days", main = "Autocorrelation between drainage observations for 10304, winter")
-pacf(hydro_summer_10304_kbe$drainage, xlab = "lag in days", main = "Autocorrelation between drainage observations for 10304, summer")
-pacf(hydro_winter_11502_kbe$drainage, xlab = "lag in days", main = "Autocorrelation between drainage observations for 11502, winter")
-pacf(hydro_summer_11502_kbe$drainage, xlab = "lag in days", main = "Autocorrelation between drainage observations for 11502, summer")
-pacf(hydro_winter_20203_kbe$drainage, xlab = "lag in days", main = "Autocorrelation between drainage observations for 20203, winter")
-pacf(hydro_summer_20203_kbe$drainage, xlab = "lag in days", main = "Autocorrelation between drainage observations for 20203, summer")
+# PACF-Plots for drainage (across all members) separated by each waterlevel and season
+plot(x = 1:37, y = pacf_mean_drainage_winter_10304, ylim = c(-0.1, 1), type = "h", xlab = "lag in days", ylab = "ACF", main = "Partial autocorrelation between drainage observations for 10304, winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 1:37, y = pacf_mean_drainage_summer_10304, ylim = c(-0.1, 1), type = "h", xlab = "lag in days", ylab = "ACF", main = "Partial autocorrelation between drainage observations for 10304, summer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 1:37, y = pacf_mean_drainage_winter_11502, ylim = c(-0.1, 1), type = "h", xlab = "lag in days", ylab = "ACF", main = "Partial autocorrelation between drainage observations for 11502, winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 1:37, y = pacf_mean_drainage_summer_11502, ylim = c(-0.1, 1), type = "h", xlab = "lag in days", ylab = "ACF", main = "Partial autocorrelation between drainage observations for 11502, summer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 1:37, y = pacf_mean_drainage_winter_20203, ylim = c(-0.1, 1), type = "h", xlab = "lag in days", ylab = "ACF", main = "Partial autocorrelation between drainage observations for 20203, winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 1:37, y = pacf_mean_drainage_summer_20203, ylim = c(-0.1, 1), type = "h", xlab = "lag in days", ylab = "ACF", main = "Partial autocorrelation between drainage observations for 20203, summer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
 
+
+## lowlevel
+# autocorrelation function, mean acf for lowlevel (across all members) separated by each waterlevel and season
+for (k in c("winter", "summer")) {
+  for (i in pegel_ids) {
+    assign(paste0("df_acf_lowlevel_", k, "_", i), data.frame(Names = 1:38))
+    for (j in levels(hydro_total$member)) {
+      assign(paste0("acf_lowlevel_", k, "_", i, "_", j), as.data.frame(acf(get(paste0("hydro_", k, "_", i, "_", j))$lowlevel, plot = FALSE)$acf))
+      assign(paste0("df_acf_lowlevel_", k, "_", i), bind_cols(get(paste0("df_acf_lowlevel_", k, "_", i)), get(paste0("acf_", k, "_", i, "_", j))))
+    }
+    assign(paste0("acf_mean_lowlevel_", k, "_", i), rowMeans(get(paste0("df_acf_lowlevel_", k, "_", i))[, 2:11]))
+  }
+}
+# -> Lowlevel ist in allen Teildatensätzen positiv autokorreliert -> Modell, das diese Autokorrelation berücksichtigt, nötig
+
+# ACF-Plots for lowlevel (across all members) separated by each waterlevel and season
+plot(x = 0:37, y = acf_mean_lowlevel_winter_10304, ylim = c(-0.1, 1), type = "h", xlab = "lag in days", ylab = "ACF", main = "Autocorrelation between lowlevel observations for 10304, winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 0:37, y = acf_mean_lowlevel_summer_10304, ylim = c(-0.1, 1), type = "h", xlab = "lag in days", ylab = "ACF", main = "Autocorrelation between lowlevel observations for 10304, summer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 0:37, y = acf_mean_lowlevel_winter_11502, ylim = c(-0.1, 1), type = "h", xlab = "lag in days", ylab = "ACF", main = "Autocorrelation between lowlevel observations for 11502, winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 0:37, y = acf_mean_lowlevel_summer_11502, ylim = c(-0.1, 1), type = "h", xlab = "lag in days", ylab = "ACF", main = "Autocorrelation between lowlevel observations for 11502, summer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 0:37, y = acf_mean_lowlevel_winter_20203, ylim = c(-0.1, 1), type = "h", xlab = "lag in days", ylab = "ACF", main = "Autocorrelation between lowlevel observations for 20203, winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 0:37, y = acf_mean_lowlevel_summer_20203, ylim = c(-0.1, 1), type = "h", xlab = "lag in days", ylab = "ACF", main = "Autocorrelation between lowlevel observations for 20203, summer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+
+# Partial autocorrelation function, mean pacf for lowlevel (across all members) separated by each waterlevel and season
+for (k in c("winter", "summer")) {
+  for (i in pegel_ids) {
+    assign(paste0("df_pacf_lowlevel_", k, "_", i), data.frame(Names = 1:37))
+    for (j in levels(hydro_total$member)) {
+      assign(paste0("pacf_lowlevel_", k, "_", i, "_", j),
+             as.data.frame(pacf(get(paste0("hydro_", k, "_", i, "_", j))$lowlevel, plot = FALSE)$acf))
+      assign(paste0("df_pacf_lowlevel_", k, "_", i),
+             bind_cols(get(paste0("df_pacf_lowlevel_", k, "_", i)), get(paste0("pacf_lowlevel_", k, "_", i, "_", j))))
+    }
+    assign(paste0("pacf_mean_lowlevel_", k, "_", i), rowMeans(get(paste0("df_pacf_lowlevel_", k, "_", i))[, 2:11]))
+  }
+}
+# 10304, Winter: Autokorrelationskoeffizient bis lag = 4 (nicht durchgängig), bis lag = 1 (durchgängig) signifikant
+# 10304, Summer: Autokorrelationskoeffizient bis lag = 1 (durchgängig) signifikant
+# 11502, Winter: Autokorrelationskoeffizient bis lag = 4 (nicht durchgängig), bis lag = 1 (durchgängig) signifikant
+# 11502, Summer: Autokorrelationskoeffizient bis lag = 1 (durchgängig) signifikant
+# 20203, Winter: Autokorrelationskoeffizient bis lag = 1 (durchgängig) signifikant
+# 20203, Summer: Autokorrelationskoeffizient bis lag = 5 (nicht durchgängig), bis lag = 1 (durchgängig) signifikant
+
+# PACF-Plots for lowlevel (across all members) seperated by each waterlevel and season
+plot(x = 1:37, y = pacf_mean_lowlevel_winter_10304, ylim = c(-0.1, 1), type = "h", xlab = "lag in days", ylab = "ACF", main = "Partial autocorrelation between lowlevel observations for 10304, winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 1:37, y = pacf_mean_lowlevel_summer_10304, ylim = c(-0.1, 1), type = "h", xlab = "lag in days", ylab = "ACF", main = "Partial autocorrelation between lowlevel observations for 10304, summer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 1:37, y = pacf_mean_lowlevel_winter_11502, ylim = c(-0.1, 1), type = "h", xlab = "lag in days", ylab = "ACF", main = "Partial autocorrelation between lowlevel observations for 11502, winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 1:37, y = pacf_mean_lowlevel_summer_11502, ylim = c(-0.1, 1), type = "h", xlab = "lag in days", ylab = "ACF", main = "Partial autocorrelation between lowlevel observations for 11502, summer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 1:37, y = pacf_mean_lowlevel_winter_20203, ylim = c(-0.1, 1), type = "h", xlab = "lag in days", ylab = "ACF", main = "Partial autocorrelation between lowlevel observations for 20203, winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 1:37, y = pacf_mean_lowlevel_summer_20203, ylim = c(-0.1, 1), type = "h", xlab = "lag in days", ylab = "ACF", main = "Partial autocorrelation between lowlevel observations for 20203, summer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
 
 # DurbinWatsonTest für GAM auf Datensatz hydro_winter_10304_kbe
 durbinWatsonTest(gam_1)
 # p < 0.05, Wert der Teststatistik: 0.3839 -> Es scheint positive Autokorrelation vorzuliegen
 
+### Driver
+## Precip
+# autocorrelation function, mean acf for precip (across all members) separated by each waterlevel and season
+for (k in c("winter", "summer")) {
+  for (i in pegel_ids) {
+    assign(paste0("df_acf_precip_", k, "_", i), data.frame(Names = 1:38))
+    for (j in levels(hydro_total$member)) {
+      assign(paste0("acf_precip_", k, "_", i, "_", j),
+             as.data.frame(acf(get(paste0("hydro_", k, "_", i, "_", j))$precip, plot = FALSE)$acf))
+      assign(paste0("df_acf_precip_", k, "_", i),
+             bind_cols(get(paste0("df_acf_precip_", k, "_", i)), get(paste0("acf_precip_", k, "_", i, "_", j))))
+    }
+    assign(paste0("acf_mean_precip_", k, "_", i), rowMeans(get(paste0("df_acf_precip_", k, "_", i))[, 2:11]))
+  }
+}
+# -> Precip ist in allen Teildatensätzen leicht positiv autokorreliert -> Modell, das diese Autokorrelation berücksichtigt, wäre von Vorteil
+
+# ACF-Plots for precip (across all members) separated by each waterlevel and season
+plot(x = 0:37, y = acf_mean_precip_winter_10304, ylim = c(-0.1, 1), type = "h", xlab = "lag in days", ylab = "ACF", main = "Autocorrelation between precip observations for 10304, winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 0:37, y = acf_mean_precip_summer_10304, ylim = c(-0.1, 1), type = "h", xlab = "lag in days", ylab = "ACF", main = "Autocorrelation between precip observations for 10304, summer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 0:37, y = acf_mean_precip_winter_11502, ylim = c(-0.1, 1), type = "h", xlab = "lag in days", ylab = "ACF", main = "Autocorrelation between precip observations for 11502, winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 0:37, y = acf_mean_precip_summer_11502, ylim = c(-0.1, 1), type = "h", xlab = "lag in days", ylab = "ACF", main = "Autocorrelation between precip observations for 11502, summer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 0:37, y = acf_mean_precip_winter_20203, ylim = c(-0.1, 1), type = "h", xlab = "lag in days", ylab = "ACF", main = "Autocorrelation between precip observations for 20203, winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 0:37, y = acf_mean_precip_summer_20203, ylim = c(-0.1, 1), type = "h", xlab = "lag in days", ylab = "ACF", main = "Autocorrelation between precip observations for 20203, summer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+
+# partial autocorrelation function, mean pacf for precip (across all members) separated by each waterlevel and season
+for (k in c("winter", "summer")) {
+  for (i in pegel_ids) {
+    assign(paste0("df_pacf_precip_", k, "_", i), data.frame(Names = 1:37))
+    for (j in levels(hydro_total$member)) {
+      assign(paste0("pacf_precip_", k, "_", i, "_", j),
+             as.data.frame(pacf(get(paste0("hydro_", k, "_", i, "_", j))$precip, plot = FALSE)$acf))
+      assign(paste0("df_pacf_precip_", k, "_", i),
+             bind_cols(get(paste0("df_pacf_precip_", k, "_", i)), get(paste0("pacf_precip_", k, "_", i, "_", j))))
+    }
+    assign(paste0("pacf_mean_precip_", k, "_", i), rowMeans(get(paste0("df_pacf_precip_", k, "_", i))[, 2:11]))
+  }
+}
+# 10304, Winter: Autokorrelationskoeffizient bis lag = 1 (durchgängig) signifikant
+# 10304, Summer: Autokorrelationskoeffizient bis lag = 1 (durchgängig) signifikant
+# 11502, Winter: Autokorrelationskoeffizient bis lag = 1 (durchgängig) signifikant
+# 11502, Summer: Autokorrelationskoeffizient bis lag = 1 (durchgängig) signifikant
+# 20203, Winter: Autokorrelationskoeffizient bis lag = 2 (durchgängig) signifikant
+# 20203, Summer: Autokorrelationskoeffizient bis lag = 1 (durchgängig) signifikant
+
+# PACF-Plots for precip (across all members) seperated by each waterlevel and season
+plot(x = 1:37, y = pacf_mean_precip_winter_10304, ylim = c(-0.1, 1), type = "h", xlab = "lag in days", ylab = "ACF", main = "Partial autocorrelation between precip observations for 10304, winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 1:37, y = pacf_mean_precip_summer_10304, ylim = c(-0.1, 1), type = "h", xlab = "lag in days", ylab = "ACF", main = "Partial autocorrelation between precip observations for 10304, summer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 1:37, y = pacf_mean_precip_winter_11502, ylim = c(-0.1, 1), type = "h", xlab = "lag in days", ylab = "ACF", main = "Partial autocorrelation between precip observations for 11502, winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 1:37, y = pacf_mean_precip_summer_11502, ylim = c(-0.1, 1), type = "h", xlab = "lag in days", ylab = "ACF", main = "Partial autocorrelation between precip observations for 11502, summer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 1:37, y = pacf_mean_precip_winter_20203, ylim = c(-0.1, 1), type = "h", xlab = "lag in days", ylab = "ACF", main = "Partial autocorrelation between precip observations for 20203, winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 1:37, y = pacf_mean_precip_summer_20203, ylim = c(-0.1, 1), type = "h", xlab = "lag in days", ylab = "ACF", main = "Partial autocorrelation between precip observations for 20203, summer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
 
 
-acf(hydro_summer_10304_kbe$airtmp, plot = FALSE)
-acf(hydro_summer_10304_kbe$airtmp)
-# -> Temperatur scheint autokorelliert zu sein
+## Airtmp
+# autocorrelation function, mean acf for airtmp (across all members) separated by each waterlevel and season
+for (k in c("winter", "summer")) {
+  for (i in pegel_ids) {
+    assign(paste0("df_acf_airtmp_", k, "_", i), data.frame(Names = 1:38))
+    for (j in levels(hydro_total$member)) {
+      assign(paste0("acf_airtmp_", k, "_", i, "_", j),
+             as.data.frame(acf(get(paste0("hydro_", k, "_", i, "_", j))$airtmp, plot = FALSE)$acf))
+      assign(paste0("df_acf_airtmp_", k, "_", i),
+             bind_cols(get(paste0("df_acf_airtmp_", k, "_", i)), get(paste0("acf_airtmp_", k, "_", i, "_", j))))
+    }
+    assign(paste0("acf_mean_airtmp_", k, "_", i), rowMeans(get(paste0("df_acf_airtmp_", k, "_", i))[, 2:11]))
+  }
+}
+# -> Airtmp ist in allen Teildatensätzen positiv autokorreliert -> Modell, das diese Autokorrelation berücksichtigt, nötig
 
-acf(hydro_summer_10304_kbe$soilwater, plot = FALSE)
-acf(hydro_summer_10304_kbe$soilwater)
+# ACF-Plots for airtmp (across all members) separated by each waterlevel and season
+plot(x = 0:37, y = acf_mean_airtmp_winter_10304, ylim = c(-0.1, 1), type = "h", xlab = "lag in days", ylab = "ACF", main = "Autocorrelation between airtmp observations for 10304, winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 0:37, y = acf_mean_airtmp_summer_10304, ylim = c(-0.1, 1), type = "h", xlab = "lag in days", ylab = "ACF", main = "Autocorrelation between airtmp observations for 10304, summer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 0:37, y = acf_mean_airtmp_winter_11502, ylim = c(-0.1, 1), type = "h", xlab = "lag in days", ylab = "ACF", main = "Autocorrelation between airtmp observations for 11502, winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 0:37, y = acf_mean_airtmp_summer_11502, ylim = c(-0.1, 1), type = "h", xlab = "lag in days", ylab = "ACF", main = "Autocorrelation between airtmp observations for 11502, summer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 0:37, y = acf_mean_airtmp_winter_20203, ylim = c(-0.1, 1), type = "h", xlab = "lag in days", ylab = "ACF", main = "Autocorrelation between airtmp observations for 20203, winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 0:37, y = acf_mean_airtmp_summer_20203, ylim = c(-0.1, 1), type = "h", xlab = "lag in days", ylab = "ACF", main = "Autocorrelation between airtmp observations for 20203, summer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
 
-# -> oberflächennahe Bodenfeuchte scheint autokorreliert zu sein
+# partial autocorrelation function, mean pacf for airtmp (across all members) separated by each waterlevel and season
+for (k in c("winter", "summer")) {
+  for (i in pegel_ids) {
+    assign(paste0("df_pacf_airtmp_", k, "_", i), data.frame(Names = 1:37))
+    for (j in levels(hydro_total$member)) {
+      assign(paste0("pacf_airtmp_", k, "_", i, "_", j),
+             as.data.frame(pacf(get(paste0("hydro_", k, "_", i, "_", j))$airtmp, plot = FALSE)$acf))
+      assign(paste0("df_pacf_airtmp_", k, "_", i),
+             bind_cols(get(paste0("df_pacf_airtmp_", k, "_", i)), get(paste0("pacf_airtmp_", k, "_", i, "_", j))))
+    }
+    assign(paste0("pacf_mean_airtmp_", k, "_", i), rowMeans(get(paste0("df_pacf_airtmp_", k, "_", i))[, 2:11]))
+  }
+}
+# 10304, Winter: Autokorrelationskoeffizient bis lag = 5 (nicht durchgängig), bis lag = 3 (durchgängig) signifikant
+# 10304, Summer: Autokorrelationskoeffizient bis lag = 7 (nicht durchgängig), bis lag = 3 (durchgängig) signifikant
+# 11502, Winter: Autokorrelationskoeffizient bis lag = 5 (nicht durchgängig), bis lag = 3 (durchgängig) signifikant
+# 11502, Summer: Autokorrelationskoeffizient bis lag = 7 (nicht durchgängig), bis lag = 3 (durchgängig) signifikant
+# 20203, Winter: Autokorrelationskoeffizient bis lag = 5 (durchgängig) signifikant
+# 20203, Summer: Autokorrelationskoeffizient bis lag = 6 (durchgängig) signifikant
 
-acf(hydro_summer_10304_kbe$precip, plot = FALSE)
-acf(hydro_summer_10304_kbe$precip)
-# -> Niederschlag ist kaum autokorreliert
+# PACF-Plots for airtmp (across all members) seperated by each waterlevel and season
+plot(x = 1:37, y = pacf_mean_airtmp_winter_10304, ylim = c(-0.1, 1), type = "h", xlab = "lag in days", ylab = "ACF", main = "Partial autocorrelation between airtmp observations for 10304, winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 1:37, y = pacf_mean_airtmp_summer_10304, ylim = c(-0.1, 1), type = "h", xlab = "lag in days", ylab = "ACF", main = "Partial autocorrelation between airtmp observations for 10304, summer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 1:37, y = pacf_mean_airtmp_winter_11502, ylim = c(-0.1, 1), type = "h", xlab = "lag in days", ylab = "ACF", main = "Partial autocorrelation between airtmp observations for 11502, winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 1:37, y = pacf_mean_airtmp_summer_11502, ylim = c(-0.1, 1), type = "h", xlab = "lag in days", ylab = "ACF", main = "Partial autocorrelation between airtmp observations for 11502, summer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 1:37, y = pacf_mean_airtmp_winter_20203, ylim = c(-0.1, 1), type = "h", xlab = "lag in days", ylab = "ACF", main = "Partial autocorrelation between airtmp observations for 20203, winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 1:37, y = pacf_mean_airtmp_summer_20203, ylim = c(-0.1, 1), type = "h", xlab = "lag in days", ylab = "ACF", main = "Partial autocorrelation between airtmp observations for 20203, summer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+
+## Glorad
+# autocorrelation function, mean acf for glorad (across all members) separated by each waterlevel and season
+for (k in c("winter", "summer")) {
+  for (i in pegel_ids) {
+    assign(paste0("df_acf_glorad_", k, "_", i), data.frame(Names = 1:38))
+    for (j in levels(hydro_total$member)) {
+      assign(paste0("acf_glorad_", k, "_", i, "_", j),
+             as.data.frame(acf(get(paste0("hydro_", k, "_", i, "_", j))$glorad, plot = FALSE)$acf))
+      assign(paste0("df_acf_glorad_", k, "_", i),
+             bind_cols(get(paste0("df_acf_glorad_", k, "_", i)), get(paste0("acf_glorad_", k, "_", i, "_", j))))
+    }
+    assign(paste0("acf_mean_glorad_", k, "_", i), rowMeans(get(paste0("df_acf_glorad_", k, "_", i))[, 2:11]))
+  }
+}
+# -> Glorad ist in allen Teildatensätzen positiv autokorreliert -> Modell, das diese Autokorrelation berücksichtigt, nötig
+
+# ACF-Plots for glorad (across all members) separated by each waterlevel and season
+plot(x = 0:37, y = acf_mean_glorad_winter_10304, ylim = c(-0.1, 1), type = "h", xlab = "lag in days", ylab = "ACF", main = "Autocorrelation between glorad observations for 10304, winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 0:37, y = acf_mean_glorad_summer_10304, ylim = c(-0.1, 1), type = "h", xlab = "lag in days", ylab = "ACF", main = "Autocorrelation between glorad observations for 10304, summer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 0:37, y = acf_mean_glorad_winter_11502, ylim = c(-0.1, 1), type = "h", xlab = "lag in days", ylab = "ACF", main = "Autocorrelation between glorad observations for 11502, winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 0:37, y = acf_mean_glorad_summer_11502, ylim = c(-0.1, 1), type = "h", xlab = "lag in days", ylab = "ACF", main = "Autocorrelation between glorad observations for 11502, summer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 0:37, y = acf_mean_glorad_winter_20203, ylim = c(-0.1, 1), type = "h", xlab = "lag in days", ylab = "ACF", main = "Autocorrelation between glorad observations for 20203, winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 0:37, y = acf_mean_glorad_summer_20203, ylim = c(-0.1, 1), type = "h", xlab = "lag in days", ylab = "ACF", main = "Autocorrelation between glorad observations for 20203, summer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+
+# partial autocorrelation function, mean pacf for glorad (across all members) separated by each waterlevel and season
+for (k in c("winter", "summer")) {
+  for (i in pegel_ids) {
+    assign(paste0("df_pacf_glorad_", k, "_", i), data.frame(Names = 1:37))
+    for (j in levels(hydro_total$member)) {
+      assign(paste0("pacf_glorad_", k, "_", i, "_", j),
+             as.data.frame(pacf(get(paste0("hydro_", k, "_", i, "_", j))$glorad, plot = FALSE)$acf))
+      assign(paste0("df_pacf_glorad_", k, "_", i),
+             bind_cols(get(paste0("df_pacf_glorad_", k, "_", i)), get(paste0("pacf_glorad_", k, "_", i, "_", j))))
+    }
+    assign(paste0("pacf_mean_glorad_", k, "_", i), rowMeans(get(paste0("df_pacf_glorad_", k, "_", i))[, 2:11]))
+  }
+}
+# 10304, Winter: Autokorrelationskoeffizient bis lag = 7 (durchgängig) signifikant
+# 10304, Summer: Autokorrelationskoeffizient bis lag = 9 (durchgängig) signifikant
+# 11502, Winter: Autokorrelationskoeffizient bis lag = 7 (durchgängig) signifikant
+# 11502, Summer: Autokorrelationskoeffizient bis lag = 8 (durchgängig) signifikant
+# 20203, Winter: Autokorrelationskoeffizient bis lag = 6 (durchgängig) signifikant
+# 20203, Summer: Autokorrelationskoeffizient bis lag = 7 (durchgängig) signifikant
+
+# PACF-Plots for glorad (across all members) seperated by each waterlevel and season
+plot(x = 1:37, y = pacf_mean_glorad_winter_10304, ylim = c(-0.1, 1), type = "h", xlab = "lag in days", ylab = "ACF", main = "Partial autocorrelation between glorad observations for 10304, winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 1:37, y = pacf_mean_glorad_summer_10304, ylim = c(-0.1, 1), type = "h", xlab = "lag in days", ylab = "ACF", main = "Partial autocorrelation between glorad observations for 10304, summer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 1:37, y = pacf_mean_glorad_winter_11502, ylim = c(-0.1, 1), type = "h", xlab = "lag in days", ylab = "ACF", main = "Partial autocorrelation between glorad observations for 11502, winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 1:37, y = pacf_mean_glorad_summer_11502, ylim = c(-0.1, 1), type = "h", xlab = "lag in days", ylab = "ACF", main = "Partial autocorrelation between glorad observations for 11502, summer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 1:37, y = pacf_mean_glorad_winter_20203, ylim = c(-0.1, 1), type = "h", xlab = "lag in days", ylab = "ACF", main = "Partial autocorrelation between glorad observations for 20203, winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 1:37, y = pacf_mean_glorad_summer_20203, ylim = c(-0.1, 1), type = "h", xlab = "lag in days", ylab = "ACF", main = "Partial autocorrelation between glorad observations for 20203, summer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+
+
+## Relhum
+# autocorrelation function, mean acf for relhum (across all members) separated by each waterlevel and season
+for (k in c("winter", "summer")) {
+  for (i in pegel_ids) {
+    assign(paste0("df_acf_relhum_", k, "_", i), data.frame(Names = 1:38))
+    for (j in levels(hydro_total$member)) {
+      assign(paste0("acf_relhum_", k, "_", i, "_", j),
+             as.data.frame(acf(get(paste0("hydro_", k, "_", i, "_", j))$relhum, plot = FALSE)$acf))
+      assign(paste0("df_acf_relhum_", k, "_", i),
+             bind_cols(get(paste0("df_acf_relhum_", k, "_", i)), get(paste0("acf_relhum_", k, "_", i, "_", j))))
+    }
+    assign(paste0("acf_mean_relhum_", k, "_", i), rowMeans(get(paste0("df_acf_relhum_", k, "_", i))[, 2:11]))
+  }
+}
+# -> Relhum ist in allen Teildatensätzen positiv autokorreliert (vor allem für Pegel 20203) -> Modell, das diese Autokorrelation berücksichtigt, nötig
+
+# ACF-Plots for relhum (across all members) separated by each waterlevel and season
+plot(x = 0:37, y = acf_mean_relhum_winter_10304, ylim = c(-0.1, 1), type = "h", xlab = "lag in days", ylab = "ACF", main = "Autocorrelation between relhum observations for 10304, winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 0:37, y = acf_mean_relhum_summer_10304, ylim = c(-0.1, 1), type = "h", xlab = "lag in days", ylab = "ACF", main = "Autocorrelation between relhum observations for 10304, summer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 0:37, y = acf_mean_relhum_winter_11502, ylim = c(-0.1, 1), type = "h", xlab = "lag in days", ylab = "ACF", main = "Autocorrelation between relhum observations for 11502, winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 0:37, y = acf_mean_relhum_summer_11502, ylim = c(-0.1, 1), type = "h", xlab = "lag in days", ylab = "ACF", main = "Autocorrelation between relhum observations for 11502, summer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 0:37, y = acf_mean_relhum_winter_20203, ylim = c(-0.1, 1), type = "h", xlab = "lag in days", ylab = "ACF", main = "Autocorrelation between relhum observations for 20203, winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 0:37, y = acf_mean_relhum_summer_20203, ylim = c(-0.1, 1), type = "h", xlab = "lag in days", ylab = "ACF", main = "Autocorrelation between relhum observations for 20203, summer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+
+# partial autocorrelation function, mean pacf for relhum (across all members) separated by each waterlevel and season
+for (k in c("winter", "summer")) {
+  for (i in pegel_ids) {
+    assign(paste0("df_pacf_relhum_", k, "_", i), data.frame(Names = 1:37))
+    for (j in levels(hydro_total$member)) {
+      assign(paste0("pacf_relhum_", k, "_", i, "_", j),
+             as.data.frame(pacf(get(paste0("hydro_", k, "_", i, "_", j))$relhum, plot = FALSE)$acf))
+      assign(paste0("df_pacf_relhum_", k, "_", i),
+             bind_cols(get(paste0("df_pacf_relhum_", k, "_", i)), get(paste0("pacf_relhum_", k, "_", i, "_", j))))
+    }
+    assign(paste0("pacf_mean_relhum_", k, "_", i), rowMeans(get(paste0("df_pacf_relhum_", k, "_", i))[, 2:11]))
+  }
+}
+# 10304, Winter: Autokorrelationskoeffizient bis lag = 3 (durchgängig) signifikant
+# 10304, Summer: Autokorrelationskoeffizient bis lag = 3 (durchgängig) signifikant
+# 11502, Winter: Autokorrelationskoeffizient bis lag = 3 (durchgängig) signifikant
+# 11502, Summer: Autokorrelationskoeffizient bis lag = 3 (durchgängig) signifikant
+# 20203, Winter: Autokorrelationskoeffizient bis lag = 5 (durchgängig) signifikant
+# 20203, Summer: Autokorrelationskoeffizient bis lag = 4 (nicht durchgängig), bis lag = 1 (durchgängig) signifikant
+
+# PACF-Plots for relhum (across all members) seperated by each waterlevel and season
+plot(x = 1:37, y = pacf_mean_relhum_winter_10304, ylim = c(-0.1, 1), type = "h", xlab = "lag in days", ylab = "ACF", main = "Partial autocorrelation between relhum observations for 10304, winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 1:37, y = pacf_mean_relhum_summer_10304, ylim = c(-0.1, 1), type = "h", xlab = "lag in days", ylab = "ACF", main = "Partial autocorrelation between relhum observations for 10304, summer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 1:37, y = pacf_mean_relhum_winter_11502, ylim = c(-0.1, 1), type = "h", xlab = "lag in days", ylab = "ACF", main = "Partial autocorrelation between relhum observations for 11502, winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 1:37, y = pacf_mean_relhum_summer_11502, ylim = c(-0.1, 1), type = "h", xlab = "lag in days", ylab = "ACF", main = "Partial autocorrelation between relhum observations for 11502, summer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 1:37, y = pacf_mean_relhum_winter_20203, ylim = c(-0.1, 1), type = "h", xlab = "lag in days", ylab = "ACF", main = "Partial autocorrelation between relhum observations for 20203, winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 1:37, y = pacf_mean_relhum_summer_20203, ylim = c(-0.1, 1), type = "h", xlab = "lag in days", ylab = "ACF", main = "Partial autocorrelation between relhum observations for 20203, summer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+
+## Soilwater
+# autocorrelation function, mean acf for soilwater (across all members) separated by each waterlevel and season
+for (k in c("winter", "summer")) {
+  for (i in pegel_ids) {
+    assign(paste0("df_acf_soilwater_", k, "_", i), data.frame(Names = 1:38))
+    for (j in levels(hydro_total$member)) {
+      assign(paste0("acf_soilwater_", k, "_", i, "_", j),
+             as.data.frame(acf(get(paste0("hydro_", k, "_", i, "_", j))$soilwater, plot = FALSE)$acf))
+      assign(paste0("df_acf_soilwater_", k, "_", i),
+             bind_cols(get(paste0("df_acf_soilwater_", k, "_", i)), get(paste0("acf_soilwater_", k, "_", i, "_", j))))
+    }
+    assign(paste0("acf_mean_soilwater_", k, "_", i), rowMeans(get(paste0("df_acf_soilwater_", k, "_", i))[, 2:11]))
+  }
+}
+# -> Soilwater ist in allen Teildatensätzen positiv autokorreliert -> Modell, das diese Autokorrelation berücksichtigt, nötig
+
+# ACF-Plots for soilwater (across all members) separated by each waterlevel and season
+plot(x = 0:37, y = acf_mean_soilwater_winter_10304, ylim = c(-0.1, 1), type = "h", xlab = "lag in days", ylab = "ACF", main = "Autocorrelation between soilwater observations for 10304, winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 0:37, y = acf_mean_soilwater_summer_10304, ylim = c(-0.1, 1), type = "h", xlab = "lag in days", ylab = "ACF", main = "Autocorrelation between soilwater observations for 10304, summer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 0:37, y = acf_mean_soilwater_winter_11502, ylim = c(-0.1, 1), type = "h", xlab = "lag in days", ylab = "ACF", main = "Autocorrelation between soilwater observations for 11502, winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 0:37, y = acf_mean_soilwater_summer_11502, ylim = c(-0.1, 1), type = "h", xlab = "lag in days", ylab = "ACF", main = "Autocorrelation between soilwater observations for 11502, summer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 0:37, y = acf_mean_soilwater_winter_20203, ylim = c(-0.1, 1), type = "h", xlab = "lag in days", ylab = "ACF", main = "Autocorrelation between soilwater observations for 20203, winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 0:37, y = acf_mean_soilwater_summer_20203, ylim = c(-0.1, 1), type = "h", xlab = "lag in days", ylab = "ACF", main = "Autocorrelation between soilwater observations for 20203, summer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+
+# partial autocorrelation function, mean pacf for soilwater (across all members) separated by each waterlevel and season
+for (k in c("winter", "summer")) {
+  for (i in pegel_ids) {
+    assign(paste0("df_pacf_soilwater_", k, "_", i), data.frame(Names = 1:37))
+    for (j in levels(hydro_total$member)) {
+      assign(paste0("pacf_soilwater_", k, "_", i, "_", j),
+             as.data.frame(pacf(get(paste0("hydro_", k, "_", i, "_", j))$soilwater, plot = FALSE)$acf))
+      assign(paste0("df_pacf_soilwater_", k, "_", i),
+             bind_cols(get(paste0("df_pacf_soilwater_", k, "_", i)), get(paste0("pacf_soilwater_", k, "_", i, "_", j))))
+    }
+    assign(paste0("pacf_mean_soilwater_", k, "_", i), rowMeans(get(paste0("df_pacf_soilwater_", k, "_", i))[, 2:11]))
+  }
+}
+# 10304, Winter: Autokorrelationskoeffizient bis lag = 2 (durchgängig) signifikant
+# 10304, Summer: Autokorrelationskoeffizient bis lag = 3 (durchgängig) signifikant
+# 11502, Winter: Autokorrelationskoeffizient bis lag = 3 (durchgängig) signifikant
+# 11502, Summer: Autokorrelationskoeffizient bis lag = 3 (durchgängig) signifikant
+# 20203, Winter: Autokorrelationskoeffizient bis lag = 2 (durchgängig) signifikant
+# 20203, Summer: Autokorrelationskoeffizient bis lag = 2 (durchgängig) signifikant
+
+# PACF-Plots for soilwater (across all members) seperated by each waterlevel and season
+plot(x = 1:37, y = pacf_mean_soilwater_winter_10304, ylim = c(-0.1, 1), type = "h", xlab = "lag in days", ylab = "ACF", main = "Partial autocorrelation between soilwater observations for 10304, winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 1:37, y = pacf_mean_soilwater_summer_10304, ylim = c(-0.1, 1), type = "h", xlab = "lag in days", ylab = "ACF", main = "Partial autocorrelation between soilwater observations for 10304, summer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 1:37, y = pacf_mean_soilwater_winter_11502, ylim = c(-0.1, 1), type = "h", xlab = "lag in days", ylab = "ACF", main = "Partial autocorrelation between soilwater observations for 11502, winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 1:37, y = pacf_mean_soilwater_summer_11502, ylim = c(-0.1, 1), type = "h", xlab = "lag in days", ylab = "ACF", main = "Partial autocorrelation between soilwater observations for 11502, summer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 1:37, y = pacf_mean_soilwater_winter_20203, ylim = c(-0.1, 1), type = "h", xlab = "lag in days", ylab = "ACF", main = "Partial autocorrelation between soilwater observations for 20203, winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 1:37, y = pacf_mean_soilwater_summer_20203, ylim = c(-0.1, 1), type = "h", xlab = "lag in days", ylab = "ACF", main = "Partial autocorrelation between soilwater observations for 20203, summer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+
+
+## Snowstorage
+# autocorrelation function, mean acf for snowstorage (across all members) separated by each waterlevel and season
+for (k in c("winter", "summer")) {
+  for (i in pegel_ids) {
+    assign(paste0("df_acf_snowstorage_", k, "_", i), data.frame(Names = 1:38))
+    for (j in levels(hydro_total$member)) {
+      assign(paste0("acf_snowstorage_", k, "_", i, "_", j),
+             as.data.frame(acf(get(paste0("hydro_", k, "_", i, "_", j))$snowstorage, plot = FALSE)$acf))
+      assign(paste0("df_acf_snowstorage_", k, "_", i),
+             bind_cols(get(paste0("df_acf_snowstorage_", k, "_", i)), get(paste0("acf_snowstorage_", k, "_", i, "_", j))))
+    }
+    assign(paste0("acf_mean_snowstorage_", k, "_", i), rowMeans(get(paste0("df_acf_snowstorage_", k, "_", i))[, 2:11]))
+  }
+}
+# -> Snowstorage ist in allen Teildatensätzen positiv autokorreliert -> Modell, das diese Autokorrelation berücksichtigt, nötig
+
+# ACF-Plots for snowstorage (across all members) separated by each waterlevel and season
+plot(x = 0:37, y = acf_mean_snowstorage_winter_10304, ylim = c(-0.1, 1), type = "h", xlab = "lag in days", ylab = "ACF", main = "Autocorrelation between snowstorage observations for 10304, winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 0:37, y = acf_mean_snowstorage_summer_10304, ylim = c(-0.1, 1), type = "h", xlab = "lag in days", ylab = "ACF", main = "Autocorrelation between snowstorage observations for 10304, summer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 0:37, y = acf_mean_snowstorage_winter_11502, ylim = c(-0.1, 1), type = "h", xlab = "lag in days", ylab = "ACF", main = "Autocorrelation between snowstorage observations for 11502, winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 0:37, y = acf_mean_snowstorage_summer_11502, ylim = c(-0.1, 1), type = "h", xlab = "lag in days", ylab = "ACF", main = "Autocorrelation between snowstorage observations for 11502, summer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 0:37, y = acf_mean_snowstorage_winter_20203, ylim = c(-0.1, 1), type = "h", xlab = "lag in days", ylab = "ACF", main = "Autocorrelation between snowstorage observations for 20203, winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 0:37, y = acf_mean_snowstorage_summer_20203, ylim = c(-0.1, 1), type = "h", xlab = "lag in days", ylab = "ACF", main = "Autocorrelation between snowstorage observations for 20203, summer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+
+# partial autocorrelation function, mean pacf for snowstorage (across all members) separated by each waterlevel and season
+for (k in c("winter", "summer")) {
+  for (i in pegel_ids) {
+    assign(paste0("df_pacf_snowstorage_", k, "_", i), data.frame(Names = 1:37))
+    for (j in levels(hydro_total$member)) {
+      assign(paste0("pacf_snowstorage_", k, "_", i, "_", j),
+             as.data.frame(pacf(get(paste0("hydro_", k, "_", i, "_", j))$snowstorage, plot = FALSE)$acf))
+      assign(paste0("df_pacf_snowstorage_", k, "_", i),
+             bind_cols(get(paste0("df_pacf_snowstorage_", k, "_", i)), get(paste0("pacf_snowstorage_", k, "_", i, "_", j))))
+    }
+    assign(paste0("pacf_mean_snowstorage_", k, "_", i), rowMeans(get(paste0("df_pacf_snowstorage_", k, "_", i))[, 2:11]))
+  }
+}
+# 10304, Winter: Autokorrelationskoeffizient bis lag = 3 (durchgängig) signifikant
+# 10304, Summer: Autokorrelationskoeffizient bis lag = 1 (durchgängig) signifikant
+# 11502, Winter: Autokorrelationskoeffizient bis lag = 4 (durchgängig) signifikant
+# 11502, Summer: Autokorrelationskoeffizient bis lag = 1 (durchgängig) signifikant
+# 20203, Winter: Autokorrelationskoeffizient bis lag = 3 (durchgängig) signifikant
+# 20203, Summer: Autokorrelationskoeffizient bis lag = 2 (durchgängig) signifikant
+
+# PACF-Plots for snowstorage (across all members) seperated by each waterlevel and season
+plot(x = 1:37, y = pacf_mean_snowstorage_winter_10304, ylim = c(-0.1, 1), type = "h", xlab = "lag in days", ylab = "ACF", main = "Partial autocorrelation between snowstorage observations for 10304, winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 1:37, y = pacf_mean_snowstorage_summer_10304, ylim = c(-0.1, 1), type = "h", xlab = "lag in days", ylab = "ACF", main = "Partial autocorrelation between snowstorage observations for 10304, summer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 1:37, y = pacf_mean_snowstorage_winter_11502, ylim = c(-0.1, 1), type = "h", xlab = "lag in days", ylab = "ACF", main = "Partial autocorrelation between snowstorage observations for 11502, winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 1:37, y = pacf_mean_snowstorage_summer_11502, ylim = c(-0.1, 1), type = "h", xlab = "lag in days", ylab = "ACF", main = "Partial autocorrelation between snowstorage observations for 11502, summer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 1:37, y = pacf_mean_snowstorage_winter_20203, ylim = c(-0.1, 1), type = "h", xlab = "lag in days", ylab = "ACF", main = "Partial autocorrelation between snowstorage observations for 20203, winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 1:37, y = pacf_mean_snowstorage_summer_20203, ylim = c(-0.1, 1), type = "h", xlab = "lag in days", ylab = "ACF", main = "Partial autocorrelation between snowstorage observations for 20203, summer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+
+
+## Groundwaterdepth
+# autocorrelation function, mean acf for groundwaterdepth (across all members) separated by each waterlevel and season
+for (k in c("winter", "summer")) {
+  for (i in pegel_ids) {
+    assign(paste0("df_acf_groundwaterdepth_", k, "_", i), data.frame(Names = 1:38))
+    for (j in levels(hydro_total$member)) {
+      assign(paste0("acf_groundwaterdepth_", k, "_", i, "_", j),
+             as.data.frame(acf(get(paste0("hydro_", k, "_", i, "_", j))$groundwaterdepth, plot = FALSE)$acf))
+      assign(paste0("df_acf_groundwaterdepth_", k, "_", i),
+             bind_cols(get(paste0("df_acf_groundwaterdepth_", k, "_", i)), get(paste0("acf_groundwaterdepth_", k, "_", i, "_", j))))
+    }
+    assign(paste0("acf_mean_groundwaterdepth_", k, "_", i), rowMeans(get(paste0("df_acf_groundwaterdepth_", k, "_", i))[, 2:11]))
+  }
+}
+# -> Groundwaterdepth ist in allen Teildatensätzen positiv autokorreliert -> Modell, das diese Autokorrelation berücksichtigt, nötig
+
+# ACF-Plots for groundwaterdepth (across all members) separated by each waterlevel and season
+plot(x = 0:37, y = acf_mean_groundwaterdepth_winter_10304, ylim = c(-0.1, 1), type = "h", xlab = "lag in days", ylab = "ACF", main = "Autocorrelation between groundwaterdepth observations for 10304, winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 0:37, y = acf_mean_groundwaterdepth_summer_10304, ylim = c(-0.1, 1), type = "h", xlab = "lag in days", ylab = "ACF", main = "Autocorrelation between groundwaterdepth observations for 10304, summer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 0:37, y = acf_mean_groundwaterdepth_winter_11502, ylim = c(-0.1, 1), type = "h", xlab = "lag in days", ylab = "ACF", main = "Autocorrelation between groundwaterdepth observations for 11502, winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 0:37, y = acf_mean_groundwaterdepth_summer_11502, ylim = c(-0.1, 1), type = "h", xlab = "lag in days", ylab = "ACF", main = "Autocorrelation between groundwaterdepth observations for 11502, summer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 0:37, y = acf_mean_groundwaterdepth_winter_20203, ylim = c(-0.1, 1), type = "h", xlab = "lag in days", ylab = "ACF", main = "Autocorrelation between groundwaterdepth observations for 20203, winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 0:37, y = acf_mean_groundwaterdepth_summer_20203, ylim = c(-0.1, 1), type = "h", xlab = "lag in days", ylab = "ACF", main = "Autocorrelation between groundwaterdepth observations for 20203, summer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+
+# partial autocorrelation function, mean pacf for groundwaterdepth (across all members) separated by each waterlevel and season
+for (k in c("winter", "summer")) {
+  for (i in pegel_ids) {
+    assign(paste0("df_pacf_groundwaterdepth_", k, "_", i), data.frame(Names = 1:37))
+    for (j in levels(hydro_total$member)) {
+      assign(paste0("pacf_groundwaterdepth_", k, "_", i, "_", j),
+             as.data.frame(pacf(get(paste0("hydro_", k, "_", i, "_", j))$groundwaterdepth, plot = FALSE)$acf))
+      assign(paste0("df_pacf_groundwaterdepth_", k, "_", i),
+             bind_cols(get(paste0("df_pacf_groundwaterdepth_", k, "_", i)), get(paste0("pacf_groundwaterdepth_", k, "_", i, "_", j))))
+    }
+    assign(paste0("pacf_mean_groundwaterdepth_", k, "_", i), rowMeans(get(paste0("df_pacf_groundwaterdepth_", k, "_", i))[, 2:11]))
+  }
+}
+# 10304, Winter: Autokorrelationskoeffizient bis lag = 1 (durchgängig) signifikant
+# 10304, Summer: Autokorrelationskoeffizient bis lag = 2 (durchgängig) signifikant
+# 11502, Winter: Autokorrelationskoeffizient bis lag = 3 (durchgängig) signifikant
+# 11502, Summer: Autokorrelationskoeffizient bis lag = 5 (durchgängig) signifikant
+# 20203, Winter: Autokorrelationskoeffizient bis lag = 1 (durchgängig) signifikant
+# 20203, Summer: Autokorrelationskoeffizient bis lag = 1 (durchgängig) signifikant
+
+# PACF-Plots for groundwaterdepth (across all members) seperated by each waterlevel and season
+plot(x = 1:37, y = pacf_mean_groundwaterdepth_winter_10304, ylim = c(-0.1, 1), type = "h", xlab = "lag in days", ylab = "ACF", main = "Partial autocorrelation between groundwaterdepth observations for 10304, winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 1:37, y = pacf_mean_groundwaterdepth_summer_10304, ylim = c(-0.1, 1), type = "h", xlab = "lag in days", ylab = "ACF", main = "Partial autocorrelation between groundwaterdepth observations for 10304, summer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 1:37, y = pacf_mean_groundwaterdepth_winter_11502, ylim = c(-0.1, 1), type = "h", xlab = "lag in days", ylab = "ACF", main = "Partial autocorrelation between groundwaterdepth observations for 11502, winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 1:37, y = pacf_mean_groundwaterdepth_summer_11502, ylim = c(-0.1, 1), type = "h", xlab = "lag in days", ylab = "ACF", main = "Partial autocorrelation between groundwaterdepth observations for 11502, summer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 1:37, y = pacf_mean_groundwaterdepth_winter_20203, ylim = c(-0.1, 1), type = "h", xlab = "lag in days", ylab = "ACF", main = "Partial autocorrelation between groundwaterdepth observations for 20203, winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 1:37, y = pacf_mean_groundwaterdepth_summer_20203, ylim = c(-0.1, 1), type = "h", xlab = "lag in days", ylab = "ACF", main = "Partial autocorrelation between groundwaterdepth observations for 20203, summer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+
+
+## Infiltration
+# autocorrelation function, mean acf for infiltration (across all members) separated by each waterlevel and season
+for (k in c("winter", "summer")) {
+  for (i in pegel_ids) {
+    assign(paste0("df_acf_infiltration_", k, "_", i), data.frame(Names = 1:38))
+    for (j in levels(hydro_total$member)) {
+      assign(paste0("acf_infiltration_", k, "_", i, "_", j),
+             as.data.frame(acf(get(paste0("hydro_", k, "_", i, "_", j))$infiltration, plot = FALSE)$acf))
+      assign(paste0("df_acf_infiltration_", k, "_", i),
+             bind_cols(get(paste0("df_acf_infiltration_", k, "_", i)), get(paste0("acf_infiltration_", k, "_", i, "_", j))))
+    }
+    assign(paste0("acf_mean_infiltration_", k, "_", i), rowMeans(get(paste0("df_acf_infiltration_", k, "_", i))[, 2:11]))
+  }
+}
+# -> Infiltration ist in allen Teildatensätzen positiv autokorreliert -> Modell, das diese Autokorrelation berücksichtigt, nötig
+
+# ACF-Plots for infiltration (across all members) separated by each waterlevel and season
+plot(x = 0:37, y = acf_mean_infiltration_winter_10304, ylim = c(-0.1, 1), type = "h", xlab = "lag in days", ylab = "ACF", main = "Autocorrelation between infiltration observations for 10304, winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 0:37, y = acf_mean_infiltration_summer_10304, ylim = c(-0.1, 1), type = "h", xlab = "lag in days", ylab = "ACF", main = "Autocorrelation between infiltration observations for 10304, summer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 0:37, y = acf_mean_infiltration_winter_11502, ylim = c(-0.1, 1), type = "h", xlab = "lag in days", ylab = "ACF", main = "Autocorrelation between infiltration observations for 11502, winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 0:37, y = acf_mean_infiltration_summer_11502, ylim = c(-0.1, 1), type = "h", xlab = "lag in days", ylab = "ACF", main = "Autocorrelation between infiltration observations for 11502, summer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 0:37, y = acf_mean_infiltration_winter_20203, ylim = c(-0.1, 1), type = "h", xlab = "lag in days", ylab = "ACF", main = "Autocorrelation between infiltration observations for 20203, winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 0:37, y = acf_mean_infiltration_summer_20203, ylim = c(-0.1, 1), type = "h", xlab = "lag in days", ylab = "ACF", main = "Autocorrelation between infiltration observations for 20203, summer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+
+# partial autocorrelation function, mean pacf for infiltration (across all members) separated by each waterlevel and season
+for (k in c("winter", "summer")) {
+  for (i in pegel_ids) {
+    assign(paste0("df_pacf_infiltration_", k, "_", i), data.frame(Names = 1:37))
+    for (j in levels(hydro_total$member)) {
+      assign(paste0("pacf_infiltration_", k, "_", i, "_", j),
+             as.data.frame(pacf(get(paste0("hydro_", k, "_", i, "_", j))$infiltration, plot = FALSE)$acf))
+      assign(paste0("df_pacf_infiltration_", k, "_", i),
+             bind_cols(get(paste0("df_pacf_infiltration_", k, "_", i)), get(paste0("pacf_infiltration_", k, "_", i, "_", j))))
+    }
+    assign(paste0("pacf_mean_infiltration_", k, "_", i), rowMeans(get(paste0("df_pacf_infiltration_", k, "_", i))[, 2:11]))
+  }
+}
+# 10304, Winter: Autokorrelationskoeffizient bis lag = 6 (durchgängig) signifikant
+# 10304, Summer: Autokorrelationskoeffizient bis lag = 1 (durchgängig) signifikant
+# 11502, Winter: Autokorrelationskoeffizient bis lag = 3 (nicht durchgängig), bis lag = 1 (durchgängig) signifikant
+# 11502, Summer: Autokorrelationskoeffizient bis lag = 1 (durchgängig) signifikant
+# 20203, Winter: Autokorrelationskoeffizient bis lag = 2 (durchgängig) signifikant
+# 20203, Summer: Autokorrelationskoeffizient bis lag = 1 (durchgängig) signifikant
+
+# PACF-Plots for infiltration (across all members) seperated by each waterlevel and season
+plot(x = 1:37, y = pacf_mean_infiltration_winter_10304, ylim = c(-0.1, 1), type = "h", xlab = "lag in days", ylab = "ACF", main = "Partial autocorrelation between infiltration observations for 10304, winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 1:37, y = pacf_mean_infiltration_summer_10304, ylim = c(-0.1, 1), type = "h", xlab = "lag in days", ylab = "ACF", main = "Partial autocorrelation between infiltration observations for 10304, summer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 1:37, y = pacf_mean_infiltration_winter_11502, ylim = c(-0.1, 1), type = "h", xlab = "lag in days", ylab = "ACF", main = "Partial autocorrelation between infiltration observations for 11502, winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 1:37, y = pacf_mean_infiltration_summer_11502, ylim = c(-0.1, 1), type = "h", xlab = "lag in days", ylab = "ACF", main = "Partial autocorrelation between infiltration observations for 11502, summer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 1:37, y = pacf_mean_infiltration_winter_20203, ylim = c(-0.1, 1), type = "h", xlab = "lag in days", ylab = "ACF", main = "Partial autocorrelation between infiltration observations for 20203, winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 1:37, y = pacf_mean_infiltration_summer_20203, ylim = c(-0.1, 1), type = "h", xlab = "lag in days", ylab = "ACF", main = "Partial autocorrelation between infiltration observations for 20203, summer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+
 ```
 
 
@@ -559,7 +1016,7 @@ fit_ardlm_across(drainage ~ soilwater + precip + snowstorage + airtmp, data = hy
 ```
 
 ```{r}
-rolCorPlot(ts_hydro_summer_10304_kbe$
+rolCorPlot(ts_hydro_summer_10304_kbe)
 ```
 
 
