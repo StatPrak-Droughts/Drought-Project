@@ -1178,7 +1178,7 @@ grid.arrange(winter_temp_10304, winter_temp_11502, winter_temp_20203,
              summer_temp_10304, summer_temp_11502, summer_temp_20203,ncol = 2)
 ```
 
-## Precip
+## precip
 ```{r}
 summary(lm(hydro_summer_10304$precip ~ hydro_summer_10304$drainage))
 summer_precip_10304 <- ggplot(hydro_summer_10304, aes(precip, drainage)) +
@@ -1381,20 +1381,678 @@ grid.arrange(winter_snowstorage_10304, winter_snowstorage_11502, winter_snowstor
 ```
 
 
-### ZV: Drainage
+### ZV: LowLevel
+
+##temp
 ``` {r}
+# summer
+
 y <- hydro_summer_10304$lowlevel
-x <- hydro_summer_10304$snowstorage
-model <- glm(y~x)
-gplot(data, aes(x = x1, y = y)) +
-  geom_point() +
-  geom_smooth(method = "glm", method.args = list(family = "binomial"), se = FALSE) +
-  labs(title = "Binärer Scatterplot", x = "Metrischer Einflussfaktor", y = "Binäre Zielvariable")
+x <- hydro_summer_10304$airtmp
+cor(x, y, method = "pearson")
+glm(y~x, data = data.frame(x, y), family = binomial())
+event_summer_10304_tmp <- ggplot(data = data.frame(x, y), aes(x = x , y = y)) +
+                            geom_point() +
+                            geom_smooth(method = "glm", method.args = list(family = "binomial"), se = TURE) +
+                            labs(title = "Summer 10304", x = "Temp", y = "LowLevel")
+event_summer_10304_tmp0 <- ggplot(data.frame(y, x) %>% filter(y == 0), aes(x = x, y = y)) +
+                            geom_boxplot() +
+                            labs(title = "LowLevel = 0", x = "tmp", y = "Low Level")
+event_summer_10304_tmp1 <- ggplot(data.frame(y, x) %>% filter(y == 1), aes(x = x, y = y)) +
+                            geom_boxplot() +
+                            labs(title = "LowLevel = 1", x = "tmp", y = "Low Level")
+grid_event_summer_10304_tmp <- grid.arrange(event_summer_10304_tmp, event_summer_10304_tmp0, event_summer_10304_tmp1, ncol = 1)
+
+
+y <- hydro_summer_11502$lowlevel
+x <- hydro_summer_11502$airtmp
+cor(x, y, method = "pearson")
+glm(y~x, data = data.frame(x, y), family = binomial())
+event_summer_11502_tmp <- ggplot(data = data.frame(x, y), aes(x = x , y = y)) +
+                            geom_point() +
+                            geom_smooth(method = "glm", method.args = list(family = "binomial"), se = TRUE) +
+                            labs(title = "Summer 11502", x = "Temp", y = "LowLevel")
+event_summer_11502_tmp0 <- ggplot(data.frame(y, x) %>% filter(y == 0), aes(x = x, y = y)) +
+                            geom_boxplot() +
+                            labs(title = "LowLevel = 0", x = "tmp", y = "Low Level")
+event_summer_11502_tmp1 <- ggplot(data.frame(y, x) %>% filter(y == 1), aes(x = x, y = y)) +
+                            geom_boxplot() +
+                            labs(title = "LowLevel = 1", x = "tmp", y = "Low Level")
+grid_event_summer_11502_tmp <- grid.arrange(event_summer_11502_tmp, event_summer_11502_tmp0, event_summer_11502_tmp1, ncol = 1)
+
+
+y <- hydro_summer_20203$lowlevel
+x <- hydro_summer_20203$airtmp
+cor(x, y, method = "pearson")
+glm(y~x, data = data.frame(x, y), family = binomial())
+event_summer_20203_tmp <- ggplot(data = data.frame(x, y), aes(x = x , y = y)) +
+                            geom_point() +
+                            geom_smooth(method = "glm", method.args = list(family = "binomial"), se = TRUE) +
+                            labs(title = "Summer 20203", x = "Temp", y = "LowLevel")
+event_summer_20203_tmp0 <- ggplot(data.frame(y, x) %>% filter(y == 0), aes(x = x, y = y)) +
+                            geom_boxplot() +
+                            labs(title = "LowLevel = 0", x = "tmp", y = "Low Level")
+event_summer_20203_tmp1 <- ggplot(data.frame(y, x) %>% filter(y == 1), aes(x = x, y = y)) +
+                            geom_boxplot() +
+                            labs(title = "LowLevel = 1", x = "tmp", y = "Low Level")
+grid_event_summer_20203_tmp <- grid.arrange(event_summer_20203_tmp, event_summer_20203_tmp0, event_summer_20203_tmp1, ncol = 1)
+
+grid.arrange(grid_event_summer_10304_tmp, grid_event_summer_11502_tmp, grid_event_summer_20203_tmp, ncol = 2)
+
+# winter
+y <- hydro_winter_10304$lowlevel
+x <- hydro_winter_10304$airtmp
+cor(x, y, method = "pearson")
+glm(y~x, data = data.frame(x, y), family = binomial())
+event_winter_10304_tmp <- ggplot(data = data.frame(x, y), aes(x = x , y = y)) +
+                            geom_point() +
+                            geom_smooth(method = "glm", method.args = list(family = "binomial"), se = TRUE) +
+                            labs(title = "Winter 10304", x = "Temp", y = "LowLevel")
+event_winter_10304_tmp0 <- ggplot(data.frame(y, x) %>% filter(y == 0), aes(x = x, y = y)) +
+                            geom_boxplot() +
+                            labs(title = "LowLevel = 0", x = "tmp", y = "Low Level")
+event_winter_10304_tmp1 <- ggplot(data.frame(y, x) %>% filter(y == 1), aes(x = x, y = y)) +
+                            geom_boxplot() +
+                            labs(title = "LowLevel = 1", x = "tmp", y = "Low Level")
+grid_event_winter_10304_tmp <- grid.arrange(event_winter_10304_tmp, event_winter_10304_tmp0, event_winter_10304_tmp1, ncol = 1)
+
+
+y <- hydro_winter_11502$lowlevel
+x <- hydro_winter_11502$airtmp
+cor(x, y, method = "pearson")
+glm(y~x, data = data.frame(x, y), family = binomial())
+event_winter_11502_tmp <- ggplot(data = data.frame(x, y), aes(x = x , y = y)) +
+                            geom_point() +
+                            geom_smooth(method = "glm", method.args = list(family = "binomial"), se = TRUE) +
+                            labs(title = "Winter 11502", x = "Temp", y = "LowLevel")
+event_winter_11502_tmp0 <- ggplot(data.frame(y, x) %>% filter(y == 0), aes(x = x, y = y)) +
+                            geom_boxplot() +
+                            labs(title = "LowLevel = 0", x = "tmp", y = "Low Level")
+event_winter_11502_tmp1 <- ggplot(data.frame(y, x) %>% filter(y == 1), aes(x = x, y = y)) +
+                            geom_boxplot() +
+                            labs(title = "LowLevel = 1", x = "tmp", y = "Low Level")
+grid_event_winter_11502_tmp <- grid.arrange(event_winter_11502_tmp, event_winter_11502_tmp0, event_winter_11502_tmp1, ncol = 1)
+
+
+y <- hydro_winter_20203$lowlevel
+x <- hydro_winter_20203$airtmp
+cor(x, y, method = "pearson")
+glm(y~x, data = data.frame(x, y), family = binomial())
+event_winter_20203_tmp <- ggplot(data = data.frame(x, y), aes(x = x , y = y)) +
+                            geom_point() +
+                            geom_smooth(method = "glm", method.args = list(family = "binomial"), se = TRUE) +
+                            labs(title = "Winter 20203", x = "Temp", y = "LowLevel")
+event_winter_20203_tmp0 <- ggplot(data.frame(y, x) %>% filter(y == 0), aes(x = x, y = y)) +
+                            geom_boxplot() +
+                            labs(title = "LowLevel = 0", x = "tmp", y = "Low Level")
+event_winter_20203_tmp1 <- ggplot(data.frame(y, x) %>% filter(y == 1), aes(x = x, y = y)) +
+                            geom_boxplot() +
+                            labs(title = "LowLevel = 1", x = "tmp", y = "Low Level")
+grid_event_winter_20203_tmp <- grid.arrange(event_winter_20203_tmp, event_winter_20203_tmp0, event_winter_20203_tmp1, ncol = 1)
+
+grid.arrange(grid_event_summer_10304_tmp, grid_event_summer_11502_tmp, grid_event_summer_20203_tmp, ncol = 2)
+grid.arrange(grid_event_summer_10304_tmp, grid_event_summer_11502_tmp, grid_event_summer_20203_tmp, grid_event_summer_10304_tmp, grid_event_summer_11502_tmp, grid_event_summer_20203_tmp, ncol = 3)
+
+```
+
+##precip
+``` {r}
+# summer
+
+y <- hydro_summer_10304$lowlevel
+x <- hydro_summer_10304$precip
+cor(x, y, method = "pearson")
+glm(y~x, data = data.frame(x, y), family = binomial())
+event_summer_10304_precip <- ggplot(data = data.frame(x, y), aes(x = x , y = y)) +
+                            geom_point() +
+                            geom_smooth(method = "glm", method.args = list(family = "binomial"), se = TRUE) +
+                            labs(title = "Summer 10304", x = "precip", y = "LowLevel")
+event_summer_10304_precip0 <- ggplot(data.frame(y, x) %>% filter(y == 0), aes(x = x, y = y)) +
+                            geom_boxplot() +
+                            labs(title = "LowLevel = 0", x = "tmp", y = "Low Level")
+event_summer_10304_precip1 <- ggplot(data.frame(y, x) %>% filter(y == 1), aes(x = x, y = y)) +
+                            geom_boxplot() +
+                            labs(title = "LowLevel = 1", x = "tmp", y = "Low Level")
+grid_event_summer_10304_precip <- grid.arrange(event_summer_10304_precip, event_summer_10304_precip0, event_summer_10304_precip1, ncol = 1)
 
 
 
+y <- hydro_summer_11502$lowlevel
+x <- hydro_summer_11502$precip
+cor(x, y, method = "pearson")
+glm(y~x, data = data.frame(x, y), family = binomial())
+event_summer_11502_precip <- ggplot(data = data.frame(x, y), aes(x = x , y = y)) +
+                            geom_point() +
+                            geom_smooth(method = "glm", method.args = list(family = "binomial"), se = TRUE) +
+                            labs(title = "Summer 11502", x = "precip", y = "LowLevel")
+event_summer_11502_precip0 <- ggplot(data.frame(y, x) %>% filter(y == 0), aes(x = x, y = y)) +
+                            geom_boxplot() +
+                            labs(title = "LowLevel = 0", x = "tmp", y = "Low Level")
+event_summer_11502_precip1 <- ggplot(data.frame(y, x) %>% filter(y == 1), aes(x = x, y = y)) +
+                            geom_boxplot() +
+                            labs(title = "LowLevel = 1", x = "tmp", y = "Low Level")
+grid_event_summer_11502_precip <- grid.arrange(event_summer_11502_precip, event_summer_11502_precip0, event_summer_11502_precip1, ncol = 1)
+
+
+
+y <- hydro_summer_20203$lowlevel
+x <- hydro_summer_20203$precip
+cor(x, y, method = "pearson")
+glm(y~x, data = data.frame(x, y), family = binomial())
+event_summer_20203_precip <- ggplot(data = data.frame(x, y), aes(x = x , y = y)) +
+                            geom_point() +
+                            geom_smooth(method = "glm", method.args = list(family = "binomial"), se = TRUE) +
+                            labs(title = "Summer 20203", x = "precip", y = "LowLevel")
+event_summer_20203_precip0 <- ggplot(data.frame(y, x) %>% filter(y == 0), aes(x = x, y = y)) +
+                            geom_boxplot() +
+                            labs(title = "LowLevel = 0", x = "tmp", y = "Low Level")
+event_summer_20203_precip1 <- ggplot(data.frame(y, x) %>% filter(y == 1), aes(x = x, y = y)) +
+                            geom_boxplot() +
+                            labs(title = "LowLevel = 1", x = "tmp", y = "Low Level")
+grid_event_summer_20203_precip <- grid.arrange(event_summer_20203_precip, event_summer_20203_precip0, event_summer_20203_precip1, ncol = 1)
+grid.arrange(grid_event_summer_10304_precip, grid_event_summer_11502_precip, grid_event_summer_20203_precip, ncol = 2)
+
+# winter
+y <- hydro_winter_10304$lowlevel
+x <- hydro_winter_10304$precip
+cor(x, y, method = "pearson")
+glm(y~x, data = data.frame(x, y), family = binomial())
+event_winter_10304_precip <- ggplot(data = data.frame(x, y), aes(x = x , y = y)) +
+                            geom_point() +
+                            geom_smooth(method = "glm", method.args = list(family = "binomial"), se = TRUE) +
+                            labs(title = "Winter 10304", x = "precip", y = "LowLevel")
+event_winter_10304_precip0 <- ggplot(data.frame(y, x) %>% filter(y == 0), aes(x = x, y = y)) +
+                            geom_boxplot() +
+                            labs(title = "LowLevel = 0", x = "tmp", y = "Low Level")
+event_winter_10304_precip1 <- ggplot(data.frame(y, x) %>% filter(y == 1), aes(x = x, y = y)) +
+                            geom_boxplot() +
+                            labs(title = "LowLevel = 1", x = "tmp", y = "Low Level")
+grid_event_winter_10304_precip <- grid.arrange(event_winter_10304_precip, event_winter_10304_precip0, event_winter_10304_precip1, ncol = 1)
+
+
+y <- hydro_winter_11502$lowlevel
+x <- hydro_winter_11502$precip
+cor(x, y, method = "pearson")
+glm(y~x, data = data.frame(x, y), family = binomial())
+event_winter_11502_precip <- ggplot(data = data.frame(x, y), aes(x = x , y = y)) +
+                            geom_point() +
+                            geom_smooth(method = "glm", method.args = list(family = "binomial"), se = TRUE) +
+                            labs(title = "Winter 11502", x = "precip", y = "LowLevel")
+event_winter_11502_precip0 <- ggplot(data.frame(y, x) %>% filter(y == 0), aes(x = x, y = y)) +
+                            geom_boxplot() +
+                            labs(title = "LowLevel = 0", x = "tmp", y = "Low Level")
+event_winter_11502_precip1 <- ggplot(data.frame(y, x) %>% filter(y == 1), aes(x = x, y = y)) +
+                            geom_boxplot() +
+                            labs(title = "LowLevel = 1", x = "tmp", y = "Low Level")
+grid_event_winter_11502_precip <- grid.arrange(event_winter_11502_precip, event_winter_11502_precip0, event_winter_11502_precip1, ncol = 1)
+
+
+y <- hydro_winter_20203$lowlevel
+x <- hydro_winter_20203$precip
+cor(x, y, method = "pearson")
+glm(y~x, data = data.frame(x, y), family = binomial())
+event_winter_20203_precip <- ggplot(data = data.frame(x, y), aes(x = x , y = y)) +
+                            geom_point() +
+                            geom_smooth(method = "glm", method.args = list(family = "binomial"), se = TRUE) +
+                            labs(title = "Winter 20203", x = "precip", y = "LowLevel")
+event_winter_20203_precip0 <- ggplot(data.frame(y, x) %>% filter(y == 0), aes(x = x, y = y)) +
+                            geom_boxplot() +
+                            labs(title = "LowLevel = 0", x = "tmp", y = "Low Level")
+event_winter_20203_precip1 <- ggplot(data.frame(y, x) %>% filter(y == 1), aes(x = x, y = y)) +
+                            geom_boxplot() +
+                            labs(title = "LowLevel = 1", x = "tmp", y = "Low Level")
+grid_event_winter_20203_precip <- grid.arrange(event_winter_20203_precip, event_winter_20203_precip0, event_winter_20203_precip1, ncol = 1)
+grid.arrange(grid_event_winter_10304_precip, grid_event_winter_11502_precip, grid_event_winter_20203_precip, ncol = 2)
+grid.arrange(grid_event_summer_10304_precip, grid_event_summer_11502_precip, grid_event_summer_20203_precip, grid_event_winter_10304_precip, grid_event_winter_11502_precip, grid_event_winter_20203_precip, ncol = 3)
+
+```
+
+## radiation
+``` {r}
+# summer
+
+y <- hydro_summer_10304$lowlevel
+x <- hydro_summer_10304$glorad
+cor(x, y, method = "pearson")
+glm(y~x, data = data.frame(x, y), family = binomial())
+event_summer_10304_glorad<- ggplot(data = data.frame(x, y), aes(x = x , y = y)) +
+                            geom_point() +
+                            geom_smooth(method = "glm", method.args = list(family = "binomial"), se = TRUE) +
+                            labs(title = "Summer 10304", x = "glorad", y = "LowLevel")
+event_summer_10304_glorad0 <- ggplot(data.frame(y, x) %>% filter(y == 0), aes(x = x, y = y)) +
+                            geom_boxplot() +
+                            labs(title = "LowLevel = 0", x = "glorad", y = "Low Level")
+event_summer_10304_glorad1 <- ggplot(data.frame(y, x) %>% filter(y == 1), aes(x = x, y = y)) +
+                            geom_boxplot() +
+                            labs(title = "LowLevel = 1", x = "glorad", y = "Low Level")
+grid_event_summer_10304_glorad <- grid.arrange(event_summer_10304_glorad, event_summer_10304_glorad0, event_summer_10304_glorad1, ncol = 1)
+
+
+y <- hydro_summer_11502$lowlevel
+x <- hydro_summer_11502$glorad
+cor(x, y, method = "pearson")
+glm(y~x, data = data.frame(x, y), family = binomial())
+event_summer_11502_glorad <- ggplot(data = data.frame(x, y), aes(x = x , y = y)) +
+                            geom_point() +
+                            geom_smooth(method = "glm", method.args = list(family = "binomial"), se = TRUE) +
+                            labs(title = "Summer 11502", x = "glorad", y = "LowLevel")
+event_summer_11502_glorad0 <- ggplot(data.frame(y, x) %>% filter(y == 0), aes(x = x, y = y)) +
+                            geom_boxplot() +
+                            labs(title = "LowLevel = 0", x = "glorad", y = "Low Level")
+event_summer_11502_glorad1 <- ggplot(data.frame(y, x) %>% filter(y == 1), aes(x = x, y = y)) +
+                            geom_boxplot() +
+                            labs(title = "LowLevel = 1", x = "glorad", y = "Low Level")
+grid_event_summer_11502_glorad <- grid.arrange(event_summer_11502_glorad, event_summer_11502_glorad0, event_summer_11502_glorad1, ncol = 1)
+
+
+y <- hydro_summer_20203$lowlevel
+x <- hydro_summer_20203$glorad
+cor(x, y, method = "pearson")
+glm(y~x, data = data.frame(x, y), family = binomial())
+event_summer_20203_glorad <- ggplot(data = data.frame(x, y), aes(x = x , y = y)) +
+                            geom_point() +
+                            geom_smooth(method = "glm", method.args = list(family = "binomial"), se = TRUE) +
+                            labs(title = "Summer 20203", x = "glorad", y = "LowLevel")
+event_summer_20203_glorad0 <- ggplot(data.frame(y, x) %>% filter(y == 0), aes(x = x, y = y)) +
+                            geom_boxplot() +
+                            labs(title = "LowLevel = 0", x = "glorad", y = "Low Level")
+event_summer_20203_glorad1 <- ggplot(data.frame(y, x) %>% filter(y == 1), aes(x = x, y = y)) +
+                            geom_boxplot() +
+                            labs(title = "LowLevel = 1", x = "glorad", y = "Low Level")
+grid_event_summer_20203_glorad <- grid.arrange(event_summer_20203_glorad, event_summer_20203_glorad0, event_summer_20203_glorad1, ncol = 1)
+
+grid.arrange(grid_event_summer_10304_glorad, grid_event_summer_11502_glorad, grid_event_summer_20203_glorad, ncol = 2)
+
+# winter
+y <- hydro_winter_10304$lowlevel
+x <- hydro_winter_10304$glorad
+cor(x, y, method = "pearson")
+glm(y~x, data = data.frame(x, y), family = binomial())
+event_winter_10304_glorad <- ggplot(data = data.frame(x, y), aes(x = x , y = y)) +
+                            geom_point() +
+                            geom_smooth(method = "glm", method.args = list(family = "binomial"), se = TRUE) +
+                            labs(title = "Winter 10304", x = "glorad", y = "LowLevel")
+event_winter_10304_glorad0 <- ggplot(data.frame(y, x) %>% filter(y == 0), aes(x = x, y = y)) +
+                            geom_boxplot() +
+                            labs(title = "LowLevel = 0", x = "glorad", y = "Low Level")
+event_winter_10304_glorad1 <- ggplot(data.frame(y, x) %>% filter(y == 1), aes(x = x, y = y)) +
+                            geom_boxplot() +
+                            labs(title = "LowLevel = 1", x = "glorad", y = "Low Level")
+grid_event_winter_10304_glorad <- grid.arrange(event_winter_10304_glorad, event_winter_10304_glorad0, event_winter_10304_glorad1, ncol = 1)                           
+
+
+y <- hydro_winter_11502$lowlevel
+x <- hydro_winter_11502$glorad
+cor(x, y, method = "pearson")
+glm(y~x, data = data.frame(x, y), family = binomial())
+event_winter_11502_glorad <- ggplot(data = data.frame(x, y), aes(x = x , y = y)) +
+                            geom_point() +
+                            geom_smooth(method = "glm", method.args = list(family = "binomial"), se = TRUE) +
+                            labs(title = "Winter 11502", x = "glorad", y = "LowLevel")
+event_winter_11502_glorad0 <- ggplot(data.frame(y, x) %>% filter(y == 0), aes(x = x, y = y)) +
+                            geom_boxplot() +
+                            labs(title = "LowLevel = 0", x = "glorad", y = "Low Level")
+event_winter_11502_glorad1 <- ggplot(data.frame(y, x) %>% filter(y == 1), aes(x = x, y = y)) +
+                            geom_boxplot() +
+                            labs(title = "LowLevel = 1", x = "glorad", y = "Low Level")
+grid_event_winter_11502_glorad <- grid.arrange(event_winter_11502_glorad, event_winter_11502_glorad0, event_winter_11502_glorad1, ncol = 1)
+
+
+y <- hydro_winter_20203$lowlevel
+x <- hydro_winter_20203$glorad
+cor(x, y, method = "pearson")
+glm(y~x, data = data.frame(x, y), family = binomial())
+event_winter_20203_glorad <- ggplot(data = data.frame(x, y), aes(x = x , y = y)) +
+                            geom_point() +
+                            geom_smooth(method = "glm", method.args = list(family = "binomial"), se = TRUE) +
+                            labs(title = "Winter 20203", x = "glorad", y = "LowLevel")
+event_winter_20203_glorad0 <- ggplot(data.frame(y, x) %>% filter(y == 0), aes(x = x, y = y)) +
+                            geom_boxplot() +
+                            labs(title = "LowLevel = 0", x = "glorad", y = "Low Level")
+event_winter_20203_glorad1 <- ggplot(data.frame(y, x) %>% filter(y == 1), aes(x = x, y = y)) +
+                            geom_boxplot() +
+                            labs(title = "LowLevel = 1", x = "glorad", y = "Low Level")
+grid_event_winter_20203_glorad <- grid.arrange(event_winter_20203_glorad, event_winter_20203_glorad0, event_winter_20203_glorad1, ncol = 1)
+grid.arrange(grid_event_winter_10304_glorad, grid_event_winter_11502_glorad, grid_event_winter_20203_glorad, ncol = 2)
+grid.arrange(grid_event_summer_10304_glorad, grid_event_summer_11502_glorad, grid_event_summer_20203_glorad, grid_event_winter_10304_glorad, grid_event_winter_11502_glorad, grid_event_winter_20203_glorad, ncol = 3)
+
+```
+
+## rel.humidity
+``` {r}
+# summer
+
+y <- hydro_summer_10304$lowlevel
+x <- hydro_summer_10304$relhum
+cor(x, y, method = "pearson")
+glm(y~x, data = data.frame(x, y), family = binomial())
+event_summer_10304_relhum <- ggplot(data = data.frame(x, y), aes(x = x , y = y)) +
+                            geom_point() +
+                            geom_smooth(method = "glm", method.args = list(family = "binomial"), se = TRUE) +
+                            labs(title = "Summer 10304", x = "relhum", y = "LowLevel")
+event_summer_10304_relhum0 <- ggplot(data.frame(y, x) %>% filter(y == 0), aes(x = x, y = y)) +
+                            geom_boxplot() +
+                            labs(title = "LowLevel = 0", x = "relhum", y = "Low Level")
+event_summer_10304_relhum1 <- ggplot(data.frame(y, x) %>% filter(y == 1), aes(x = x, y = y)) +
+                            geom_boxplot() +
+                            labs(title = "LowLevel = 1", x = "relhum", y = "Low Level")
+grid_event_summer_10304_relhum <- grid.arrange(event_summer_10304_relhum, event_summer_10304_relhum0, event_summer_10304_relhum1, ncol = 1)
+
+y <- hydro_summer_11502$lowlevel
+x <- hydro_summer_11502$relhum
+cor(x, y, method = "pearson")
+glm(y~x, data = data.frame(x, y), family = binomial())
+event_summer_11502_relhum <- ggplot(data = data.frame(x, y), aes(x = x , y = y)) +
+                            geom_point() +
+                            geom_smooth(method = "glm", method.args = list(family = "binomial"), se = TRUE) +
+                            labs(title = "Summer 11502", x = "relhum", y = "LowLevel")
+event_summer_11502_relhum0 <- ggplot(data.frame(y, x) %>% filter(y == 0), aes(x = x, y = y)) +
+                            geom_boxplot() +
+                            labs(title = "LowLevel = 0", x = "relhum", y = "Low Level")
+event_summer_11502_relhum1 <- ggplot(data.frame(y, x) %>% filter(y == 1), aes(x = x, y = y)) +
+                            geom_boxplot() +
+                            labs(title = "LowLevel = 1", x = "relhum", y = "Low Level")
+grid_event_summer_11502_relhum <- grid.arrange(event_summer_11502_relhum, event_summer_11502_relhum0, event_summer_11502_relhum1, ncol = 1)
+
+
+y <- hydro_summer_20203$lowlevel
+x <- hydro_summer_20203$relhum
+cor(x, y, method = "pearson")
+glm(y~x, data = data.frame(x, y), family = binomial())
+event_summer_20203_relhum <- ggplot(data = data.frame(x, y), aes(x = x , y = y)) +
+                            geom_point() +
+                            geom_smooth(method = "glm", method.args = list(family = "binomial"), se = TRUE) +
+                            labs(title = "Summer 20203", x = "relhum", y = "LowLevel")
+event_summer_20203_relhum0 <- ggplot(data.frame(y, x) %>% filter(y == 0), aes(x = x, y = y)) +
+                            geom_boxplot() +
+                            labs(title = "LowLevel = 0", x = "relhum", y = "Low Level")
+event_summer_20203_relhum1 <- ggplot(data.frame(y, x) %>% filter(y == 1), aes(x = x, y = y)) +
+                            geom_boxplot() +
+                            labs(title = "LowLevel = 1", x = "relhum", y = "Low Level")
+grid_event_summer_20203_relhum <- grid.arrange(event_summer_20203_relhum, event_summer_20203_relhum0, event_summer_20203_relhum1, ncol = 1)
+
+grid.arrange(grid_event_summer_10304_relhum, grid_event_summer_11502_relhum, grid_event_summer_20203_relhum, ncol = 2)
+
+# winter
+y <- hydro_winter_10304$lowlevel
+x <- hydro_winter_10304$relhum
+cor(x, y, method = "pearson")
+glm(y~x, data = data.frame(x, y), family = binomial())
+event_winter_10304_relhum <- ggplot(data = data.frame(x, y), aes(x = x , y = y)) +
+                            geom_point() +
+                            geom_smooth(method = "glm", method.args = list(family = "binomial"), se = TRUE) +
+                            labs(title = "Winter 10304", x = "relhum", y = "LowLevel")
+event_winter_10304_relhum0 <- ggplot(data.frame(y, x) %>% filter(y == 0), aes(x = x, y = y)) +
+                            geom_boxplot() +
+                            labs(title = "LowLevel = 0", x = "relhum", y = "Low Level")
+event_winter_10304_relhum1 <- ggplot(data.frame(y, x) %>% filter(y == 1), aes(x = x, y = y)) +
+                            geom_boxplot() +
+                            labs(title = "LowLevel = 1", x = "relhum", y = "Low Level")
+grid_event_winter_10304_relhum <- grid.arrange(event_winter_10304_relhum, event_winter_10304_relhum0, event_winter_10304_relhum1, ncol = 1)       
+
+y <- hydro_winter_11502$lowlevel
+x <- hydro_winter_11502$relhum
+cor(x, y, method = "pearson")
+glm(y~x, data = data.frame(x, y), family = binomial())
+event_winter_11502_relhum <- ggplot(data = data.frame(x, y), aes(x = x , y = y)) +
+                            geom_point() +
+                            geom_smooth(method = "glm", method.args = list(family = "binomial"), se = TRUE) +
+                            labs(title = "Winter 11502", x = "relhum", y = "LowLevel")
+event_winter_11502_relhum0 <- ggplot(data.frame(y, x) %>% filter(y == 0), aes(x = x, y = y)) +
+                            geom_boxplot() +
+                            labs(title = "LowLevel = 0", x = "relhum", y = "Low Level")
+event_winter_11502_relhum1 <- ggplot(data.frame(y, x) %>% filter(y == 1), aes(x = x, y = y)) +
+                            geom_boxplot() +
+                            labs(title = "LowLevel = 1", x = "relhum", y = "Low Level")
+grid_event_winter_11502_relhum <- grid.arrange(event_winter_11502_relhum, event_winter_11502_relhum0, event_winter_11502_relhum1, ncol = 1)
+
+
+y <- hydro_winter_20203$lowlevel
+x <- hydro_winter_20203$relhum
+cor(x, y, method = "pearson")
+glm(y~x, data = data.frame(x, y), family = binomial())
+event_winter_20203_relhum <- ggplot(data = data.frame(x, y), aes(x = x , y = y)) +
+                            geom_point() +
+                            geom_smooth(method = "glm", method.args = list(family = "binomial"), se = TRUE) +
+                            labs(title = "Winter 20203", x = "relhum", y = "LowLevel")
+event_winter_20203_relhum0 <- ggplot(data.frame(y, x) %>% filter(y == 0), aes(x = x, y = y)) +
+                            geom_boxplot() +
+                            labs(title = "LowLevel = 0", x = "relhum", y = "Low Level")
+event_winter_20203_relhum1 <- ggplot(data.frame(y, x) %>% filter(y == 1), aes(x = x, y = y)) +
+                            geom_boxplot() +
+                            labs(title = "LowLevel = 1", x = "relhum", y = "Low Level")
+grid_event_winter_20203_relhum <- grid.arrange(event_winter_20203_relhum, event_winter_20203_relhum0, event_winter_20203_relhum1, ncol = 1)
+
+grid.arrange(grid_event_winter_10304_relhum, grid_event_winter_11502_relhum, grid_event_winter_20203_relhum, ncol = 2)
+grid.arrange(grid_event_summer_10304_relhum, grid_event_summer_11502_relhum, grid_event_summer_20203_relhum, grid_event_winter_10304_relhum, grid_event_winter_11502_relhum, grid_event_winter_20203_relhum, ncol = 3)
 
 
 ```
 
+## groundwater depth
+``` {r}
+# summer
+
+y <- hydro_summer_10304$lowlevel
+x <- hydro_summer_10304$groundwaterdepth
+cor(x, y, method = "pearson")
+glm(y~x, data = data.frame(x, y), family = binomial())
+event_summer_10304_groundwaterdepth <- ggplot(data = data.frame(x, y), aes(x = x , y = y)) +
+                            geom_point() +
+                            geom_smooth(method = "glm", method.args = list(family = "binomial"), se = TRUE) +
+                            labs(title = "Summer 10304", x = "groundwaterdepth", y = "LowLevel")
+event_summer_10304_groundwaterdepth0 <- ggplot(data.frame(y, x) %>% filter(y == 0), aes(x = x, y = y)) +
+                            geom_boxplot() +
+                            labs(title = "LowLevel = 0", x = "groundwaterdepth", y = "Low Level")
+event_summer_10304_groundwaterdepth1 <- ggplot(data.frame(y, x) %>% filter(y == 1), aes(x = x, y = y)) +
+                            geom_boxplot() +
+                            labs(title = "LowLevel = 1", x = "groundwaterdepth", y = "Low Level")
+grid_event_summer_10304_groundwaterdepth <- grid.arrange(event_summer_10304_groundwaterdepth, event_summer_10304_groundwaterdepth0, event_summer_10304_groundwaterdepth1, ncol = 1)
+
+
+
+y <- hydro_summer_11502$lowlevel
+x <- hydro_summer_11502$groundwaterdepth
+cor(x, y, method = "pearson")
+glm(y~x, data = data.frame(x, y), family = binomial())
+event_summer_11502_groundwaterdepth <- ggplot(data = data.frame(x, y), aes(x = x , y = y)) +
+                            geom_point() +
+                            geom_smooth(method = "glm", method.args = list(family = "binomial"), se = TRUE) +
+                            labs(title = "Summer 11502", x = "groundwaterdepth", y = "LowLevel")
+event_summer_11502_groundwaterdepth0 <- ggplot(data.frame(y, x) %>% filter(y == 0), aes(x = x, y = y)) +
+                            geom_boxplot() +
+                            labs(title = "LowLevel = 0", x = "groundwaterdepth", y = "Low Level")
+event_summer_11502_groundwaterdepth1 <- ggplot(data.frame(y, x) %>% filter(y == 1), aes(x = x, y = y)) +
+                            geom_boxplot() +
+                            labs(title = "LowLevel = 1", x = "groundwaterdepth", y = "Low Level")
+grid_event_summer_11502_groundwaterdepth<- grid.arrange(event_summer_11502_groundwaterdepth, event_summer_11502_groundwaterdepth0, event_summer_11502_groundwaterdepth1, ncol = 1)
+
+
+
+y <- hydro_summer_20203$lowlevel
+x <- hydro_summer_20203$groundwaterdepth
+cor(x, y, method = "pearson")
+glm(y~x, data = data.frame(x, y), family = binomial())
+event_summer_20203_groundwaterdepth <- ggplot(data = data.frame(x, y), aes(x = x , y = y)) +
+                            geom_point() +
+                            geom_smooth(method = "glm", method.args = list(family = "binomial"), se = TRUE) +
+                            labs(title = "Summer 20203", x = "groundwaterdepth", y = "LowLevel")
+event_summer_20203_groundwaterdepth0 <- ggplot(data.frame(y, x) %>% filter(y == 0), aes(x = x, y = y)) +
+                            geom_boxplot() +
+                            labs(title = "LowLevel = 0", x = "groundwaterdepth", y = "Low Level")
+event_summer_20203_groundwaterdepth1 <- ggplot(data.frame(y, x) %>% filter(y == 1), aes(x = x, y = y)) +
+                            geom_boxplot() +
+                            labs(title = "LowLevel = 1", x = "groundwaterdepth", y = "Low Level")
+grid_event_summer_20203_groundwaterdepth <- grid.arrange(event_summer_20203_groundwaterdepth, event_summer_20203_groundwaterdepth0, event_summer_20203_groundwaterdepth1, ncol = 1)
+
+grid.arrange(grid_event_summer_10304_groundwaterdepth, grid_event_summer_11502_groundwaterdepth, grid_event_summer_20203_groundwaterdepth, ncol = 2)
+
+# winter
+y <- hydro_winter_10304$lowlevel
+x <- hydro_winter_10304$groundwaterdepth
+cor(x, y, method = "pearson")
+glm(y~x, data = data.frame(x, y), family = binomial())
+event_winter_10304_groundwaterdepth <- ggplot(data = data.frame(x, y), aes(x = x , y = y)) +
+                            geom_point() +
+                            geom_smooth(method = "glm", method.args = list(family = "binomial"), se = TRUE) +
+                            labs(title = "Winter 10304", x = "groundwaterdepth", y = "LowLevel")
+event_winter_10304_groundwaterdepth0 <- ggplot(data.frame(y, x) %>% filter(y == 0), aes(x = x, y = y)) +
+                            geom_boxplot() +
+                            labs(title = "LowLevel = 0", x = "groundwaterdepth", y = "Low Level")
+event_winter_10304_groundwaterdepth1 <- ggplot(data.frame(y, x) %>% filter(y == 1), aes(x = x, y = y)) +
+                            geom_boxplot() +
+                            labs(title = "LowLevel = 1", x = "groundwaterdepth", y = "Low Level")
+grid_event_winter_10304_groundwaterdepth <- grid.arrange(event_winter_10304_groundwaterdepth, event_winter_10304_groundwaterdepth0, event_winter_10304_groundwaterdepth1, ncol = 1)  
+
+
+y <- hydro_winter_11502$lowlevel
+x <- hydro_winter_11502$groundwaterdepth
+cor(x, y, method = "pearson")
+glm(y~x, data = data.frame(x, y), family = binomial())
+event_winter_11502_groundwaterdepth <- ggplot(data = data.frame(x, y), aes(x = x , y = y)) +
+                            geom_point() +
+                            geom_smooth(method = "glm", method.args = list(family = "binomial"), se = TRUE) +
+                            labs(title = "Winter 11502", x = "groundwaterdepth", y = "LowLevel")
+event_winter_11502_groundwaterdepth0 <- ggplot(data.frame(y, x) %>% filter(y == 0), aes(x = x, y = y)) +
+                            geom_boxplot() +
+                            labs(title = "LowLevel = 0", x = "groundwaterdepth", y = "Low Level")
+event_winter_11502_groundwaterdepth1 <- ggplot(data.frame(y, x) %>% filter(y == 1), aes(x = x, y = y)) +
+                            geom_boxplot() +
+                            labs(title = "LowLevel = 1", x = "groundwaterdepth", y = "Low Level")
+grid_event_winter_11502_groundwaterdepth <- grid.arrange(event_winter_11502_groundwaterdepth, event_winter_11502_groundwaterdepth0, event_winter_11502_groundwaterdepth1, ncol = 1)
+
+
+
+y <- hydro_winter_20203$lowlevel
+x <- hydro_winter_20203$groundwaterdepth
+cor(x, y, method = "pearson")
+glm(y~x, data = data.frame(x, y), family = binomial())
+event_winter_20203_groundwaterdepth <- ggplot(data = data.frame(x, y), aes(x = x , y = y)) +
+                            geom_point() +
+                            geom_smooth(method = "glm", method.args = list(family = "binomial"), se = TRUE) +
+                            labs(title = "Winter 20203", x = "groundwaterdepth", y = "LowLevel")
+event_winter_20203_groundwaterdepth0 <- ggplot(data.frame(y, x) %>% filter(y == 0), aes(x = x, y = y)) +
+                            geom_boxplot() +
+                            labs(title = "LowLevel = 0", x = "groundwaterdepth", y = "Low Level")
+event_winter_20203_groundwaterdepth1 <- ggplot(data.frame(y, x) %>% filter(y == 1), aes(x = x, y = y)) +
+                            geom_boxplot() +
+                            labs(title = "LowLevel = 1", x = "groundwaterdepth", y = "Low Level")
+grid_event_winter_20203_groundwaterdepth <- grid.arrange(event_winter_20203_groundwaterdepth, event_winter_20203_groundwaterdepth0, event_winter_20203_groundwaterdepth1, ncol = 1)
+
+grid.arrange(grid_event_winter_10304_groundwaterdepth, grid_event_winter_11502_groundwaterdepth, grid_event_winter_20203_groundwaterdepth, ncol = 2)
+grid.arrange(grid_event_summer_10304_groundwaterdepth, grid_event_summer_11502_groundwaterdepth, grid_event_summer_20203_groundwaterdepth, grid_event_winter_10304_groundwaterdepth, grid_event_winter_11502_groundwaterdepth, grid_event_winter_20203_groundwaterdepth, ncol = 3)
+
+
+```
+
+##soilwater
+``` {r}
+# summer
+
+y <- hydro_summer_10304$lowlevel
+x <- hydro_summer_10304$soilwater
+cor(x, y, method = "pearson")
+glm(y~x, data = data.frame(x, y), family = binomial())
+event_summer_10304_soilwater <- ggplot(data = data.frame(x, y), aes(x = x , y = y)) +
+                            geom_point() +
+                            geom_smooth(method = "glm", method.args = list(family = "binomial"), se = TRUE) +
+                            labs(title = "Summer 10304", x = "soilwater", y = "LowLevel")
+event_summer_10304_soilwater0 <- ggplot(data.frame(y, x) %>% filter(y == 0), aes(x = x, y = y)) +
+                            geom_boxplot() +
+                            labs(title = "LowLevel = 0", x = "soilwater", y = "Low Level")
+event_summer_10304_soilwater1 <- ggplot(data.frame(y, x) %>% filter(y == 1), aes(x = x, y = y)) +
+                            geom_boxplot() +
+                            labs(title = "LowLevel = 1", x = "soilwater", y = "Low Level")
+grid_event_summer_10304_soilwater <- grid.arrange(event_summer_10304_soilwater, event_summer_10304_soilwater0, event_summer_10304_soilwater1, ncol = 1)
+
+
+y <- hydro_summer_11502$lowlevel
+x <- hydro_summer_11502$soilwater
+cor(x, y, method = "pearson")
+glm(y~x, data = data.frame(x, y), family = binomial())
+event_summer_11502_soilwater <- ggplot(data = data.frame(x, y), aes(x = x , y = y)) +
+                            geom_point() +
+                            geom_smooth(method = "glm", method.args = list(family = "binomial"), se = TRUE) +
+                            labs(title = "Summer 11502", x = "soilwater", y = "LowLevel")
+event_summer_11502_soilwater0 <- ggplot(data.frame(y, x) %>% filter(y == 0), aes(x = x, y = y)) +
+                            geom_boxplot() +
+                            labs(title = "LowLevel = 0", x = "soilwater", y = "Low Level")
+event_summer_11502_soilwater1 <- ggplot(data.frame(y, x) %>% filter(y == 1), aes(x = x, y = y)) +
+                            geom_boxplot() +
+                            labs(title = "LowLevel = 1", x = "soilwater", y = "Low Level")
+grid_event_summer_11502_soilwater <- grid.arrange(event_summer_11502_soilwater, event_summer_11502_soilwater0, event_summer_11502_soilwater1, ncol = 1)
+
+
+y <- hydro_summer_20203$lowlevel
+x <- hydro_summer_20203$soilwater
+cor(x, y, method = "pearson")
+glm(y~x, data = data.frame(x, y), family = binomial())
+event_summer_20203_soilwater <- ggplot(data = data.frame(x, y), aes(x = x , y = y)) +
+                            geom_point() +
+                            geom_smooth(method = "glm", method.args = list(family = "binomial"), se = TRUE) +
+                            labs(title = "Summer 20203", x = "soilwater", y = "LowLevel")
+event_summer_20203_soilwater0 <- ggplot(data.frame(y, x) %>% filter(y == 0), aes(x = x, y = y)) +
+                            geom_boxplot() +
+                            labs(title = "LowLevel = 0", x = "soilwater", y = "Low Level")
+event_summer_20203_soilwater1 <- ggplot(data.frame(y, x) %>% filter(y == 1), aes(x = x, y = y)) +
+                            geom_boxplot() +
+                            labs(title = "LowLevel = 1", x = "soilwater", y = "Low Level")
+grid_event_summer_20203_soilwater <- grid.arrange(event_summer_20203_soilwater, event_summer_20203_soilwater0, event_summer_20203_soilwater1, ncol = 1)
+
+grid.arrange(grid_event_summer_10304_soilwater, grid_event_summer_11502_soilwater, grid_event_summer_20203_soilwater, ncol = 2)
+
+# winter
+y <- hydro_winter_10304$lowlevel
+x <- hydro_winter_10304$soilwater
+cor(x, y, method = "pearson")
+glm(y~x, data = data.frame(x, y), family = binomial())
+event_winter_10304_soilwater <- ggplot(data = data.frame(x, y), aes(x = x , y = y)) +
+                            geom_point() +
+                            geom_smooth(method = "glm", method.args = list(family = "binomial"), se = TRUE) +
+                            labs(title = "Winter 10304", x = "soilwater", y = "LowLevel")
+event_winter_10304_soilwater0 <- ggplot(data.frame(y, x) %>% filter(y == 0), aes(x = x, y = y)) +
+                            geom_boxplot() +
+                            labs(title = "LowLevel = 0", x = "soilwater", y = "Low Level")
+event_winter_10304_soilwater1 <- ggplot(data.frame(y, x) %>% filter(y == 1), aes(x = x, y = y)) +
+                            geom_boxplot() +
+                            labs(title = "LowLevel = 1", x = "soilwater", y = "Low Level")
+grid_event_winter_10304_soilwater <- grid.arrange(event_winter_10304_soilwater, event_winter_10304_soilwater0, event_winter_10304_soilwater1, ncol = 1)       
+
+y <- hydro_winter_11502$lowlevel
+x <- hydro_winter_11502$soilwater
+cor(x, y, method = "pearson")
+glm(y~x, data = data.frame(x, y), family = binomial())
+event_winter_11502_soilwater <- ggplot(data = data.frame(x, y), aes(x = x , y = y)) +
+                            geom_point() +
+                            geom_smooth(method = "glm", method.args = list(family = "binomial"), se = TRUE) +
+                            labs(title = "Winter 11502", x = "soilwater", y = "LowLevel")
+event_winter_11502_soilwater0 <- ggplot(data.frame(y, x) %>% filter(y == 0), aes(x = x, y = y)) +
+                            geom_boxplot() +
+                            labs(title = "LowLevel = 0", x = "soilwater", y = "Low Level")
+event_winter_11502_soilwater1 <- ggplot(data.frame(y, x) %>% filter(y == 1), aes(x = x, y = y)) +
+                            geom_boxplot() +
+                            labs(title = "LowLevel = 1", x = "soilwater", y = "Low Level")
+grid_event_winter_11502_soilwater <- grid.arrange(event_winter_11502_soilwater, event_winter_11502_soilwater0, event_winter_11502_soilwater1, ncol = 1)
+
+
+y <- hydro_winter_20203$lowlevel
+x <- hydro_winter_20203$soilwater
+cor(x, y, method = "pearson")
+glm(y~x, data = data.frame(x, y), family = binomial())
+event_winter_20203_soilwater <- ggplot(data = data.frame(x, y), aes(x = x , y = y)) +
+                            geom_point() +
+                            geom_smooth(method = "glm", method.args = list(family = "binomial"), se = TRUE) +
+                            labs(title = "Winter 20203", x = "soilwater", y = "LowLevel")
+event_winter_20203_soilwater0 <- ggplot(data.frame(y, x) %>% filter(y == 0), aes(x = x, y = y)) +
+                            geom_boxplot() +
+                            labs(title = "LowLevel = 0", x = "soilwater", y = "Low Level")
+event_winter_20203_soilwater1 <- ggplot(data.frame(y, x) %>% filter(y == 1), aes(x = x, y = y)) +
+                            geom_boxplot() +
+                            labs(title = "LowLevel = 1", x = "soilwater", y = "Low Level")
+grid_event_winter_20203_soilwater <- grid.arrange(event_winter_20203_soilwater, event_winter_20203_soilwater0, event_winter_20203_soilwater1, ncol = 1)
+
+grid.arrange(grid_event_summer_10304_soilwater, grid_event_summer_11502_soilwater, grid_event_summer_20203_soilwater, ncol = 2)
+grid.arrange(grid_event_summer_10304_soilwater, grid_event_summer_11502_soilwater, grid_event_summer_20203_soilwater, grid_event_summer_10304_soilwater, grid_event_summer_11502_soilwater, grid_event_summer_20203_soilwater, ncol = 3)
+
+```
 ```
