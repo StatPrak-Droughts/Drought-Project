@@ -30,6 +30,23 @@ hydro_winter_10304 <- readRDS(file = "./data/hydro_winter_10304.RDS")
 pegel_prop <- readRDS(file = "./data/pegel_prop.RDS")
 ```
 
+```{r}
+# separate datasets for each waterlevel, season and member
+# winter
+for (i in pegel_ids) {
+  for (j in levels(hydro_total$member)) {
+    assign(paste0("hydro_winter_", i, "_", j), hydro_winter %>% filter(name_waterlevel %in% i) %>% filter(member %in% j))
+  }
+}
+
+# summer
+for (i in pegel_ids) {
+  for (j in levels(hydro_total$member)) {
+    assign(paste0("hydro_summer_", i, "_", j), hydro_summer %>% filter(name_waterlevel %in% i) %>% filter(member %in% j))
+  }
+}
+```
+
 ## Geo Data (Map data)
 ```{r}
 # Read in shape file
@@ -94,6 +111,7 @@ plot_single_dranage <- function(dataset, year = c(2000), member_input = "kbe") {
        x = "Datum")
 }
 plot_single_dranage(hydro_total %>% filter(name_waterlevel == "10304"), year = 2000:2003)
+# -> Daten sind saisonal
 ggsave("Plots/Chris/analysis/single_dranage_Isar-Mittenwald_2000-2003.png", width = 12, height = 6)
 
 plot_dranage(hydro_total, year = 2000)
@@ -142,6 +160,54 @@ ggplot(data = table_days_low_flow_by_hydro_year, mapping = aes(x = YY, y = avg_n
        x = "Datum") +
   facet_wrap(vars(hydro_year))
 ggsave("Plots/Chris/analysis/yearly_avg_number_of_low_flow_days_per_season.png", width = 12, height = 6)
+
+```
+
+## Stationary analysis
+```{r}
+library(tseries)
+
+stationary_drainage_mean_p <- function(waterlevel, season) {
+  name <- paste0("stationar_", season, "_", waterlevel, "_")
+  member_names <- levels(hydro_total$member)
+  for (i in 1:length(member_names)) {
+    assign(paste0(name, i),
+           kpss.test(get(paste0("hydro_", season, "_", waterlevel, "_", member_names[i]))$drainage)$p.value)
+  }
+  mean(get(paste0(name, "1")), get(paste0(name, "2")), get(paste0(name, "3")), get(paste0(name, "4")),
+       get(paste0(name, "5")), get(paste0(name, "6")), get(paste0(name, "7")), get(paste0(name, "8")),
+       get(paste0(name, "9")), get(paste0(name, "10")))
+}
+
+stationary_drainage_mean_p("10304", "winter")
+stationary_drainage_mean_p("10304", "summer")
+stationary_drainage_mean_p("11502", "winter")
+stationary_drainage_mean_p("11502", "summer")
+stationary_drainage_mean_p("20203", "winter")
+stationary_drainage_mean_p("20203", "summer")
+# nur die Zeitreihe von drainage für 20203/winter ist zum Signifikanzniveau 0.05 signifikant nicht-stationär;
+# bei allen anderen Zeitreihen von drainage kann die Annahme der Stationarität nicht abgelehnt werden
+
+stationary_lowlevel_mean_p <- function(waterlevel, season) {
+  name <- paste0("stationar_", season, "_", waterlevel, "_")
+  member_names <- levels(hydro_total$member)
+  for (i in 1:length(member_names)) {
+    assign(paste0(name, i),
+           kpss.test(get(paste0("hydro_", season, "_", waterlevel, "_", member_names[i]))$lowlevel)$p.value)
+  }
+  mean(get(paste0(name, "1")), get(paste0(name, "2")), get(paste0(name, "3")), get(paste0(name, "4")),
+       get(paste0(name, "5")), get(paste0(name, "6")), get(paste0(name, "7")), get(paste0(name, "8")),
+       get(paste0(name, "9")), get(paste0(name, "10")))
+}
+
+stationary_lowlevel_mean_p("10304", "winter")
+stationary_lowlevel_mean_p("10304", "summer")
+stationary_lowlevel_mean_p("11502", "winter")
+stationary_lowlevel_mean_p("11502", "summer")
+stationary_lowlevel_mean_p("20203", "winter")
+stationary_lowlevel_mean_p("20203", "summer")
+# die Zeitreihen von lowlevel für 10304/winter, 20203/winter, 20203/summer sind zum Signifikanzniveau 0.05 signifikant nicht-stationär:
+# für die Zeitreihen von lowlevel für 10304/summer, 11502/winter, 11502/summer kann die Annahme der Stationarität nicht abgelehnt werden
 
 ```
 
@@ -357,21 +423,48 @@ plot_ts_facet("avg_glorad", hydro_winter_20203, period = 5, title = 20203)
 ### Glm - Linear trend over time 
 ```{r}
 model_1 <- glm(lowlevel ~ date  + avg_airtmp + avg_soilwater + avg_precip + avg_precip * avg_soilwater, data = hydro_summer_10304_kbe, family = binomial)
-
 summary(model_1)
 
 model_2 <- glm(lowlevel ~ date  + avg_airtmp + avg_soilwater + avg_precip + avg_precip * avg_soilwater + avg_snowstorage + avg_glorad  + avg_infiltration, data = hydro_summer_10304_kbe, family = binomial)
-
 summary(model_2)
+
+# generalized linear mixed-effects model with random intercept for member (no interactions)
+library(lme4)
+glmer_1 <- glmer(lowlevel ~ precip + airtmp + glorad + relhum + soilwater + snowstorage + groundwaterdepth + infiltration + (1|member), data = hydro_winter_10304, family = binomial())
+summary(glmer_1)
 ```
 # GAM
 ```{r}
 library(mgcv)
-gam_1 <- gam(lowlevel ~ date  + s(avg_airtmp) + s(avg_soilwater) + s(avg_precip) + avg_precip * avg_soilwater + avg_snowstorage + s(avg_glorad) + s(avg_infiltration), data = hydro_summer_10304_kbe, family = binomial(), method = "REML")
+gam_1 <- gam(lowlevel ~ date + s(avg_airtmp) + s(avg_soilwater) + s(avg_precip) + avg_precip * avg_soilwater + avg_snowstorage + s(avg_glorad) + s(avg_infiltration), data = hydro_summer_10304_kbe, family = binomial(), method = "REML")
 summary(gam_1)
+
+gam_1_s_interac <- gam(lowlevel ~ s(precip) + s(airtmp) + s(glorad) + s(relhum) + s(soilwater) + s(snowstorage) + s(groundwaterdepth) + s(infiltration) + s(precip, by = soilwater), data = hydro_summer_10304, family = binomial(), method = "REML")
+summary(gam_1_s_interac)
+plot(gam_1_s_interac)
+
+gam_randinter_member_10304_winter <- gam(lowlevel ~ s(precip) + s(airtmp) + s(glorad) + s(relhum) + s(soilwater) + s(snowstorage) + s(groundwaterdepth) + s(infiltration) + s(member, bs = "re"), data = hydro_winter_10304, family = binomial(), method = "REML")
+summary(gam_randinter_member_10304_winter)
+plot(gam_randinter_member_10304_winter)
+
+gam_randinter_member_10304_summer <- gam(lowlevel ~ s(precip) + s(airtmp) + s(glorad) + s(relhum) + s(soilwater) + s(snowstorage) + s(groundwaterdepth) + s(infiltration) + s(member, bs = "re"), data = hydro_summer_10304, family = binomial(), method = "REML")
+summary(gam_randinter_member_10304_summer)
+plot(gam_randinter_member_10304_summer)
+
+gam_randinter_member_ps <- gam(lowlevel ~ s(precip, bs = "ps") + s(airtmp, bs = "ps") + s(glorad, bs = "ps") + s(relhum, bs = "ps") + s(soilwater, bs = "ps") + s(snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(infiltration, bs = "ps") + s(precip, by = soilwater, bs = "ps") + s(member, bs = "re"), data = hydro_winter_10304, family = binomial(), method = "REML")
+summary(gam_randinter_member_ps)
+plot(gam_randinter_member_ps)
+
+
+# generalized additive mixed model with ARMA-correlation-structure for member kbe
+gamm_randinter_member_ps_corAR1 <- gamm(lowlevel ~ s(precip, bs = "ps") + s(airtmp, bs = "ps") + s(glorad, bs = "ps") + s(relhum, bs = "ps") + s(soilwater, bs = "ps") + s(snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(infiltration, bs = "ps") + s(precip, by = soilwater, bs = "ps") + s(member, bs = "re"), data = hydro_winter_10304, family = binomial(), correlation = corCAR1(form = ~ date | member))
+# Ausprobieren: corARMA(p = 4, q = 1)
+summary(gamm_randinter_member_ps_corAR1)
+
 
 gam_2 <- gam(lowlevel ~ date + s(airtmp) + s(soilwater) + s(precip) + s(soilwater, precip), data = hydro_summer_10304_kbe, family = binomial())
 summary(gam_2)
+
 
 ```
 # P Splines
@@ -386,22 +479,6 @@ summary(gam_2_ps)
 
 ### Auto corr
 ```{r}
-# separate datasets for each waterlevel, season and member
-# winter
-for (i in pegel_ids) {
-  for (j in levels(hydro_total$member)) {
-    assign(paste0("hydro_winter_", i, "_", j), hydro_winter %>% filter(name_waterlevel %in% i) %>% filter(member %in% j))
-  }
-}
-
-# summer
-for (i in pegel_ids) {
-  for (j in levels(hydro_total$member)) {
-    assign(paste0("hydro_summer_", i, "_", j), hydro_summer %>% filter(name_waterlevel %in% i) %>% filter(member %in% j))
-  }
-}
-
-
 library(car)
 
 ## drainage
@@ -419,12 +496,12 @@ for (k in c("winter", "summer")) {
 # -> Drainage ist in allen Teildatensätzen positiv autokorreliert -> Modell, das diese Autokorrelation berücksichtigt, nötig
 
 # ACF-Plots for drainage (across all members) separated by each waterlevel and season
-plot(x = 0:37, y = acf_mean_drainage_winter_10304, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Autokorr. zw. Beob. des Abflusses für Isar/Mittenwald, Winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
-plot(x = 0:37, y = acf_mean_drainage_summer_10304, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Autokorr. zw. Beob. des Abflusses für Isar/Mittenwald, Sommer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
-plot(x = 0:37, y = acf_mean_drainage_winter_11502, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Autokorr. zw. Beob. des Abflusses für Iller/Kempten, Winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
-plot(x = 0:37, y = acf_mean_drainage_summer_11502, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Autokorr. zw. Beob. des Abflusses für Iller/Kempten, Sommer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
-plot(x = 0:37, y = acf_mean_drainage_winter_20203, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Autokorr. zw. Beob. des Abflusses für fränk. Saale/Salz, Winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
-plot(x = 0:37, y = acf_mean_drainage_summer_20203, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Autokorr. zw. Beob. des Abflusses für fränk. Saale/Salz, Sommer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 0:37, y = acf_mean_drainage_winter_10304, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Autokor. zw. Beob. des Abflusses für Isar/Mittenwald, Winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 0:37, y = acf_mean_drainage_summer_10304, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Autokor. zw. Beob. des Abflusses für Isar/Mittenwald, Sommer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 0:37, y = acf_mean_drainage_winter_11502, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Autokor. zw. Beob. des Abflusses für Iller/Kempten, Winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 0:37, y = acf_mean_drainage_summer_11502, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Autokor. zw. Beob. des Abflusses für Iller/Kempten, Sommer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 0:37, y = acf_mean_drainage_winter_20203, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Autokor. zw. Beob. des Abflusses für fränk. Saale/Salz, Winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 0:37, y = acf_mean_drainage_summer_20203, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Autokor. zw. Beob. des Abflusses für fränk. Saale/Salz, Sommer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
 
 # Partial autocorrelation function, mean pacf for drainage (across all members) separated by each waterlevel and season
 for (k in c("winter", "summer")) {
@@ -447,12 +524,12 @@ for (k in c("winter", "summer")) {
 # 20203, Summer: Autokorrelationskoeffizient bis lag = 5 (nicht durchgängig), bis lag = 3 (durchgängig) signifikant
 
 # PACF-Plots for drainage (across all members) separated by each waterlevel and season
-plot(x = 1:37, y = pacf_mean_drainage_winter_10304, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Part. Autokorr. zw. Beob. des Abflusses für Isar/Mittenwald, Winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
-plot(x = 1:37, y = pacf_mean_drainage_summer_10304, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Part. Autokorr. zw. Beob. des Abflusses für Isar/Mittenwald, Sommer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
-plot(x = 1:37, y = pacf_mean_drainage_winter_11502, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Part. Autokorr. zw. Beob. des Abflusses für Iller/Kempten, Winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
-plot(x = 1:37, y = pacf_mean_drainage_summer_11502, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Part. Autokorr. zw. Beob. des Abflusses für Iller/Kempten, Sommer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
-plot(x = 1:37, y = pacf_mean_drainage_winter_20203, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Part. Autokorr. zw. Beob. des Abflusses für fränk. Saale/Salz, Winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
-plot(x = 1:37, y = pacf_mean_drainage_summer_20203, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Part. Autokorr. zw. Beob. des Abflusses für fränk. Saale/Salz, Sommer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 1:37, y = pacf_mean_drainage_winter_10304, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Part. Autokor. zw. Beob. des Abflusses für Isar/Mittenwald, Winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 1:37, y = pacf_mean_drainage_summer_10304, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Part. Autokor. zw. Beob. des Abflusses für Isar/Mittenwald, Sommer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 1:37, y = pacf_mean_drainage_winter_11502, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Part. Autokor. zw. Beob. des Abflusses für Iller/Kempten, Winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 1:37, y = pacf_mean_drainage_summer_11502, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Part. Autokor. zw. Beob. des Abflusses für Iller/Kempten, Sommer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 1:37, y = pacf_mean_drainage_winter_20203, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Part. Autokor. zw. Beob. des Abflusses für fränk. Saale/Salz, Winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 1:37, y = pacf_mean_drainage_summer_20203, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Part. Autokor. zw. Beob. des Abflusses für fränk. Saale/Salz, Sommer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
 
 
 ## lowlevel
@@ -470,12 +547,12 @@ for (k in c("winter", "summer")) {
 # -> Lowlevel ist in allen Teildatensätzen positiv autokorreliert -> Modell, das diese Autokorrelation berücksichtigt, nötig
 
 # ACF-Plots for lowlevel (across all members) separated by each waterlevel and season
-plot(x = 0:37, y = acf_mean_lowlevel_winter_10304, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Autokorr. zw. Beob. von Niedrigwasserevents für Isar/Mittenwald, Winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
-plot(x = 0:37, y = acf_mean_lowlevel_summer_10304, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Autokorr. zw. Beob. von Niedrigwasserevents für Isar/Mittenwald, Sommer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
-plot(x = 0:37, y = acf_mean_lowlevel_winter_11502, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Autokorr. zw. Beob. von Niedrigwasserevents für Iller/Kempten, Winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
-plot(x = 0:37, y = acf_mean_lowlevel_summer_11502, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Autokorr. zw. Beob. von Niedrigwasserevents für Iller/Kempten, Sommer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
-plot(x = 0:37, y = acf_mean_lowlevel_winter_20203, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Autokorr. zw. Beob. von Niedrigwasserevents für fränk. Saale/Salz, Winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
-plot(x = 0:37, y = acf_mean_lowlevel_summer_20203, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Autokorr. zw. Beob. von Niedrigwasserevents für fränk. Saale/Salz, Sommer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 0:37, y = acf_mean_lowlevel_winter_10304, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Autokor. zw. Beob. von Niedrigwasserevents für Isar/Mittenwald, Winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 0:37, y = acf_mean_lowlevel_summer_10304, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Autokor. zw. Beob. von Niedrigwasserevents für Isar/Mittenwald, Sommer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 0:37, y = acf_mean_lowlevel_winter_11502, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Autokor. zw. Beob. von Niedrigwasserevents für Iller/Kempten, Winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 0:37, y = acf_mean_lowlevel_summer_11502, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Autokor. zw. Beob. von Niedrigwasserevents für Iller/Kempten, Sommer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 0:37, y = acf_mean_lowlevel_winter_20203, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Autokor. zw. Beob. von Niedrigwasserevents für fränk. Saale/Salz, Winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 0:37, y = acf_mean_lowlevel_summer_20203, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Autokor. zw. Beob. von Niedrigwasserevents für fränk. Saale/Salz, Sommer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
 
 # Partial autocorrelation function, mean pacf for lowlevel (across all members) separated by each waterlevel and season
 for (k in c("winter", "summer")) {
@@ -498,12 +575,12 @@ for (k in c("winter", "summer")) {
 # 20203, Summer: Autokorrelationskoeffizient bis lag = 5 (nicht durchgängig), bis lag = 1 (durchgängig) signifikant
 
 # PACF-Plots for lowlevel (across all members) seperated by each waterlevel and season
-plot(x = 1:37, y = pacf_mean_lowlevel_winter_10304, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Part. Autokorr. zw. Beob. von Niedrigwasserevents für Isar/Mittenwald, Winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
-plot(x = 1:37, y = pacf_mean_lowlevel_summer_10304, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Part. Autokorr. zw. Beob. von Niedrigwasserevents für Isar/Mittenwald, Sommer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
-plot(x = 1:37, y = pacf_mean_lowlevel_winter_11502, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Part. Autokorr. zw. Beob. von Niedrigwasserevents für Iller/Kempten, Winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
-plot(x = 1:37, y = pacf_mean_lowlevel_summer_11502, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Part. Autokorr. zw. Beob. von Niedrigwasserevents für Iller/Kempten, Sommer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
-plot(x = 1:37, y = pacf_mean_lowlevel_winter_20203, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Part. Autokorr. zw. Beob. von Niedrigwasserevents für fränk. Saale/Salz, Winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
-plot(x = 1:37, y = pacf_mean_lowlevel_summer_20203, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Part. Autokorr. zw. Beob. von Niedrigwasserevents für fränk. Saale/Salz, Sommer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 1:37, y = pacf_mean_lowlevel_winter_10304, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Part. Autokor. zw. Beob. v. Niedrigwasserevents für Isar/Mittenw., Winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 1:37, y = pacf_mean_lowlevel_summer_10304, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Part. Autokor. zw. Beob. von Niedrigwasserevents für Isar/Mittenwald, Sommer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 1:37, y = pacf_mean_lowlevel_winter_11502, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Part. Autokor. zw. Beob. von Niedrigwasserevents für Iller/Kempten, Winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 1:37, y = pacf_mean_lowlevel_summer_11502, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Part. Autokor. zw. Beob. von Niedrigwasserevents für Iller/Kempten, Sommer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 1:37, y = pacf_mean_lowlevel_winter_20203, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Part. Autokor. zw. Beob. von Niedrigwasserevents für fränk. Saale/Salz, Winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 1:37, y = pacf_mean_lowlevel_summer_20203, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Part. Autokor. zw. Beob. von Niedrigwasserevents für fränk. Saale/Salz, Sommer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
 
 # DurbinWatsonTest für GAM auf Datensatz hydro_winter_10304_kbe
 durbinWatsonTest(gam_1)
@@ -527,12 +604,12 @@ for (k in c("winter", "summer")) {
 # -> Precip ist in allen Teildatensätzen leicht positiv autokorreliert -> Modell, das diese Autokorrelation berücksichtigt, wäre von Vorteil
 
 # ACF-Plots for precip (across all members) separated by each waterlevel and season
-plot(x = 0:37, y = acf_mean_precip_winter_10304, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Autokorr. zw. Beob. des Niederschlags für Isar/Mittenwald, Winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
-plot(x = 0:37, y = acf_mean_precip_summer_10304, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Autokorr. zw. Beob. des Niederschlags für Isar/Mittenwald, Sommer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
-plot(x = 0:37, y = acf_mean_precip_winter_11502, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Autokorr. zw. Beob. des Niederschlags für Iller/Kempten, Winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
-plot(x = 0:37, y = acf_mean_precip_summer_11502, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Autokorr. zw. Beob. des Niederschlags für Iller/Kempten, Sommer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
-plot(x = 0:37, y = acf_mean_precip_winter_20203, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Autokorr. zw. Beob. des Niederschlags für fränk. Saale/Salz, Winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
-plot(x = 0:37, y = acf_mean_precip_summer_20203, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Autokorr. zw. Beob. des Niederschlags für fränk. Saale/Salz, Sommer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 0:37, y = acf_mean_precip_winter_10304, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Autokor. zw. Beob. des Niederschlags für Isar/Mittenwald, Winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 0:37, y = acf_mean_precip_summer_10304, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Autokor. zw. Beob. des Niederschlags für Isar/Mittenwald, Sommer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 0:37, y = acf_mean_precip_winter_11502, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Autokor. zw. Beob. des Niederschlags für Iller/Kempten, Winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 0:37, y = acf_mean_precip_summer_11502, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Autokor. zw. Beob. des Niederschlags für Iller/Kempten, Sommer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 0:37, y = acf_mean_precip_winter_20203, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Autokor. zw. Beob. des Niederschlags für fränk. Saale/Salz, Winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 0:37, y = acf_mean_precip_summer_20203, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Autokor. zw. Beob. des Niederschlags für fränk. Saale/Salz, Sommer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
 
 # partial autocorrelation function, mean pacf for precip (across all members) separated by each waterlevel and season
 for (k in c("winter", "summer")) {
@@ -555,12 +632,12 @@ for (k in c("winter", "summer")) {
 # 20203, Summer: Autokorrelationskoeffizient bis lag = 1 (durchgängig) signifikant
 
 # PACF-Plots for precip (across all members) seperated by each waterlevel and season
-plot(x = 1:37, y = pacf_mean_precip_winter_10304, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Part. Autokorr. zw. Beob. des Niederschlags für Isar/Mittenwald, Winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
-plot(x = 1:37, y = pacf_mean_precip_summer_10304, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Part. Autokorr. zw. Beob. des Niederschlags für Isar/Mittenwald, Sommer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
-plot(x = 1:37, y = pacf_mean_precip_winter_11502, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Part. Autokorr. zw. Beob. des Niederschlags für Iller/Kempten, Winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
-plot(x = 1:37, y = pacf_mean_precip_summer_11502, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Part. Autokorr. zw. Beob. des Niederschlags für Iller/Kempten, Sommer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
-plot(x = 1:37, y = pacf_mean_precip_winter_20203, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Part. Autokorr. zw. Beob. des Niederschlags für fränk. Saale/Salz, Winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
-plot(x = 1:37, y = pacf_mean_precip_summer_20203, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Part. Autokorr. zw. Beob. des Niederschlags für fränk. Saale/Salz, Sommer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 1:37, y = pacf_mean_precip_winter_10304, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Part. Autokor. zw. Beob. des Niederschlags für Isar/Mittenwald, Winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 1:37, y = pacf_mean_precip_summer_10304, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Part. Autokor. zw. Beob. des Niederschlags für Isar/Mittenwald, Sommer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 1:37, y = pacf_mean_precip_winter_11502, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Part. Autokor. zw. Beob. des Niederschlags für Iller/Kempten, Winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 1:37, y = pacf_mean_precip_summer_11502, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Part. Autokor. zw. Beob. des Niederschlags für Iller/Kempten, Sommer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 1:37, y = pacf_mean_precip_winter_20203, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Part. Autokor. zw. Beob. des Niederschlags für fränk. Saale/Salz, Winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 1:37, y = pacf_mean_precip_summer_20203, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Part. Autokor. zw. Beob. des Niederschlags für fränk. Saale/Salz, Sommer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
 
 
 ## Airtmp
@@ -580,12 +657,12 @@ for (k in c("winter", "summer")) {
 # -> Airtmp ist in allen Teildatensätzen positiv autokorreliert -> Modell, das diese Autokorrelation berücksichtigt, nötig
 
 # ACF-Plots for airtmp (across all members) separated by each waterlevel and season
-plot(x = 0:37, y = acf_mean_airtmp_winter_10304, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Autokorr. zw. Beob. der Temperatur für Isar/Mittenwald, Winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
-plot(x = 0:37, y = acf_mean_airtmp_summer_10304, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Autokorr. zw. Beob. der Temperatur für Isar/Mittenwald, Sommer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
-plot(x = 0:37, y = acf_mean_airtmp_winter_11502, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Autokorr. zw. Beob. der Temperatur für Iller/Kempten, Winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
-plot(x = 0:37, y = acf_mean_airtmp_summer_11502, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Autokorr. zw. Beob. der Temperatur für Iller/Kempten, Sommer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
-plot(x = 0:37, y = acf_mean_airtmp_winter_20203, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Autokorr. zw. Beob. der Temperatur für fränk. Saale/Salz, Winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
-plot(x = 0:37, y = acf_mean_airtmp_summer_20203, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Autokorr. zw. Beob. der Temperatur für fränk. Saale/Salz, Sommer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 0:37, y = acf_mean_airtmp_winter_10304, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Autokor. zw. Beob. der Temperatur für Isar/Mittenwald, Winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 0:37, y = acf_mean_airtmp_summer_10304, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Autokor. zw. Beob. der Temperatur für Isar/Mittenwald, Sommer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 0:37, y = acf_mean_airtmp_winter_11502, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Autokor. zw. Beob. der Temperatur für Iller/Kempten, Winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 0:37, y = acf_mean_airtmp_summer_11502, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Autokor. zw. Beob. der Temperatur für Iller/Kempten, Sommer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 0:37, y = acf_mean_airtmp_winter_20203, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Autokor. zw. Beob. der Temperatur für fränk. Saale/Salz, Winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 0:37, y = acf_mean_airtmp_summer_20203, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Autokor. zw. Beob. der Temperatur für fränk. Saale/Salz, Sommer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
 
 # partial autocorrelation function, mean pacf for airtmp (across all members) separated by each waterlevel and season
 for (k in c("winter", "summer")) {
@@ -608,12 +685,12 @@ for (k in c("winter", "summer")) {
 # 20203, Summer: Autokorrelationskoeffizient bis lag = 6 (durchgängig) signifikant
 
 # PACF-Plots for airtmp (across all members) seperated by each waterlevel and season
-plot(x = 1:37, y = pacf_mean_airtmp_winter_10304, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Part. Autokorr. zw. Beob. der Temperatur für Isar/Mittenwald, Winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
-plot(x = 1:37, y = pacf_mean_airtmp_summer_10304, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Part. Autokorr. zw. Beob. der Temperatur für Isar/Mittenwald, Sommer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
-plot(x = 1:37, y = pacf_mean_airtmp_winter_11502, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Part. Autokorr. zw. Beob. der Temperatur für Iller/Kempten, Winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
-plot(x = 1:37, y = pacf_mean_airtmp_summer_11502, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Part. Autokorr. zw. Beob. der Temperatur für Iller/Kempten, Sommer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
-plot(x = 1:37, y = pacf_mean_airtmp_winter_20203, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Part. Autokorr. zw. Beob. der Temperatur für fränk. Saale/Salz, Winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
-plot(x = 1:37, y = pacf_mean_airtmp_summer_20203, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Part. Autokorr. zw. Beob. der Temperatur für fränk. Saale/Salz, Sommer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 1:37, y = pacf_mean_airtmp_winter_10304, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Part. Autokor. zw. Beob. der Temperatur für Isar/Mittenwald, Winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 1:37, y = pacf_mean_airtmp_summer_10304, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Part. Autokor. zw. Beob. der Temperatur für Isar/Mittenwald, Sommer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 1:37, y = pacf_mean_airtmp_winter_11502, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Part. Autokor. zw. Beob. der Temperatur für Iller/Kempten, Winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 1:37, y = pacf_mean_airtmp_summer_11502, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Part. Autokor. zw. Beob. der Temperatur für Iller/Kempten, Sommer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 1:37, y = pacf_mean_airtmp_winter_20203, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Part. Autokor. zw. Beob. der Temperatur für fränk. Saale/Salz, Winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 1:37, y = pacf_mean_airtmp_summer_20203, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Part. Autokor. zw. Beob. der Temperatur für fränk. Saale/Salz, Sommer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
 
 ## Glorad
 # autocorrelation function, mean acf for glorad (across all members) separated by each waterlevel and season
@@ -632,12 +709,12 @@ for (k in c("winter", "summer")) {
 # -> Glorad ist in allen Teildatensätzen positiv autokorreliert -> Modell, das diese Autokorrelation berücksichtigt, nötig
 
 # ACF-Plots for glorad (across all members) separated by each waterlevel and season
-plot(x = 0:37, y = acf_mean_glorad_winter_10304, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Autokorr. zw. Beob. der einfall. kurzw. Strahlung für Isar/Mittenwald, Winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
-plot(x = 0:37, y = acf_mean_glorad_summer_10304, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Autokorr. zw. Beob. der einfall. kurzw. Strahlung für Isar/Mittenwald, Sommer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
-plot(x = 0:37, y = acf_mean_glorad_winter_11502, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Autokorr. zw. Beob. der einfall. kurzw. Strahlung für Iller/Kempten, Winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
-plot(x = 0:37, y = acf_mean_glorad_summer_11502, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Autokorr. zw. Beob. der einfall. kurzw. Strahlung für Iller/Kempten, Sommer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
-plot(x = 0:37, y = acf_mean_glorad_winter_20203, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Autokorr. zw. Beob. der einfall. kurzw. Strahlung für fränk. Saale/Salz, Winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
-plot(x = 0:37, y = acf_mean_glorad_summer_20203, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Autokorr. zw. Beob. der einfall. kurzw. Strahlung für fränk. Saale/Salz, Sommer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 0:37, y = acf_mean_glorad_winter_10304, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Autokor. zw. Beob. der einfall. kurzw. Strahlung für Isar/Mittenwald, Winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 0:37, y = acf_mean_glorad_summer_10304, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Autokor. zw. Beob. der einfall. kurzw. Strahlung für Isar/Mittenwald, Sommer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 0:37, y = acf_mean_glorad_winter_11502, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Autokor. zw. Beob. der einfall. kurzw. Strahlung für Iller/Kempten, Winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 0:37, y = acf_mean_glorad_summer_11502, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Autokor. zw. Beob. der einfall. kurzw. Strahlung für Iller/Kempten, Sommer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 0:37, y = acf_mean_glorad_winter_20203, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Autokor. zw. Beob. der einfall. kurzw. Strahlung für fränk. Saale/Salz, Winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 0:37, y = acf_mean_glorad_summer_20203, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Autokor. zw. Beob. der einfall. kurzw. Strahlung für fränk. Saale/Salz, Sommer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
 
 # partial autocorrelation function, mean pacf for glorad (across all members) separated by each waterlevel and season
 for (k in c("winter", "summer")) {
@@ -660,12 +737,12 @@ for (k in c("winter", "summer")) {
 # 20203, Summer: Autokorrelationskoeffizient bis lag = 7 (durchgängig) signifikant
 
 # PACF-Plots for glorad (across all members) seperated by each waterlevel and season
-plot(x = 1:37, y = pacf_mean_glorad_winter_10304, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Part. Autokorr. zw. Beob. der einfall. kurzw. Strahlung für Isar/Mittenwald, Winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
-plot(x = 1:37, y = pacf_mean_glorad_summer_10304, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Part. Autokorr. zw. Beob. der einfall. kurzw. Strahlung für Isar/Mittenwald, Sommer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
-plot(x = 1:37, y = pacf_mean_glorad_winter_11502, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Part. Autokorr. zw. Beob. der einfall. kurzw. Strahlung für Iller/Kempten, Winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
-plot(x = 1:37, y = pacf_mean_glorad_summer_11502, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Part. Autokorr. zw. Beob. der einfall. kurzw. Strahlung für Iller/Kempten, Sommer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
-plot(x = 1:37, y = pacf_mean_glorad_winter_20203, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Part. Autokorr. zw. Beob. der einfall. kurzw. Strahlung für fränk. Saale/Salz, Winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
-plot(x = 1:37, y = pacf_mean_glorad_summer_20203, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Part. Autokorr. zw. Beob. der einfall. kurzw. Strahlung für fränk. Saale/Salz, Sommer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 1:37, y = pacf_mean_glorad_winter_10304, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Part. Autokor. zw. Beob. der einfall. kurzw. Strahlung für Isar/Mittenwald, Winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 1:37, y = pacf_mean_glorad_summer_10304, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Part. Autokor. zw. Beob. der einfall. kurzw. Strahlung für Isar/Mittenwald, Sommer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 1:37, y = pacf_mean_glorad_winter_11502, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Part. Autokor. zw. Beob. der einfall. kurzw. Strahlung für Iller/Kempten, Winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 1:37, y = pacf_mean_glorad_summer_11502, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Part. Autokor. zw. Beob. der einfall. kurzw. Strahlung für Iller/Kempten, Sommer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 1:37, y = pacf_mean_glorad_winter_20203, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Part. Autokor. zw. Beob. der einfall. kurzw. Strahlung für fränk. Saale/Salz, Winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 1:37, y = pacf_mean_glorad_summer_20203, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Part. Autokor. zw. Beob. der einfall. kurzw. Strahlung für fränk. Saale/Salz, Sommer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
 
 
 ## Relhum
@@ -685,12 +762,12 @@ for (k in c("winter", "summer")) {
 # -> Relhum ist in allen Teildatensätzen positiv autokorreliert (vor allem für Pegel 20203) -> Modell, das diese Autokorrelation berücksichtigt, nötig
 
 # ACF-Plots for relhum (across all members) separated by each waterlevel and season
-plot(x = 0:37, y = acf_mean_relhum_winter_10304, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Autokorr. zw. Beob. der relativen Luftfeuchte für Isar/Mittenwald, Winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
-plot(x = 0:37, y = acf_mean_relhum_summer_10304, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Autokorr. zw. Beob. der relativen Luftfeuchte für Isar/Mittenwald, Sommer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
-plot(x = 0:37, y = acf_mean_relhum_winter_11502, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Autokorr. zw. Beob. der relativen Luftfeuchte für Iller/Kempten, Winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
-plot(x = 0:37, y = acf_mean_relhum_summer_11502, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Autokorr. zw. Beob. der relativen Luftfeuchte für Iller/Kempten, Sommer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
-plot(x = 0:37, y = acf_mean_relhum_winter_20203, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Autokorr. zw. Beob. der relativen Luftfeuchte für fränk. Saale/Salz, Winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
-plot(x = 0:37, y = acf_mean_relhum_summer_20203, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Autokorr. zw. Beob. der relativen Luftfeuchte für fränk. Saale/Salz, Sommer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 0:37, y = acf_mean_relhum_winter_10304, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Autokor. zw. Beob. der relativen Luftfeuchte für Isar/Mittenwald, Winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 0:37, y = acf_mean_relhum_summer_10304, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Autokor. zw. Beob. der relativen Luftfeuchte für Isar/Mittenwald, Sommer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 0:37, y = acf_mean_relhum_winter_11502, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Autokor. zw. Beob. der relativen Luftfeuchte für Iller/Kempten, Winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 0:37, y = acf_mean_relhum_summer_11502, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Autokor. zw. Beob. der relativen Luftfeuchte für Iller/Kempten, Sommer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 0:37, y = acf_mean_relhum_winter_20203, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Autokor. zw. Beob. der relativen Luftfeuchte für fränk. Saale/Salz, Winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 0:37, y = acf_mean_relhum_summer_20203, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Autokor. zw. Beob. der relativen Luftfeuchte für fränk. Saale/Salz, Sommer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
 
 # partial autocorrelation function, mean pacf for relhum (across all members) separated by each waterlevel and season
 for (k in c("winter", "summer")) {
@@ -713,12 +790,12 @@ for (k in c("winter", "summer")) {
 # 20203, Summer: Autokorrelationskoeffizient bis lag = 4 (nicht durchgängig), bis lag = 1 (durchgängig) signifikant
 
 # PACF-Plots for relhum (across all members) seperated by each waterlevel and season
-plot(x = 1:37, y = pacf_mean_relhum_winter_10304, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Part. Autokorr. zw. Beob. der relativen Luftfeuchte für Isar/Mittenwald, Winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
-plot(x = 1:37, y = pacf_mean_relhum_summer_10304, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Part. Autokorr. zw. Beob. der relativen Luftfeuchte für Isar/Mittenwald, Sommer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
-plot(x = 1:37, y = pacf_mean_relhum_winter_11502, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Part. Autokorr. zw. Beob. der relativen Luftfeuchte für Iller/Kempten, Winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
-plot(x = 1:37, y = pacf_mean_relhum_summer_11502, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Part. Autokorr. zw. Beob. der relativen Luftfeuchte für Iller/Kempten, Sommer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
-plot(x = 1:37, y = pacf_mean_relhum_winter_20203, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Part. Autokorr. zw. Beob. der relativen Luftfeuchte für fränk. Saale/Salz, Winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
-plot(x = 1:37, y = pacf_mean_relhum_summer_20203, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Part. Autokorr. zw. Beob. der relativen Luftfeuchte für fränk. Saale/Salz, Sommer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 1:37, y = pacf_mean_relhum_winter_10304, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Part. Autokor. zw. Beob. der relativen Luftfeuchte für Isar/Mittenwald, Winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 1:37, y = pacf_mean_relhum_summer_10304, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Part. Autokor. zw. Beob. der relativen Luftfeuchte für Isar/Mittenwald, Sommer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 1:37, y = pacf_mean_relhum_winter_11502, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Part. Autokor. zw. Beob. der relativen Luftfeuchte für Iller/Kempten, Winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 1:37, y = pacf_mean_relhum_summer_11502, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Part. Autokor. zw. Beob. der relativen Luftfeuchte für Iller/Kempten, Sommer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 1:37, y = pacf_mean_relhum_winter_20203, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Part. Autokor. zw. Beob. der relativen Luftfeuchte für fränk. Saale/Salz, Winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 1:37, y = pacf_mean_relhum_summer_20203, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Part. Autokor. zw. Beob. der relativen Luftfeuchte für fränk. Saale/Salz, Sommer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
 
 ## Soilwater
 # autocorrelation function, mean acf for soilwater (across all members) separated by each waterlevel and season
@@ -737,12 +814,12 @@ for (k in c("winter", "summer")) {
 # -> Soilwater ist in allen Teildatensätzen positiv autokorreliert -> Modell, das diese Autokorrelation berücksichtigt, nötig
 
 # ACF-Plots for soilwater (across all members) separated by each waterlevel and season
-plot(x = 0:37, y = acf_mean_soilwater_winter_10304, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Autokorr. zw. Beob. der oberflächennahen Bodenfeuchte für Isar/Mittenwald, Winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
-plot(x = 0:37, y = acf_mean_soilwater_summer_10304, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Autokorr. zw. Beob. der oberflächennahen Bodenfeuchte für Isar/Mittenwald, Sommer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
-plot(x = 0:37, y = acf_mean_soilwater_winter_11502, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Autokorr. zw. Beob. der oberflächennahen Bodenfeuchte für Iller/Kempten, Winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
-plot(x = 0:37, y = acf_mean_soilwater_summer_11502, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Autokorr. zw. Beob. der oberflächennahen Bodenfeuchte für Iller/Kempten, Sommer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
-plot(x = 0:37, y = acf_mean_soilwater_winter_20203, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Autokorr. zw. Beob. der oberflächennahen Bodenfeuchte für fränk. Saale/Salz, Winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
-plot(x = 0:37, y = acf_mean_soilwater_summer_20203, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Autokorr. zw. Beob. der oberflächennahen Bodenfeuchte für fränk. Saale/Salz, Sommer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 0:37, y = acf_mean_soilwater_winter_10304, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Autokor. zw. Beob. der oberflächennahen Bodenfeuchte für Isar/Mittenwald, Winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 0:37, y = acf_mean_soilwater_summer_10304, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Autokor. zw. Beob. der oberflächennahen Bodenfeuchte für Isar/Mittenwald, Sommer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 0:37, y = acf_mean_soilwater_winter_11502, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Autokor. zw. Beob. der oberflächennahen Bodenfeuchte für Iller/Kempten, Winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 0:37, y = acf_mean_soilwater_summer_11502, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Autokor. zw. Beob. der oberflächennahen Bodenfeuchte für Iller/Kempten, Sommer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 0:37, y = acf_mean_soilwater_winter_20203, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Autokor. zw. Beob. der oberflächennahen Bodenfeuchte für fränk. Saale/Salz, Winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 0:37, y = acf_mean_soilwater_summer_20203, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Autokor. zw. Beob. der oberflächennahen Bodenfeuchte für fränk. Saale/Salz, Sommer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
 
 # partial autocorrelation function, mean pacf for soilwater (across all members) separated by each waterlevel and season
 for (k in c("winter", "summer")) {
@@ -765,12 +842,12 @@ for (k in c("winter", "summer")) {
 # 20203, Summer: Autokorrelationskoeffizient bis lag = 2 (durchgängig) signifikant
 
 # PACF-Plots for soilwater (across all members) seperated by each waterlevel and season
-plot(x = 1:37, y = pacf_mean_soilwater_winter_10304, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Part. Autokorr. zw. Beob. der oberflächennahen Bodenfeuchte für Isar/Mittenwald, Winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
-plot(x = 1:37, y = pacf_mean_soilwater_summer_10304, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Part. Autokorr. zw. Beob. der oberflächennahen Bodenfeuchte für Isar/Mittenwald, Sommer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
-plot(x = 1:37, y = pacf_mean_soilwater_winter_11502, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Part. Autokorr. zw. Beob. der oberflächennahen Bodenfeuchte für Iller/Kempten, Winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
-plot(x = 1:37, y = pacf_mean_soilwater_summer_11502, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Part. Autokorr. zw. Beob. der oberflächennahen Bodenfeuchte für Iller/Kempten, Sommer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
-plot(x = 1:37, y = pacf_mean_soilwater_winter_20203, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Part. Autokorr. zw. Beob. der oberflächennahen Bodenfeuchte für fränk. Saale/Salz, Winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
-plot(x = 1:37, y = pacf_mean_soilwater_summer_20203, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Part. Autokorr. zw. Beob. der oberflächennahen Bodenfeuchte für fränk. Saale/Salz, Sommer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 1:37, y = pacf_mean_soilwater_winter_10304, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Part. Autokor. zw. Beob. der oberflächennahen Bodenfeuchte für Isar/Mittenwald, Winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 1:37, y = pacf_mean_soilwater_summer_10304, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Part. Autokor. zw. Beob. der oberflächennahen Bodenfeuchte für Isar/Mittenwald, Sommer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 1:37, y = pacf_mean_soilwater_winter_11502, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Part. Autokor. zw. Beob. der oberflächennahen Bodenfeuchte für Iller/Kempten, Winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 1:37, y = pacf_mean_soilwater_summer_11502, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Part. Autokor. zw. Beob. der oberflächennahen Bodenfeuchte für Iller/Kempten, Sommer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 1:37, y = pacf_mean_soilwater_winter_20203, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Part. Autokor. zw. Beob. der oberflächennahen Bodenfeuchte für fränk. Saale/Salz, Winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 1:37, y = pacf_mean_soilwater_summer_20203, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Part. Autokor. zw. Beob. der oberflächennahen Bodenfeuchte für fränk. Saale/Salz, Sommer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
 
 
 ## Snowstorage
@@ -790,12 +867,12 @@ for (k in c("winter", "summer")) {
 # -> Snowstorage ist in allen Teildatensätzen positiv autokorreliert -> Modell, das diese Autokorrelation berücksichtigt, nötig
 
 # ACF-Plots for snowstorage (across all members) separated by each waterlevel and season
-plot(x = 0:37, y = acf_mean_snowstorage_winter_10304, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Autokorr. zw. Beob. des Schneespeichers für Isar/Mittenwald, Winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
-plot(x = 0:37, y = acf_mean_snowstorage_summer_10304, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Autokorr. zw. Beob. des Schneespeichers für Isar/Mittenwald, Sommer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
-plot(x = 0:37, y = acf_mean_snowstorage_winter_11502, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Autokorr. zw. Beob. des Schneespeichers für Iller/Kempten, Winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
-plot(x = 0:37, y = acf_mean_snowstorage_summer_11502, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Autokorr. zw. Beob. des Schneespeichers für Iller/Kempten, Sommer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
-plot(x = 0:37, y = acf_mean_snowstorage_winter_20203, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Autokorr. zw. Beob. des Schneespeichers für fränk. Saale/Salz, Winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
-plot(x = 0:37, y = acf_mean_snowstorage_summer_20203, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Autokorr. zw. Beob. des Schneespeichers für fränk. Saale/Salz, Sommer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 0:37, y = acf_mean_snowstorage_winter_10304, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Autokor. zw. Beob. des Schneespeichers für Isar/Mittenwald, Winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 0:37, y = acf_mean_snowstorage_summer_10304, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Autokor. zw. Beob. des Schneespeichers für Isar/Mittenwald, Sommer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 0:37, y = acf_mean_snowstorage_winter_11502, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Autokor. zw. Beob. des Schneespeichers für Iller/Kempten, Winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 0:37, y = acf_mean_snowstorage_summer_11502, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Autokor. zw. Beob. des Schneespeichers für Iller/Kempten, Sommer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 0:37, y = acf_mean_snowstorage_winter_20203, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Autokor. zw. Beob. des Schneespeichers für fränk. Saale/Salz, Winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 0:37, y = acf_mean_snowstorage_summer_20203, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Autokor. zw. Beob. des Schneespeichers für fränk. Saale/Salz, Sommer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
 
 # partial autocorrelation function, mean pacf for snowstorage (across all members) separated by each waterlevel and season
 for (k in c("winter", "summer")) {
@@ -818,12 +895,12 @@ for (k in c("winter", "summer")) {
 # 20203, Summer: Autokorrelationskoeffizient bis lag = 2 (durchgängig) signifikant
 
 # PACF-Plots for snowstorage (across all members) seperated by each waterlevel and season
-plot(x = 1:37, y = pacf_mean_snowstorage_winter_10304, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Part. Autokorr. zw. Beob. des Schneespeichers für Isar/Mittenwald, Winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
-plot(x = 1:37, y = pacf_mean_snowstorage_summer_10304, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Part. Autokorr. zw. Beob. des Schneespeichers für Isar/Mittenwald, Sommer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
-plot(x = 1:37, y = pacf_mean_snowstorage_winter_11502, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Part. Autokorr. zw. Beob. des Schneespeichers für Iller/Kempten, Winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
-plot(x = 1:37, y = pacf_mean_snowstorage_summer_11502, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Part. Autokorr. zw. Beob. des Schneespeichers für Iller/Kempten, Sommer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
-plot(x = 1:37, y = pacf_mean_snowstorage_winter_20203, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Part. Autokorr. zw. Beob. des Schneespeichers für fränk. Saale/Salz, Winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
-plot(x = 1:37, y = pacf_mean_snowstorage_summer_20203, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Part. Autokorr. zw. Beob. des Schneespeichers für fränk. Saale/Salz, Sommer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 1:37, y = pacf_mean_snowstorage_winter_10304, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Part. Autokor. zw. Beob. des Schneespeichers für Isar/Mittenwald, Winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 1:37, y = pacf_mean_snowstorage_summer_10304, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Part. Autokor. zw. Beob. des Schneespeichers für Isar/Mittenwald, Sommer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 1:37, y = pacf_mean_snowstorage_winter_11502, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Part. Autokor. zw. Beob. des Schneespeichers für Iller/Kempten, Winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 1:37, y = pacf_mean_snowstorage_summer_11502, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Part. Autokor. zw. Beob. des Schneespeichers für Iller/Kempten, Sommer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 1:37, y = pacf_mean_snowstorage_winter_20203, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Part. Autokor. zw. Beob. des Schneespeichers für fränk. Saale/Salz, Winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 1:37, y = pacf_mean_snowstorage_summer_20203, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Part. Autokor. zw. Beob. des Schneespeichers für fränk. Saale/Salz, Sommer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
 
 
 ## Groundwaterdepth
@@ -843,12 +920,12 @@ for (k in c("winter", "summer")) {
 # -> Groundwaterdepth ist in allen Teildatensätzen positiv autokorreliert -> Modell, das diese Autokorrelation berücksichtigt, nötig
 
 # ACF-Plots for groundwaterdepth (across all members) separated by each waterlevel and season
-plot(x = 0:37, y = acf_mean_groundwaterdepth_winter_10304, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Autokorr. zw. Beob. des Grundwasserstands für Isar/Mittenwald, Winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
-plot(x = 0:37, y = acf_mean_groundwaterdepth_summer_10304, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Autokorr. zw. Beob. des Grundwasserstands für Isar/Mittenwald, Sommer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
-plot(x = 0:37, y = acf_mean_groundwaterdepth_winter_11502, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Autokorr. zw. Beob. des Grundwasserstands für Iller/Kempten, Winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
-plot(x = 0:37, y = acf_mean_groundwaterdepth_summer_11502, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Autokorr. zw. Beob. des Grundwasserstands für Iller/Kempten, Sommer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
-plot(x = 0:37, y = acf_mean_groundwaterdepth_winter_20203, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Autokorr. zw. Beob. des Grundwasserstands für fränk. Saale/Salz, Winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
-plot(x = 0:37, y = acf_mean_groundwaterdepth_summer_20203, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Autokorr. zw. Beob. des Grundwasserstands für fränk. Saale/Salz, Sommer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 0:37, y = acf_mean_groundwaterdepth_winter_10304, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Autokor. zw. Beob. des Grundwasserstands für Isar/Mittenwald, Winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 0:37, y = acf_mean_groundwaterdepth_summer_10304, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Autokor. zw. Beob. des Grundwasserstands für Isar/Mittenwald, Sommer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 0:37, y = acf_mean_groundwaterdepth_winter_11502, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Autokor. zw. Beob. des Grundwasserstands für Iller/Kempten, Winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 0:37, y = acf_mean_groundwaterdepth_summer_11502, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Autokor. zw. Beob. des Grundwasserstands für Iller/Kempten, Sommer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 0:37, y = acf_mean_groundwaterdepth_winter_20203, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Autokor. zw. Beob. des Grundwasserstands für fränk. Saale/Salz, Winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 0:37, y = acf_mean_groundwaterdepth_summer_20203, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Autokor. zw. Beob. des Grundwasserstands für fränk. Saale/Salz, Sommer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
 
 # partial autocorrelation function, mean pacf for groundwaterdepth (across all members) separated by each waterlevel and season
 for (k in c("winter", "summer")) {
@@ -871,12 +948,12 @@ for (k in c("winter", "summer")) {
 # 20203, Summer: Autokorrelationskoeffizient bis lag = 1 (durchgängig) signifikant
 
 # PACF-Plots for groundwaterdepth (across all members) seperated by each waterlevel and season
-plot(x = 1:37, y = pacf_mean_groundwaterdepth_winter_10304, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Part. Autokorr. zw. Beob. des Grundwasserstands für Isar/Mittenwald, Winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
-plot(x = 1:37, y = pacf_mean_groundwaterdepth_summer_10304, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Part. Autokorr. zw. Beob. des Grundwasserstands für Isar/Mittenwald, Sommer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
-plot(x = 1:37, y = pacf_mean_groundwaterdepth_winter_11502, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Part. Autokorr. zw. Beob. des Grundwasserstands für Iller/Kempten, Winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
-plot(x = 1:37, y = pacf_mean_groundwaterdepth_summer_11502, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Part. Autokorr. zw. Beob. des Grundwasserstands für Iller/Kempten, Sommer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
-plot(x = 1:37, y = pacf_mean_groundwaterdepth_winter_20203, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Part. Autokorr. zw. Beob. des Grundwasserstands für fränk. Saale/Salz, Winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
-plot(x = 1:37, y = pacf_mean_groundwaterdepth_summer_20203, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Part. Autokorr. zw. Beob. des Grundwasserstands für fränk. Saale/Salz, Sommer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 1:37, y = pacf_mean_groundwaterdepth_winter_10304, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Part. Autokor. zw. Beob. des Grundwasserstands für Isar/Mittenwald, Winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 1:37, y = pacf_mean_groundwaterdepth_summer_10304, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Part. Autokor. zw. Beob. des Grundwasserstands für Isar/Mittenwald, Sommer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 1:37, y = pacf_mean_groundwaterdepth_winter_11502, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Part. Autokor. zw. Beob. des Grundwasserstands für Iller/Kempten, Winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 1:37, y = pacf_mean_groundwaterdepth_summer_11502, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Part. Autokor. zw. Beob. des Grundwasserstands für Iller/Kempten, Sommer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 1:37, y = pacf_mean_groundwaterdepth_winter_20203, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Part. Autokor. zw. Beob. des Grundwasserstands für fränk. Saale/Salz, Winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 1:37, y = pacf_mean_groundwaterdepth_summer_20203, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Part. Autokor. zw. Beob. des Grundwasserstands für fränk. Saale/Salz, Sommer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
 
 
 ## Infiltration
@@ -896,12 +973,12 @@ for (k in c("winter", "summer")) {
 # -> Infiltration ist in allen Teildatensätzen positiv autokorreliert -> Modell, das diese Autokorrelation berücksichtigt, nötig
 
 # ACF-Plots for infiltration (across all members) separated by each waterlevel and season
-plot(x = 0:37, y = acf_mean_infiltration_winter_10304, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Autokorr. zw. Beob. der Wasserleitfähigkeit für Isar/Mittenwald, Winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
-plot(x = 0:37, y = acf_mean_infiltration_summer_10304, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Autokorr. zw. Beob. der Wasserleitfähigkeit für Isar/Mittenwald, Sommer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
-plot(x = 0:37, y = acf_mean_infiltration_winter_11502, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Autokorr. zw. Beob. der Wasserleitfähigkeit für Iller/Kempten, Winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
-plot(x = 0:37, y = acf_mean_infiltration_summer_11502, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Autokorr. zw. Beob. der Wasserleitfähigkeit für Iller/Kempten, Sommer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
-plot(x = 0:37, y = acf_mean_infiltration_winter_20203, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Autokorr. zw. Beob. der Wasserleitfähigkeit für fränk. Saale/Salz, Winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
-plot(x = 0:37, y = acf_mean_infiltration_summer_20203, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Autokorr. zw. Beob. der Wasserleitfähigkeit für fränk. Saale/Salz, Sommer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 0:37, y = acf_mean_infiltration_winter_10304, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Autokor. zw. Beob. der Wasserleitfähigkeit für Isar/Mittenwald, Winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 0:37, y = acf_mean_infiltration_summer_10304, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Autokor. zw. Beob. der Wasserleitfähigkeit für Isar/Mittenwald, Sommer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 0:37, y = acf_mean_infiltration_winter_11502, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Autokor. zw. Beob. der Wasserleitfähigkeit für Iller/Kempten, Winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 0:37, y = acf_mean_infiltration_summer_11502, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Autokor. zw. Beob. der Wasserleitfähigkeit für Iller/Kempten, Sommer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 0:37, y = acf_mean_infiltration_winter_20203, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Autokor. zw. Beob. der Wasserleitfähigkeit für fränk. Saale/Salz, Winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 0:37, y = acf_mean_infiltration_summer_20203, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Autokor. zw. Beob. der Wasserleitfähigkeit für fränk. Saale/Salz, Sommer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
 
 # partial autocorrelation function, mean pacf for infiltration (across all members) separated by each waterlevel and season
 for (k in c("winter", "summer")) {
@@ -924,12 +1001,12 @@ for (k in c("winter", "summer")) {
 # 20203, Summer: Autokorrelationskoeffizient bis lag = 1 (durchgängig) signifikant
 
 # PACF-Plots for infiltration (across all members) seperated by each waterlevel and season
-plot(x = 1:37, y = pacf_mean_infiltration_winter_10304, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Part. Autokorr. zw. Beob. der Wasserleitfähigkeit für Isar/Mittenwald, Winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
-plot(x = 1:37, y = pacf_mean_infiltration_summer_10304, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Part. Autokorr. zw. Beob. der Wasserleitfähigkeit für Isar/Mittenwald, Sommer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
-plot(x = 1:37, y = pacf_mean_infiltration_winter_11502, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Part. Autokorr. zw. Beob. der Wasserleitfähigkeit für Iller/Kempten, Winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
-plot(x = 1:37, y = pacf_mean_infiltration_summer_11502, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Part. Autokorr. zw. Beob. der Wasserleitfähigkeit für Iller/Kempten, Sommer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
-plot(x = 1:37, y = pacf_mean_infiltration_winter_20203, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Part. Autokorr. zw. Beob. der Wasserleitfähigkeit für fränk. Saale/Salz, Winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
-plot(x = 1:37, y = pacf_mean_infiltration_summer_20203, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Part. Autokorr. zw. Beob. der Wasserleitfähigkeit für fränk. Saale/Salz, Sommer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 1:37, y = pacf_mean_infiltration_winter_10304, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Part. Autokor. zw. Beob. der Wasserleitfähigkeit für Isar/Mittenwald, Winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 1:37, y = pacf_mean_infiltration_summer_10304, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Part. Autokor. zw. Beob. der Wasserleitfähigkeit für Isar/Mittenwald, Sommer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 1:37, y = pacf_mean_infiltration_winter_11502, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Part. Autokor. zw. Beob. der Wasserleitfähigkeit für Iller/Kempten, Winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 1:37, y = pacf_mean_infiltration_summer_11502, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Part. Autokor. zw. Beob. der Wasserleitfähigkeit für Iller/Kempten, Sommer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 1:37, y = pacf_mean_infiltration_winter_20203, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Part. Autokor. zw. Beob. der Wasserleitfähigkeit für fränk. Saale/Salz, Winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 1:37, y = pacf_mean_infiltration_summer_20203, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "ACF", main = "Part. Autokor. zw. Beob. der Wasserleitfähigkeit für fränk. Saale/Salz, Sommer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
 
 ```
 
