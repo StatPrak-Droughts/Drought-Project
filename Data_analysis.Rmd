@@ -94,9 +94,21 @@ plot_drainage <- function(dataset, year = c(2000), member_input = "kbe") {
     scale_y_continuous(trans='log10') +
     geom_point(data = dataset %>% filter(YY %in% year, member == member_input, lowlevel == TRUE), 
                aes(x = date, y = drainage), color = "purple") +
-    labs(title = "Drainage für unterschiedliche Pegel über die Zeit",
-       y = "Drainage",
-       x = "Datum")
+    labs(title = "Abflussmenge für unterschiedliche Pegel über die Zeit",
+       y = "Abflussmenge",
+       x = "Datum") +
+  guides(color=guide_legend(title="Pegel"))
+}
+
+plot_drainage_unmarked <- function(dataset, year = c(2000), member_input = "kbe") {
+  dataset %>% filter(YY %in% year, member == member_input) %>%
+  ggplot(mapping = aes(x = date, y = drainage, color = waterlevel)) +
+    geom_line() +
+    scale_y_continuous(trans='log10') +
+    labs(title = "Abflussmenge für unterschiedliche Pegel über die Zeit",
+       y = "Abflussmenge",
+       x = "Datum") +
+  guides(color=guide_legend(title="Pegel"))
 }
 
 plot_single_drainage <- function(dataset, year = c(2000), member_input = "kbe") {
@@ -107,8 +119,8 @@ plot_single_drainage <- function(dataset, year = c(2000), member_input = "kbe") 
     geom_line(mapping = aes(y = nm7q), color = "red") +
     geom_point(data = dataset %>% filter(YY %in% year, member == member_input, lowlevel == TRUE), 
                aes(x = date, y = drainage), color = "purple") +
-    labs(title = "Drainage für einen Pegel über die Zeit",
-       y = "Drainage",
+    labs(title = "Abflussmenge für einen Pegel über die Zeit",
+       y = "Abflussmenge",
        x = "Datum")
 }
 plot_single_drainage(hydro_total %>% filter(name_waterlevel == "10304"), year = 2000:2003)
@@ -116,7 +128,10 @@ plot_single_drainage(hydro_total %>% filter(name_waterlevel == "10304"), year = 
 ggsave("Plots/Chris/analysis/single_drainage_Isar-Mittenwald_2000-2003.png", width = 12, height = 6)
 
 plot_drainage(hydro_total, year = 2000)
-ggsave("Plots/Chris/analysis/drainage_total_2000.png", width = 12, height = 6)
+ggsave("Plots/Chris/analysis/drainage_total_2000_kbe.png", width = 12, height = 6)
+
+plot_drainage_unmarked(hydro_total, year = 2000)
+ggsave("Plots/Chris/analysis/drainage_total_unmarked_2000_kbe.png", width = 12, height = 6)
 
 
 # Visualisierung der 10 Member für 10304, Jahr 2000
@@ -154,7 +169,7 @@ table_days_low_flow_winter <- hydro_winter %>%
   filter(lowlevel == TRUE) %>%
   mutate(avg_number_low_flows = number_low_flows / length(unique(hydro_total$member)))
 
-# Yearly average number of low flow days over time for the 3 waterlevels
+# Jährliche durchschnittliche Anzahl von Niedrigwasser-Tagen für die 3 Wasserstände
 ggplot(data = table_days_low_flow, mapping = aes(x = YY, y = avg_number_low_flows, color = waterlevel)) +
   geom_line() +
   geom_point() +
