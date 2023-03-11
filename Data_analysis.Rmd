@@ -1263,6 +1263,14 @@ summer_temp_20203 <- ggplot(hydro_summer_20203, aes(airtmp, drainage)) +
   geom_point() +
   geom_smooth(method = "lm", formular = y~x)
 grid.arrange(summer_temp_10304, summer_temp_11502, summer_temp_20203, ncol = 2)
+
+
+## Nach membern differenziert ein Testplot
+ggplot(data = hydro_summer_10304, aes(x = airtmp, y = drainage, color = member)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE) +
+  theme_bw()
+
 # Winter
 summary(lm(hydro_winter_10304$airtmp ~ hydro_winter_10304$drainage))
 winter_temp_10304 <- ggplot(hydro_winter_10304, aes(airtmp, drainage)) +
@@ -1279,6 +1287,12 @@ winter_temp_20203 <- ggplot(hydro_winter_20203, aes(airtmp, drainage)) +
 grid.arrange(winter_temp_10304, winter_temp_11502, winter_temp_20203, ncol = 2)
 grid.arrange(winter_temp_10304, winter_temp_11502, winter_temp_20203, 
              summer_temp_10304, summer_temp_11502, summer_temp_20203,ncol = 2)
+
+## Nach membern differenziert ein Testplot
+ggplot(data = hydro_winter_10304, aes(x = airtmp, y = drainage, color = member)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE) +
+  theme_bw()
 ```
 
 ## precip
@@ -1296,6 +1310,11 @@ summer_precip_20203 <- ggplot(hydro_summer_20203, aes(precip, drainage)) +
   geom_point() +
   geom_smooth(method = "lm", formular = y~x)
 grid.arrange(summer_precip_10304, summer_precip_11502, summer_precip_20203, ncol = 2)
+## Nach membern differenziert ein Testplot
+ggplot(data = hydro_summer_10304, aes(x = precip, y = drainage, color = member)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE) +
+  theme_bw()
 # Winter
 summary(lm(hydro_winter_10304$precip ~ hydro_winter_10304$drainage))
 winter_precip_10304 <- ggplot(hydro_winter_10304, aes(precip, drainage)) +
@@ -1312,6 +1331,11 @@ winter_precip_20203 <- ggplot(hydro_winter_20203, aes(precip, drainage)) +
 grid.arrange(winter_precip_10304, winter_precip_11502, winter_precip_20203, ncol = 2)
 grid.arrange(winter_precip_10304, winter_precip_11502, winter_precip_20203, 
              summer_precip_10304, summer_precip_11502, summer_precip_20203, ncol = 3)
+## Nach membern differenziert ein Testplot
+ggplot(data = hydro_winter_10304, aes(x = precip, y = drainage, color = member)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE) +
+  theme_bw()
 ```
 
 ## radiation
@@ -1329,6 +1353,12 @@ summer_glorad_20203 <- ggplot(hydro_summer_20203, aes(glorad, drainage)) +
   geom_point() +
   geom_smooth(method = "lm", formular = y~x)
 grid.arrange(summer_glorad_10304, summer_glorad_11502, summer_glorad_20203, ncol = 2)
+
+## Nach membern differenziert ein Testplot
+ggplot(data = hydro_summer_10304, aes(x = glorad, y = drainage, color = member)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE) +
+  theme_bw()
 # Winter
 summary(lm(hydro_winter_10304$glorad ~ hydro_winter_10304$drainage))
 winter_glorad_10304 <- ggplot(hydro_winter_10304, aes(glorad, drainage)) +
@@ -1345,6 +1375,12 @@ winter_glorad_20203 <- ggplot(hydro_winter_20203, aes(glorad, drainage)) +
 grid.arrange(winter_glorad_10304, winter_glorad_11502, winter_glorad_20203, ncol = 2)
 grid.arrange(winter_glorad_10304, winter_glorad_11502, winter_glorad_20203, 
              summer_glorad_10304, summer_glorad_11502, summer_glorad_20203, ncol = 3)
+
+## Nach membern differenziert ein Testplot
+ggplot(data = hydro_winter_10304, aes(x = glorad, y = drainage, color = member)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE) +
+  theme_bw()
 ```
 
 # rel. Humidity
@@ -1362,6 +1398,12 @@ summer_relhum_20203 <- ggplot(hydro_summer_20203, aes(relhum, drainage)) +
   geom_point() +
   geom_smooth(method = "lm", formular = y~x)
 grid.arrange(summer_relhum_10304, summer_relhum_11502, summer_relhum_20203, ncol = 2)
+
+## Nach membern differenziert ein Testplot
+ggplot(data = hydro_summer_10304, aes(x = relhum, y = drainage, color = member)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE) +
+  theme_bw()
 # Winter
 summary(lm(hydro_winter_10304$relhum ~ hydro_winter_10304$drainage))
 winter_relhum_10304 <- ggplot(hydro_winter_10304, aes(relhum, drainage)) +
@@ -1379,6 +1421,11 @@ grid.arrange(winter_relhum_10304, winter_relhum_11502, winter_relhum_20203, ncol
 grid.arrange(winter_relhum_10304, winter_relhum_11502, winter_relhum_20203, 
              summer_relhum_10304, summer_relhum_11502, summer_relhum_20203, ncol = 3)
 
+## Nach membern differenziert ein Testplot
+ggplot(data = hydro_winter_10304, aes(x = relhum, y = drainage, color = member)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE) +
+  theme_bw()
 
 
 
@@ -1399,6 +1446,13 @@ summer_groundwaterdepth_20203 <- ggplot(hydro_summer_20203, aes(groundwaterdepth
   geom_point() +
   geom_smooth(method = "lm", formular = y~x)
 grid.arrange(summer_groundwaterdepth_10304, summer_groundwaterdepth_11502, summer_groundwaterdepth_20203, ncol = 2)
+
+## Nach membern differenziert ein Testplot
+ggplot(data = hydro_summer_10304, aes(x = groundwaterdepth, y = drainage, color = member)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE) +
+  theme_bw()
+
 # Winter
 summary(lm(hydro_winter_10304$groundwaterdepth ~ hydro_winter_10304$drainage))
 winter_groundwaterdepth_10304 <- ggplot(hydro_winter_10304, aes(groundwaterdepth, drainage)) +
@@ -1415,6 +1469,12 @@ winter_groundwaterdepth_20203 <- ggplot(hydro_winter_20203, aes(groundwaterdepth
 grid.arrange(winter_groundwaterdepth_10304, winter_groundwaterdepth_11502, winter_groundwaterdepth_20203, ncol = 2)
 grid.arrange(winter_groundwaterdepth_10304, winter_groundwaterdepth_11502, winter_groundwaterdepth_20203, 
              summer_groundwaterdepth_10304, summer_groundwaterdepth_11502, summer_groundwaterdepth_20203, ncol = 3)
+
+## Nach membern differenziert ein Testplot
+ggplot(data = hydro_winter_10304, aes(x = groundwaterdepth, y = drainage, color = member)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE) +
+  theme_bw()
 ```
 
 # Soilwater
@@ -1432,6 +1492,13 @@ summer_soilwater_20203 <- ggplot(hydro_summer_20203, aes(soilwater, drainage)) +
   geom_point() +
   geom_smooth(method = "lm", formular = y~x)
 grid.arrange(summer_soilwater_10304, summer_soilwater_11502, summer_soilwater_20203, ncol = 2)
+
+## Nach membern differenziert ein Testplot
+ggplot(data = hydro_summer_10304, aes(x = soilwater, y = drainage, color = member)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE) +
+  theme_bw()
+
 # Winter
 summary(lm(hydro_winter_10304$soilwater ~ hydro_winter_10304$drainage))
 winter_soilwater_10304 <- ggplot(hydro_winter_10304, aes(soilwater, drainage)) +
@@ -1448,6 +1515,12 @@ winter_soilwater_20203 <- ggplot(hydro_winter_20203, aes(soilwater, drainage)) +
 grid.arrange(winter_soilwater_10304, winter_soilwater_11502, winter_soilwater_20203, ncol = 2)
 grid.arrange(winter_soilwater_10304, winter_soilwater_11502, winter_soilwater_20203, 
              summer_soilwater_10304, summer_soilwater_11502, summer_soilwater_20203, ncol = 3)
+
+## Nach membern differenziert ein Testplot
+ggplot(data = hydro_winter_10304, aes(x = soilwater, y = drainage, color = member)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE) +
+  theme_bw()
 ```
 
 # snow
@@ -1465,6 +1538,13 @@ summer_snowstorage_20203 <- ggplot(hydro_summer_20203, aes(snowstorage, drainage
   geom_point() +
   geom_smooth(method = "lm", formular = y~x)
 grid.arrange(summer_snowstorage_10304, summer_snowstorage_11502, summer_snowstorage_20203, ncol = 2)
+
+## Nach membern differenziert ein Testplot
+ggplot(data = hydro_summer_10304, aes(x = snowstorage, y = drainage, color = member)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE) +
+  theme_bw()
+
 # Winter
 summary(lm(hydro_winter_10304$snowstorage ~ hydro_winter_10304$drainage))
 winter_snowstorage_10304 <- ggplot(hydro_winter_10304, aes(snowstorage, drainage)) +
@@ -1481,6 +1561,13 @@ winter_snowstorage_20203 <- ggplot(hydro_winter_20203, aes(snowstorage, drainage
 grid.arrange(winter_snowstorage_10304, winter_snowstorage_11502, winter_snowstorage_20203, ncol = 2)
 grid.arrange(winter_snowstorage_10304, winter_snowstorage_11502, winter_snowstorage_20203, 
              summer_snowstorage_10304, summer_snowstorage_11502, summer_snowstorage_20203, ncol = 3)
+
+## Nach membern differenziert ein Testplot
+ggplot(data = hydro_winter_10304, aes(x = snowstorage, y = drainage, color = member)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE) +
+  theme_bw()
+
 ```
 
 
@@ -2158,4 +2245,128 @@ grid.arrange(grid_event_summer_10304_soilwater, grid_event_summer_11502_soilwate
 grid.arrange(grid_event_summer_10304_soilwater, grid_event_summer_11502_soilwater, grid_event_summer_20203_soilwater, grid_event_summer_10304_soilwater, grid_event_summer_11502_soilwater, grid_event_summer_20203_soilwater, ncol = 3)
 
 ```
+
+##Snow
+``` {r}
+# summer
+
+y <- hydro_summer_10304$lowlevel
+x <- hydro_summer_10304$snowstorage
+cor(x, y, method = "pearson")
+glm(y~x, data = data.frame(x, y), family = binomial())
+event_summer_10304_snowstorage <- ggplot(data = data.frame(x, y), aes(x = x , y = y)) +
+                            geom_point() +
+                            geom_smooth(method = "glm", method.args = list(family = "binomial"), se = TRUE) +
+                            labs(title = "Summer 10304", x = "snowstorage", y = "LowLevel")
+event_summer_10304_snowstorage0 <- ggplot(data.frame(y, x) %>% filter(y == 0), aes(x = x, y = y)) +
+                            geom_boxplot() +
+                            labs(title = "LowLevel = 0", x = "snowstorage", y = "Low Level")
+event_summer_10304_snowstorage1 <- ggplot(data.frame(y, x) %>% filter(y == 1), aes(x = x, y = y)) +
+                            geom_boxplot() +
+                            labs(title = "LowLevel = 1", x = "snowstorage", y = "Low Level")
+grid_event_summer_10304_snowstorage <- grid.arrange(event_summer_10304_snowstorage, event_summer_10304_snowstorage0, event_summer_10304_snowstorage1, ncol = 1)
+
+
+y <- hydro_summer_11502$lowlevel
+x <- hydro_summer_11502$snowstorage
+cor(x, y, method = "pearson")
+glm(y~x, data = data.frame(x, y), family = binomial())
+event_summer_11502_snowstorage <- ggplot(data = data.frame(x, y), aes(x = x , y = y)) +
+                            geom_point() +
+                            geom_smooth(method = "glm", method.args = list(family = "binomial"), se = TRUE) +
+                            labs(title = "Summer 11502", x = "snowstorage", y = "LowLevel")
+event_summer_11502_snowstorage0 <- ggplot(data.frame(y, x) %>% filter(y == 0), aes(x = x, y = y)) +
+                            geom_boxplot() +
+                            labs(title = "LowLevel = 0", x = "snowstorage", y = "Low Level")
+event_summer_11502_snowstorage1 <- ggplot(data.frame(y, x) %>% filter(y == 1), aes(x = x, y = y)) +
+                            geom_boxplot() +
+                            labs(title = "LowLevel = 1", x = "snowstorage", y = "Low Level")
+grid_event_summer_11502_snowstorage <- grid.arrange(event_summer_11502_snowstorage, event_summer_11502_snowstorage0, event_summer_11502_snowstorage1, ncol = 1)
+
+
+y <- hydro_summer_20203$lowlevel
+x <- hydro_summer_20203$snowstorage
+cor(x, y, method = "pearson")
+glm(y~x, data = data.frame(x, y), family = binomial())
+event_summer_20203_snowstorage <- ggplot(data = data.frame(x, y), aes(x = x , y = y)) +
+                            geom_point() +
+                            geom_smooth(method = "glm", method.args = list(family = "binomial"), se = TRUE) +
+                            labs(title = "Summer 20203", x = "snowstorage", y = "LowLevel")
+event_summer_20203_snowstorage0 <- ggplot(data.frame(y, x) %>% filter(y == 0), aes(x = x, y = y)) +
+                            geom_boxplot() +
+                            labs(title = "LowLevel = 0", x = "snowstorage", y = "Low Level")
+event_summer_20203_snowstorage1 <- ggplot(data.frame(y, x) %>% filter(y == 1), aes(x = x, y = y)) +
+                            geom_boxplot() +
+                            labs(title = "LowLevel = 1", x = "snowstorage", y = "Low Level")
+grid_event_summer_20203_snowstorage <- grid.arrange(event_summer_20203_snowstorage, event_summer_20203_snowstorage0, event_summer_20203_snowstorage1, ncol = 1)
+
+grid.arrange(grid_event_summer_10304_snowstorage, grid_event_summer_11502_snowstorage, grid_event_summer_20203_snowstorage, ncol = 2)
+
+# winter
+y <- hydro_winter_10304$lowlevel
+x <- hydro_winter_10304$snowstorage
+cor(x, y, method = "pearson")
+glm(y~x, data = data.frame(x, y), family = binomial())
+event_winter_10304_snowstorage <- ggplot(data = data.frame(x, y), aes(x = x , y = y)) +
+                            geom_point() +
+                            geom_smooth(method = "glm", method.args = list(family = "binomial"), se = TRUE) +
+                            labs(title = "Winter 10304", x = "snowstorage", y = "LowLevel")
+event_winter_10304_snowstorage0 <- ggplot(data.frame(y, x) %>% filter(y == 0), aes(x = x, y = y)) +
+                            geom_boxplot() +
+                            labs(title = "LowLevel = 0", x = "snowstorage", y = "Low Level")
+event_winter_10304_snowstorage1 <- ggplot(data.frame(y, x) %>% filter(y == 1), aes(x = x, y = y)) +
+                            geom_boxplot() +
+                            labs(title = "LowLevel = 1", x = "snowstorage", y = "Low Level")
+grid_event_winter_10304_snowstorage <- grid.arrange(event_winter_10304_snowstorage, event_winter_10304_snowstorage0, event_winter_10304_snowstorage1, ncol = 1)       
+
+y <- hydro_winter_11502$lowlevel
+x <- hydro_winter_11502$snowstorage
+cor(x, y, method = "pearson")
+glm(y~x, data = data.frame(x, y), family = binomial())
+event_winter_11502_snowstorage <- ggplot(data = data.frame(x, y), aes(x = x , y = y)) +
+                            geom_point() +
+                            geom_smooth(method = "glm", method.args = list(family = "binomial"), se = TRUE) +
+                            labs(title = "Winter 11502", x = "snowstorage", y = "LowLevel")
+event_winter_11502_snowstorage0 <- ggplot(data.frame(y, x) %>% filter(y == 0), aes(x = x, y = y)) +
+                            geom_boxplot() +
+                            labs(title = "LowLevel = 0", x = "snowstorage", y = "Low Level")
+event_winter_11502_snowstorage1 <- ggplot(data.frame(y, x) %>% filter(y == 1), aes(x = x, y = y)) +
+                            geom_boxplot() +
+                            labs(title = "LowLevel = 1", x = "snowstorage", y = "Low Level")
+grid_event_winter_11502_snowstorage <- grid.arrange(event_winter_11502_snowstorage, event_winter_11502_snowstorage0, event_winter_11502_snowstorage1, ncol = 1)
+
+
+y <- hydro_winter_20203$lowlevel
+x <- hydro_winter_20203$snowstorage
+cor(x, y, method = "pearson")
+glm(y~x, data = data.frame(x, y), family = binomial())
+event_winter_20203_snowstorage <- ggplot(data = data.frame(x, y), aes(x = x , y = y)) +
+                            geom_point() +
+                            geom_smooth(method = "glm", method.args = list(family = "binomial"), se = TRUE) +
+                            labs(title = "Winter 20203", x = "snowstorage", y = "LowLevel")
+event_winter_20203_snowstorage0 <- ggplot(data.frame(y, x) %>% filter(y == 0), aes(x = x, y = y)) +
+                            geom_boxplot() +
+                            labs(title = "LowLevel = 0", x = "snowstorage", y = "Low Level")
+event_winter_20203_snowstorage1 <- ggplot(data.frame(y, x) %>% filter(y == 1), aes(x = x, y = y)) +
+                            geom_boxplot() +
+                            labs(title = "LowLevel = 1", x = "snowstorage", y = "Low Level")
+grid_event_winter_20203_snowstorage <- grid.arrange(event_winter_20203_snowstorage, event_winter_20203_snowstorage0, event_winter_20203_snowstorage1, ncol = 1)
+
+grid.arrange(grid_event_summer_10304_snowstorage, grid_event_summer_11502_snowstorage, grid_event_summer_20203_snowstorage, ncol = 2)
+grid.arrange(grid_event_summer_10304_snowstorage, grid_event_summer_11502_snowstorage, grid_event_summer_20203_snowstorage, grid_event_summer_10304_snowstorage, grid_event_summer_11502_snowstorage, grid_event_summer_20203_snowstorage, ncol = 3)
+
 ```
+
+
+
+```
+
+
+
+
+
+
+
+
+
+
