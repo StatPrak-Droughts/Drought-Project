@@ -85,7 +85,7 @@ hydro_bavaria_three <- hydro_bavaria %>% filter(gridcode %in% c(10304, 11502, 20
 
 ## Chris: Analysis
 
-```{r Chris analysis}
+```{r Chris: Analysis of low flow events}
 # First visualizations
 plot_drainage <- function(dataset, year = c(2000), member_input = "kbe") {
   dataset %>% filter(YY %in% year, member == member_input) %>%
@@ -176,6 +176,75 @@ ggplot(data = table_days_low_flow_by_hydro_year, mapping = aes(x = YY, y = avg_n
 ggsave("Plots/Chris/analysis/yearly_avg_number_of_low_flow_days_per_season.png", width = 12, height = 6)
 
 
+
+```
+
+# Chris: Analysis of drivers
+
+```{r Chris: Analysis of drivers}
+# Tables for futher plots
+table_yearly_max_prec_by_member <- hydro_total %>%
+  group_by(waterlevel, YY, member) %>%
+  summarise(max_precip = max(precip))
+
+table_yearly_avg_max_prec <- table_yearly_max_prec_by_member %>% 
+  group_by(waterlevel, YY) %>%
+  summarise(avg_max_precip = mean(max_precip)) 
+
+table_yearly_avg_max_airtmp <- hydro_total %>%
+  group_by(waterlevel, YY, member) %>%
+  summarise(max_airtmp = max(airtmp)) %>% 
+  group_by(waterlevel, YY) %>%
+  summarise(avg_max_airtemp = mean(max_airtmp)) 
+
+table_yearly_avg_max_snowstorage <- hydro_total %>%
+  group_by(waterlevel, YY, member) %>%
+  summarise(max_snowstorage = max(snowstorage)) %>% 
+  group_by(waterlevel, YY) %>%
+  summarise(avg_max_snowstorage = mean(max_snowstorage)) 
+
+table_yearly_avg_max_soilwater <- hydro_total %>%
+  group_by(waterlevel, YY, member) %>%
+  summarise(max_soilwater = max(soilwater)) %>% 
+  group_by(waterlevel, YY) %>%
+  summarise(avg_max_soilwater = mean(max_soilwater)) 
+
+# Plots
+ggplot(data = table_yearly_avg_max_prec, mapping = aes(x = YY, y = avg_max_precip, color = waterlevel)) +
+  geom_line() +
+  geom_point() +
+  labs(title = "Jährliches durchschnittliches Maximum an täglichem Niederschlag im Zeitverlauf (aller Member)",
+       y = "Jährliches durchschnittliches Maximum an täglichem Niederschlag",
+       x = "Datum") +
+  guides(color=guide_legend(title="Pegel"))
+ggsave("Plots/Chris/analysis/yearly_avg_max_prec.png", width = 12, height = 6)
+
+ggplot(data = table_yearly_avg_max_airtmp, mapping = aes(x = YY, y = avg_max_airtemp, color = waterlevel)) +
+  geom_line() +
+  geom_point() +
+  labs(title = "Jährliches durchschnittliches Maximum an täglicher Lufttemperatur im Zeitverlauf (aller Member)",
+       y = "Jährliches durchschnittliches Maximum an täglicher Lufttemperatur",
+       x = "Datum") +
+  guides(color=guide_legend(title="Pegel"))
+ggsave("Plots/Chris/analysis/yearly_avg_max_airtemp.png", width = 12, height = 6)
+
+ggplot(data = table_yearly_avg_max_snowstorage, mapping = aes(x = YY, y = avg_max_snowstorage, color = waterlevel)) +
+  geom_line() +
+  geom_point() +
+  labs(title = "Jährliches durchschnittliches Maximum an täglichem Schneespeicher im Zeitverlauf (aller Member)",
+       y = "Jährliches durchschnittliches Maximum an täglichem Schneespeicher",
+       x = "Datum") +
+  guides(color=guide_legend(title="Pegel"))
+ggsave("Plots/Chris/analysis/yearly_avg_max_snowstorage.png", width = 12, height = 6)
+
+ggplot(data = table_yearly_avg_max_soilwater, mapping = aes(x = YY, y = avg_max_soilwater, color = waterlevel)) +
+  geom_line() +
+  geom_point() +
+  labs(title = "Jährliches durchschnittliches Maximum an täglicher Oberflächennahe relative Bodenfeuchte im Zeitverlauf (aller Member)",
+       y = "Jährliches durchschnittliches Maximum an täglicher Oberflächennahe relative Bodenfeuchte",
+       x = "Datum") +
+  guides(color=guide_legend(title="Pegel"))
+ggsave("Plots/Chris/analysis/yearly_avg_max_soilwater.png", width = 12, height = 6)
 
 ```
 
