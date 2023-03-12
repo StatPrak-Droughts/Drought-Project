@@ -94,9 +94,25 @@ plot_drainage <- function(dataset, year = c(2000), member_input = "kbe") {
     scale_y_continuous(trans='log10') +
     geom_point(data = dataset %>% filter(YY %in% year, member == member_input, lowlevel == TRUE), 
                aes(x = date, y = drainage), color = "purple") +
-    labs(title = "Drainage für unterschiedliche Pegel über die Zeit",
-       y = "Drainage",
-       x = "Datum")
+    labs(title = "Abflussmenge für unterschiedliche Pegel über die Zeit",
+       y = "Abflussmenge",
+       x = "Datum") +
+  guides(color=guide_legend(title="Pegel")) +
+    theme(text = element_text(size = 20),
+          legend.position="bottom")       
+}
+
+plot_drainage_unmarked <- function(dataset, year = c(2000), member_input = "kbe") {
+  dataset %>% filter(YY %in% year, member == member_input) %>%
+  ggplot(mapping = aes(x = date, y = drainage, color = waterlevel)) +
+    geom_line() +
+    scale_y_continuous(trans='log10') +
+    labs(title = "Abflussmenge für unterschiedliche Pegel über die Zeit",
+       y = "Abflussmenge",
+       x = "Datum") +
+  guides(color=guide_legend(title="Pegel")) +
+    theme(text = element_text(size = 20),
+          legend.position="bottom")  
 }
 
 plot_single_drainage <- function(dataset, year = c(2000), member_input = "kbe") {
@@ -107,17 +123,20 @@ plot_single_drainage <- function(dataset, year = c(2000), member_input = "kbe") 
     geom_line(mapping = aes(y = nm7q), color = "red") +
     geom_point(data = dataset %>% filter(YY %in% year, member == member_input, lowlevel == TRUE), 
                aes(x = date, y = drainage), color = "purple") +
-    labs(title = "Drainage für einen Pegel über die Zeit",
-       y = "Drainage",
-       x = "Datum")
+    labs(title = "Abflussmenge für einen Pegel über die Zeit",
+       y = "Abflussmenge",
+       x = "Datum") +
+    theme(text = element_text(size = 20))  
 }
 plot_single_drainage(hydro_total %>% filter(name_waterlevel == "10304"), year = 2000:2003)
 # -> Daten sind saisonal
-ggsave("Plots/Chris/analysis/single_drainage_Isar-Mittenwald_2000-2003.png", width = 12, height = 6)
+ggsave("Plots/Chris/analysis/single_drainage_Isar-Mittenwald_2000-2003.png", width = 12, height = 9)
 
 plot_drainage(hydro_total, year = 2000)
-ggsave("Plots/Chris/analysis/drainage_total_2000.png", width = 12, height = 6)
+ggsave("Plots/Chris/analysis/drainage_total_2000_kbe.png", width = 12, height = 9)
 
+plot_drainage_unmarked(hydro_total, year = 2000)
+ggsave("Plots/Chris/analysis/drainage_total_unmarked_2000_kbe.png", width = 12, height = 9)
 
 # Visualisierung der 10 Member für 10304, Jahr 2000
 hydro_total_10304 <- hydro_total %>% filter(name_waterlevel == "10304")
@@ -142,27 +161,29 @@ table_days_low_flow_by_hydro_year <- hydro_total %>%
   filter(lowlevel == TRUE) %>%
   mutate(avg_number_low_flows = number_low_flows / length(unique(hydro_total$member)))
 
-table_days_low_flow_summer <- hydro_summer %>%
-  group_by(waterlevel, YY) %>%
-  count(lowlevel, name = "number_low_flows") %>%
-  filter(lowlevel == TRUE) %>%
-  mutate(avg_number_low_flows = number_low_flows / length(unique(hydro_total$member)))
+# table_days_low_flow_summer <- hydro_summer %>%
+#   group_by(waterlevel, YY) %>%
+#   count(lowlevel, name = "number_low_flows") %>%
+#   filter(lowlevel == TRUE) %>%
+#   mutate(avg_number_low_flows = number_low_flows / length(unique(hydro_total$member)))
+# 
+# table_days_low_flow_winter <- hydro_winter %>%
+#   group_by(waterlevel, YY) %>%
+#   count(lowlevel, name = "number_low_flows") %>%
+#   filter(lowlevel == TRUE) %>%
+#   mutate(avg_number_low_flows = number_low_flows / length(unique(hydro_total$member)))
 
-table_days_low_flow_winter <- hydro_winter %>%
-  group_by(waterlevel, YY) %>%
-  count(lowlevel, name = "number_low_flows") %>%
-  filter(lowlevel == TRUE) %>%
-  mutate(avg_number_low_flows = number_low_flows / length(unique(hydro_total$member)))
-
-# Yearly average number of low flow days over time for the 3 waterlevels
+# Jährliche durchschnittliche Anzahl von Niedrigwasser-Tagen für die 3 Wasserstände
 ggplot(data = table_days_low_flow, mapping = aes(x = YY, y = avg_number_low_flows, color = waterlevel)) +
   geom_line() +
   geom_point() +
-  labs(title = "Jährliche durchschnittliche Anzahl von Niedrigwasser-Tagen im Zeitverlauf (aller Member)",
+  labs(title = "Jährliche durchschnittliche Anzahl von Niedrigwasser-Tagen \nim Zeitverlauf (aller Member)",
        y = "Jährliche durchschnittliche Anzahl von Niedrigwasser-Tagen",
        x = "Datum") +
-  guides(color=guide_legend(title="Pegel"))
-ggsave("Plots/Chris/analysis/yearly_avg_number_of_low_flow_days.png", width = 12, height = 6)
+  guides(color=guide_legend(title="Pegel")) +
+    theme(text = element_text(size = 20),
+          legend.position="bottom")
+ggsave("Plots/Chris/analysis/yearly_avg_number_of_low_flow_days.png", width = 12, height = 9)
 
 ggplot(data = table_days_low_flow_by_hydro_year, mapping = aes(x = YY, y = avg_number_low_flows, color = waterlevel)) +
   geom_line() +
@@ -172,8 +193,10 @@ ggplot(data = table_days_low_flow_by_hydro_year, mapping = aes(x = YY, y = avg_n
        y = "Jährliche durchschnittliche Anzahl von Niedrigwasser-Tagen",
        x = "Datum") +
   facet_wrap(vars(hydro_year), labeller = as_labeller(c(`summer` = "Sommer", `winter` = "Winter"))) +
-  guides(color=guide_legend(title="Pegel"))
-ggsave("Plots/Chris/analysis/yearly_avg_number_of_low_flow_days_per_season.png", width = 12, height = 6)
+  guides(color=guide_legend(title="Pegel")) +
+    theme(text = element_text(size = 20),
+          legend.position="bottom")
+ggsave("Plots/Chris/analysis/yearly_avg_number_of_low_flow_days_per_season.png", width = 12, height = 9)
 
 
 
@@ -213,38 +236,46 @@ table_yearly_avg_max_soilwater <- hydro_total %>%
 ggplot(data = table_yearly_avg_max_prec, mapping = aes(x = YY, y = avg_max_precip, color = waterlevel)) +
   geom_line() +
   geom_point() +
-  labs(title = "Jährliches durchschnittliches Maximum an täglichem Niederschlag im Zeitverlauf (aller Member)",
+  labs(title = "Jährliches durchschnittliches Maximum an täglichem Niederschlag \nim Zeitverlauf (aller Member)",
        y = "Jährliches durchschnittliches Maximum an täglichem Niederschlag",
        x = "Datum") +
-  guides(color=guide_legend(title="Pegel"))
-ggsave("Plots/Chris/analysis/yearly_avg_max_prec.png", width = 12, height = 6)
+  guides(color=guide_legend(title="Pegel")) +
+    theme(text = element_text(size = 20),
+          legend.position="bottom")
+ggsave("Plots/Chris/analysis/yearly_avg_max_prec.png", width = 12, height = 9)
 
 ggplot(data = table_yearly_avg_max_airtmp, mapping = aes(x = YY, y = avg_max_airtemp, color = waterlevel)) +
   geom_line() +
   geom_point() +
-  labs(title = "Jährliches durchschnittliches Maximum an täglicher Lufttemperatur im Zeitverlauf (aller Member)",
+  labs(title = "Jährliches durchschnittliches Maximum an täglicher Lufttemperatur \nim Zeitverlauf (aller Member)",
        y = "Jährliches durchschnittliches Maximum an täglicher Lufttemperatur",
        x = "Datum") +
-  guides(color=guide_legend(title="Pegel"))
-ggsave("Plots/Chris/analysis/yearly_avg_max_airtemp.png", width = 12, height = 6)
+  guides(color=guide_legend(title="Pegel")) +
+    theme(text = element_text(size = 20),
+          legend.position="bottom")
+ggsave("Plots/Chris/analysis/yearly_avg_max_airtemp.png", width = 12, height = 9)
 
 ggplot(data = table_yearly_avg_max_snowstorage, mapping = aes(x = YY, y = avg_max_snowstorage, color = waterlevel)) +
   geom_line() +
   geom_point() +
-  labs(title = "Jährliches durchschnittliches Maximum an täglichem Schneespeicher im Zeitverlauf (aller Member)",
+  labs(title = "Jährliches durchschnittliches Maximum an täglichem Schneespeicher \nim Zeitverlauf (aller Member)",
        y = "Jährliches durchschnittliches Maximum an täglichem Schneespeicher",
        x = "Datum") +
-  guides(color=guide_legend(title="Pegel"))
-ggsave("Plots/Chris/analysis/yearly_avg_max_snowstorage.png", width = 12, height = 6)
+  guides(color=guide_legend(title="Pegel")) +
+    theme(text = element_text(size = 20),
+          legend.position="bottom")
+ggsave("Plots/Chris/analysis/yearly_avg_max_snowstorage.png", width = 12, height = 9)
 
 ggplot(data = table_yearly_avg_max_soilwater, mapping = aes(x = YY, y = avg_max_soilwater, color = waterlevel)) +
   geom_line() +
   geom_point() +
-  labs(title = "Jährliches durchschnittliches Maximum an täglicher Oberflächennahe relative Bodenfeuchte im Zeitverlauf (aller Member)",
+  labs(title = "Jährliches durchschnittliches Maximum an täglicher Oberflächennahe \nrelative Bodenfeuchte im Zeitverlauf (aller Member)",
        y = "Jährliches durchschnittliches Maximum an täglicher Oberflächennahe relative Bodenfeuchte",
        x = "Datum") +
-  guides(color=guide_legend(title="Pegel"))
-ggsave("Plots/Chris/analysis/yearly_avg_max_soilwater.png", width = 12, height = 6)
+  guides(color=guide_legend(title="Pegel")) +
+    theme(text = element_text(size = 20),
+          legend.position="bottom")
+ggsave("Plots/Chris/analysis/yearly_avg_max_soilwater.png", width = 12, height = 9)
 
 ```
 
