@@ -2,13 +2,52 @@
 title: "Descriptive Summary"
 author: "Christian Hobelsberger"
 date: "`r Sys.Date()`"
-output: html_document
+output:
+  pdf_document: default
+  html_document: default
 ---
 
 ```{r setup, include=FALSE}
-hydro_total <- readRDS(file = "./data/hydro_total.RDS")
-
-
-CTIS_micro[, c("lowlevel", "airtmp", "glorad", "precip", )] %>%
-    `colnames<-` (c("Niedriwasserevent", "Lufttemperatur", "Einfallende kurzwellige Strahlung", "Lufttemperatur",)) |> desctable::desc_table() |> pander::pander()
+# hydro_total <- readRDS(file = "./data/hydro_total.RDS")
+# 
+# 
+# hydro_total[, c("lowlevel", "drainage", "airtmp", "glorad", "precip", "groundwaterdepth", "relhum", "snowstorage", "soilwater", "infiltration")] %>%
+#     `colnames<-` (c("Niedriwasserevent", "Abfluss (in m³/s)", "Lufttemperatur (in °C)", "Einfallende kurzwellige Strahlung (in Wh/m²)",
+#                     "Niederschlag (in mm/24h)", "Grundwasserstand (M unter Oberfläche)", "Relative Luftfeuchte (in %)", "Schneespeicher (in mm)", "Oberflächennahe relative Bodenfeuchte (in %)", "Wasserleitfähigkeit")) |> desctable::desc_table(
+#              "N"      = length,
+#              "%" = percent,
+#              "Med"    = median,
+#              "IQR"    = IQR
+#                     ) |> pander::pander()
 ```
+
+----------------------------------------------------------------------
+           Variables                N        %        Med       IQR   
+-------------------------------- -------- -------- --------- ---------
+     **Niedriwasserevent**        339450   90.32      NA         0    
+
+ **Niedriwasserevent**: *FALSE*   306577   9.684      NA         0    
+
+ **Niedriwasserevent**: *TRUE*    32873    339450     NA         0    
+
+       Abfluss (in m³/s)          339450     NA      13.18     20.01  
+
+     Lufttemperatur (in °C)       339450     NA      6.536     11.66  
+
+    Einfallende kurzwellige       339450     NA      335.2     414.1  
+      Strahlung (in Wh/m²)                                            
+
+    Niederschlag (in mm/24h)      339450     NA      0.566     4.222  
+
+   Grundwasserstand (M unter      339450     NA     -7.736     3.955  
+          Oberfläche)                                                 
+
+  Relative Luftfeuchte (in %)     339450     NA     0.8084    0.1774  
+
+     Schneespeicher (in mm)       339450     NA     0.4012     51.84  
+
+    Oberflächennahe relative      339450     NA     0.3888    0.04095 
+      Bodenfeuchte (in %)                                             
+
+      Wasserleitfähigkeit         339450     NA     0.07337   0.4288  
+----------------------------------------------------------------------
