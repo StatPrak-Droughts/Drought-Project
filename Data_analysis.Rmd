@@ -270,7 +270,7 @@ ggplot(data = table_yearly_avg_max_soilwater, mapping = aes(x = YY, y = avg_max_
   geom_line() +
   geom_point() +
   labs(title = "Jährliches durchschnittliches Maximum an täglicher Oberflächennahe \nrelative Bodenfeuchte im Zeitverlauf (aller Member)",
-       y = "Jährliches durchschnittliches Maximum an täglicher Oberflächennahe relative Bodenfeuchte",
+       y = "Jährliches durchschnittliches Maximum an täglicher Oberflächennahe\n relative Bodenfeuchte",
        x = "Datum") +
   guides(color=guide_legend(title="Pegel")) +
     theme(text = element_text(size = 20),
