@@ -20,7 +20,7 @@ hydro_winter <- read.table("data/Zielvariablen/hydro_winter.txt")
 pegel_ids <- c("20203", "11502", "10304")
 names(pegel_ids) <- c("PEG-Fraenkische-Saale-Salz", "PEG-Iller-Kempten", "PEG-Isar-Mittenwald")
 pegel_ids_list <- list("20203", "11502", "10304")
-names(pegel_ids_list) <- c("PEG-Fraenkische-Saale-Salz", "PEG-Iller-Kempten", "PEG-Isar-Mittenwald")
+names(pegel_ids_list) <- c("Fraenkische Saale Salz", "Iller Kempten", "Isar Mittenwald")
 ```
 
 ## Overview
