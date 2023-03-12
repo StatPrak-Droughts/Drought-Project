@@ -28,6 +28,13 @@ hydro_winter_20203 <- readRDS(file = "./data/hydro_winter_20203.RDS")
 hydro_winter_11502 <- readRDS(file = "./data/hydro_winter_11502.RDS")
 hydro_winter_10304 <- readRDS(file = "./data/hydro_winter_10304.RDS")
 pegel_prop <- readRDS(file = "./data/pegel_prop.RDS")
+# Add rescaled soilwater
+hydro_summer_20203$soilwater100 <- hydro_summer_20203$soilwater * 100
+hydro_summer_11502$soilwater100 <- hydro_summer_11502$soilwater * 100
+hydro_summer_10304$soilwater100 <- hydro_summer_10304$soilwater * 100
+hydro_winter_20203$soilwater100 <- hydro_winter_20203$soilwater * 100
+hydro_winter_11502$soilwater100 <- hydro_winter_11502$soilwater * 100
+hydro_winter_10304$soilwater100 <- hydro_winter_10304$soilwater * 100
 ```
 
 ## Geo Data (Map data)
@@ -1688,6 +1695,7 @@ grid.arrange(grid_event_summer_10304_soilwater, grid_event_summer_11502_soilwate
 
 ##Snow
 ``` {r}
+
 # summer
 
 y <- hydro_summer_10304$lowlevel
@@ -1797,7 +1805,42 @@ grid.arrange(grid_event_summer_10304_snowstorage, grid_event_summer_11502_snowst
 
 ```
 
+# Forst plot
+``` {r}
+## Sommer
 
+## 10304
+sommer10304GLM <- glm(lowlevel ~ airtmp + precip + glorad + relhum + groundwaterdepth + soilwater100 + snowstorage, family = binomial(link='logit'), data = hydro_summer_10304)
+#11502
+sommer11502GLM <- glm(lowlevel ~ airtmp + precip + glorad + relhum + groundwaterdepth + soilwater100 + snowstorage, family = binomial(link='logit'), data = hydro_summer_11502)
+#20203
+sommer20203GLM <- glm(lowlevel ~ airtmp + precip + glorad + relhum + groundwaterdepth + soilwater100 + snowstorage, family = binomial(link='logit'), data = hydro_summer_20203)
+
+##Winter
+##10304
+winter10304GLM <- glm(lowlevel ~ airtmp + precip + glorad + relhum + groundwaterdepth + soilwater100 + snowstorage, family = binomial(link='logit'), data = hydro_summer_10304)
+#11502
+winter11502GLM <- glm(lowlevel ~ airtmp + precip + glorad + relhum + groundwaterdepth + soilwater100 + snowstorage, family = binomial(link='logit'), data = hydro_winter_11502)
+#20203
+winter20203GLM <- glm(lowlevel ~ airtmp + precip + glorad + relhum + groundwaterdepth + soilwater100 + snowstorage, family = binomial(link='logit'), data = hydro_summer_20203)
+
+all.models <- list()
+all.models[[1]] <- sommer10304GLM
+all.models[[2]] <- sommer11502GLM
+all.models[[3]] <- sommer20203GLM
+all.models[[4]] <- winter10304GLM
+all.models[[5]] <- winter11502GLM
+all.models[[6]] <- winter20203GLM
+plot_models(all.models)
+plot_models(sommer10304GLM)
+p <- last_plot() +
+  scale_color_manual(values = c("yellow", "red", "blue","pink", "green", "purple" ), 
+                     name = "Gewässer/Halbsjahr", 
+                     labels = c("Winter 20203",  "Winter 11502",  "Winter 10304","Sommer 20203", 
+                                "Sommer 11502", "Sommer 10304")) +
+  theme(legend.title = element_text(size = 12, face = "bold"))
+print(p)
+```
 
 ```
 
