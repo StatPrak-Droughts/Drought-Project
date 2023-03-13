@@ -1840,6 +1840,7 @@ p <- last_plot() +
                                 "Sommer 11502", "Sommer 10304")) +
   theme(legend.title = element_text(size = 12, face = "bold"))
 print(p)
+print(p)
 ```
 
 ```
