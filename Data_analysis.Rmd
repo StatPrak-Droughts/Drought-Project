@@ -566,13 +566,36 @@ gam_1_s_interac <- gam(lowlevel ~ s(precip) + s(airtmp) + s(glorad) + s(relhum) 
 summary(gam_1_s_interac)
 plot(gam_1_s_interac)
 
-gam_randinter_member_10304_winter <- gam(lowlevel ~ s(precip) + s(airtmp) + s(glorad) + s(relhum) + s(soilwater) + s(snowstorage) + s(groundwaterdepth) + s(infiltration) + s(member, bs = "re"), data = hydro_winter_10304, family = binomial(), method = "REML")
+## gam mit glatten Effekten (penalized B-splines) und member als random Effekt
+# 10304, winter
+gam_randinter_member_10304_winter <- gam(lowlevel ~ date + s(precip, bs = "ps") + s(airtmp, bs = "ps") + s(glorad, bs = "ps") + s(relhum, bs = "ps") + s(soilwater, bs = "ps") + s(snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(infiltration, bs = "ps") + s(member, bs = "re"), data = hydro_winter_10304, family = binomial(), method = "REML")
 summary(gam_randinter_member_10304_winter)
 plot(gam_randinter_member_10304_winter)
 
-gam_randinter_member_10304_summer <- gam(lowlevel ~ s(precip) + s(airtmp) + s(glorad) + s(relhum) + s(soilwater) + s(snowstorage) + s(groundwaterdepth) + s(infiltration) + s(member, bs = "re"), data = hydro_summer_10304, family = binomial(), method = "REML")
+# 10304, summer
+gam_randinter_member_10304_summer <- gam(lowlevel ~ date + s(precip, bs = "ps") + s(airtmp, bs = "ps") + s(glorad, bs = "ps") + s(relhum, bs = "ps") + s(soilwater, bs = "ps") + s(snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(infiltration, bs = "ps") + s(member, bs = "re"), data = hydro_summer_10304, family = binomial(), method = "REML")
 summary(gam_randinter_member_10304_summer)
 plot(gam_randinter_member_10304_summer)
+
+# 11502, winter
+gam_randinter_member_11502_winter <- gam(lowlevel ~ date + s(precip, bs = "ps") + s(airtmp, bs = "ps") + s(glorad, bs = "ps") + s(relhum, bs = "ps") + s(soilwater, bs = "ps") + s(snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(infiltration, bs = "ps") + s(member, bs = "re"), data = hydro_winter_11502, family = binomial(), method = "REML")
+summary(gam_randinter_member_11502_winter)
+plot(gam_randinter_member_11502_winter)
+
+# 11502, summer
+gam_randinter_member_11502_summer <- gam(lowlevel ~ date + s(precip, bs = "ps") + s(airtmp, bs = "ps") + s(glorad, bs = "ps") + s(relhum, bs = "ps") + s(soilwater, bs = "ps") + s(snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(infiltration, bs = "ps") + s(member, bs = "re"), data = hydro_summer_11502, family = binomial(), method = "REML")
+summary(gam_randinter_member_11502_summer)
+plot(gam_randinter_member_11502_summer)
+
+# 20203, winter
+gam_randinter_member_20203_winter <- gam(lowlevel ~ date + s(precip, bs = "ps") + s(airtmp, bs = "ps") + s(glorad, bs = "ps") + s(relhum, bs = "ps") + s(soilwater, bs = "ps") + s(snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(infiltration, bs = "ps") + s(member, bs = "re"), data = hydro_winter_20203, family = binomial(), method = "REML")
+summary(gam_randinter_member_20203_winter)
+plot(gam_randinter_member_20203_winter)
+
+# 20203, summer
+gam_randinter_member_20203_summer <- gam(lowlevel ~ date + s(precip, bs = "ps") + s(airtmp, bs = "ps") + s(glorad, bs = "ps") + s(relhum, bs = "ps") + s(soilwater, bs = "ps") + s(snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(infiltration, bs = "ps") + s(member, bs = "re"), data = hydro_summer_20203, family = binomial(), method = "REML")
+summary(gam_randinter_member_20203_summer)
+plot(gam_randinter_member_20203_summer)
 
 gam_randinter_member_ps <- gam(lowlevel ~ s(precip, bs = "ps") + s(airtmp, bs = "ps") + s(glorad, bs = "ps") + s(relhum, bs = "ps") + s(soilwater, bs = "ps") + s(snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(infiltration, bs = "ps") + s(precip, by = soilwater, bs = "ps") + s(member, bs = "re"), data = hydro_winter_10304, family = binomial(), method = "REML")
 summary(gam_randinter_member_ps)
@@ -708,7 +731,7 @@ for (k in c("winter", "summer")) {
 # 20203, Summer: Autokorrelationskoeffizient bis lag = 5 (nicht durchgängig), bis lag = 1 (durchgängig) signifikant
 
 # PACF-Plots for lowlevel (across all members) seperated by each waterlevel and season
-plot(x = 1:37, y = pacf_mean_lowlevel_winter_10304, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "PACF", main = "Part. Autokor. zw. Beob. v. Niedrigwasserevents für Isar/Mittenw., Winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
+plot(x = 1:37, y = pacf_mean_lowlevel_winter_10304, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "PACF", main = "Part. Autokor. zw. Beob. v. Niedrigwasserevents für Isar Mittenw., Winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
 plot(x = 1:37, y = pacf_mean_lowlevel_summer_10304, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "PACF", main = "Part. Autokor. zw. Beob. von Niedrigwasserevents für Isar Mittenwald, Sommer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
 plot(x = 1:37, y = pacf_mean_lowlevel_winter_11502, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "PACF", main = "Part. Autokor. zw. Beob. von Niedrigwasserevents für Iller Kempten, Winter") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
 plot(x = 1:37, y = pacf_mean_lowlevel_summer_11502, ylim = c(-0.1, 1), type = "h", xlab = "lag", ylab = "PACF", main = "Part. Autokor. zw. Beob. von Niedrigwasserevents für Iller Kempten, Sommer") + abline(h = 0) + abline(h = c(-0.05, 0.05), col = "blue", lty = "dashed")
