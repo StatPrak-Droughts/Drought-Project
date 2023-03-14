@@ -8,12 +8,19 @@ output:
 ---
 
 ```{r setup, include=FALSE}
+<<<<<<< HEAD
 # library(memisc)
+=======
+>>>>>>> cf44c6c1b4bfca5560ea0305931a469f6b98c2c9
 # hydro_total <- readRDS(file = "./data/hydro_total.RDS")
 # 
 # 
 # hydro_total[, c("lowlevel", "drainage", "airtmp", "glorad", "precip", "groundwaterdepth", "relhum", "snowstorage", "soilwater", "infiltration")] %>%
+<<<<<<< HEAD
 #     `colnames<-` (c("Niedrigwasserevent", "Abfluss (in m³/s)", "Lufttemperatur (in °C)", "Einfallende kurzwellige Strahlung (in Wh/m²)",
+=======
+#     `colnames<-` (c("Niedriwasserevent", "Abfluss (in m³/s)", "Lufttemperatur (in °C)", "Einfallende kurzwellige Strahlung (in Wh/m²)",
+>>>>>>> cf44c6c1b4bfca5560ea0305931a469f6b98c2c9
 #                     "Niederschlag (in mm/24h)", "Grundwasserstand (M unter Oberfläche)", "Relative Luftfeuchte (in %)", "Schneespeicher (in mm)", "Oberflächennahe relative Bodenfeuchte (in %)", "Wasserleitfähigkeit")) |> desctable::desc_table(
 #              "N"      = length,
 #              "%" = percent,
@@ -25,11 +32,19 @@ output:
 ----------------------------------------------------------------------
            Variables                N        %        Med       IQR   
 -------------------------------- -------- -------- --------- ---------
+<<<<<<< HEAD
      **Niedrigwasserevent**        339450   NA      NA         0    
 
  **Niedriwasserevent**: *FALSE*   306577   90.32      NA         0    
 
  **Niedriwasserevent**: *TRUE*    32873    9.684     NA         0    
+=======
+     **Niedriwasserevent**        339450   90.32      NA         0    
+
+ **Niedriwasserevent**: *FALSE*   306577   9.684      NA         0    
+
+ **Niedriwasserevent**: *TRUE*    32873    339450     NA         0    
+>>>>>>> cf44c6c1b4bfca5560ea0305931a469f6b98c2c9
 
        Abfluss (in m³/s)          339450     NA      13.18     20.01  
 
