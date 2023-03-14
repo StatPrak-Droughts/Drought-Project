@@ -256,11 +256,6 @@ ggplot(data = table_yearly_avg_max_prec, mapping = aes(x = YY, y = avg_max_preci
     theme(text = element_text(size = 20),
           legend.position="bottom") +
     scale_color_brewer(palette = "Dark2")
-       y = "Jährliches durchschnittliches Maximum an täglichem Niederschlag",
-       x = "Datum") +
-  guides(color=guide_legend(title="Pegel")) +
-    theme(text = element_text(size = 20),
-          legend.position="bottom")
 ggsave("Plots/Chris/analysis/yearly_avg_max_prec.png", width = 12, height = 9)
 
 ggplot(data = table_yearly_avg_max_airtmp, mapping = aes(x = YY, y = avg_max_airtemp, color = waterlevel)) +
@@ -273,11 +268,6 @@ ggplot(data = table_yearly_avg_max_airtmp, mapping = aes(x = YY, y = avg_max_air
     theme(text = element_text(size = 20),
           legend.position="bottom") +
     scale_color_brewer(palette = "Dark2")
-       y = "Jährliches durchschnittliches Maximum an täglicher Lufttemperatur",
-       x = "Datum") +
-  guides(color=guide_legend(title="Pegel")) +
-    theme(text = element_text(size = 20),
-          legend.position="bottom")
 ggsave("Plots/Chris/analysis/yearly_avg_max_airtemp.png", width = 12, height = 9)
 
 ggplot(data = table_yearly_avg_max_snowstorage, mapping = aes(x = YY, y = avg_max_snowstorage, color = waterlevel)) +
@@ -290,11 +280,6 @@ ggplot(data = table_yearly_avg_max_snowstorage, mapping = aes(x = YY, y = avg_ma
     theme(text = element_text(size = 20),
           legend.position="bottom") +
     scale_color_brewer(palette = "Dark2")
-       y = "Jährliches durchschnittliches Maximum an täglichem Schneespeicher",
-       x = "Datum") +
-  guides(color=guide_legend(title="Pegel")) +
-    theme(text = element_text(size = 20),
-          legend.position="bottom")
 ggsave("Plots/Chris/analysis/yearly_avg_max_snowstorage.png", width = 12, height = 9)
 
 ggplot(data = table_yearly_avg_max_soilwater, mapping = aes(x = YY, y = avg_max_soilwater, color = waterlevel)) +
@@ -307,11 +292,6 @@ ggplot(data = table_yearly_avg_max_soilwater, mapping = aes(x = YY, y = avg_max_
     theme(text = element_text(size = 20),
           legend.position="bottom") +
     scale_color_brewer(palette = "Dark2")
-       y = "Jährliches durchschnittliches Maximum an täglicher Oberflächennahe relative Bodenfeuchte",
-       x = "Datum") +
-  guides(color=guide_legend(title="Pegel")) +
-    theme(text = element_text(size = 20),
-          legend.position="bottom")
 ggsave("Plots/Chris/analysis/yearly_avg_max_soilwater.png", width = 12, height = 9)
 
 ```
