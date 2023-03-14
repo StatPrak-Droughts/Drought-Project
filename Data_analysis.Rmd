@@ -1809,20 +1809,42 @@ grid.arrange(grid_event_summer_10304_snowstorage, grid_event_summer_11502_snowst
 ``` {r}
 ## Sommer
 
+varnames <- colnames(hydro_summer_10304)
+varnames[15] <- "Lufttemperatur"
+varnames[18] <- "Niederschlag"
+varnames[16] <- "KurzwelligeStrahlung"
+varnames[19] <- "RelativeLuftfeuchte"
+varnames[17] <- "Grundwasserstand"
+varnames[37] <- "relOberflächennaheBodenfeuchte"
+varnames[20] <- "Schneespeicher"
+varnames[26] <- "Niedriwasserevent"
+varnames[22] <- "Wasserleitfähigkeit"
 ## 10304
-sommer10304GLM <- glm(lowlevel ~ airtmp + precip + glorad + relhum + groundwaterdepth + soilwater100 + snowstorage, family = binomial(link='logit'), data = hydro_summer_10304)
+hydro_summer_10304_named <- hydro_summer_10304
+colnames(hydro_summer_10304_named) <- varnames
+sommer10304GLM <- glm(Niedriwasserevent ~ Lufttemperatur + Niederschlag + KurzwelligeStrahlung + RelativeLuftfeuchte + Grundwasserstand + relOberflächennaheBodenfeuchte + Schneespeicher + Wasserleitfähigkeit, family = binomial(link='logit'), data = hydro_summer_10304_named)
 #11502
-sommer11502GLM <- glm(lowlevel ~ airtmp + precip + glorad + relhum + groundwaterdepth + soilwater100 + snowstorage, family = binomial(link='logit'), data = hydro_summer_11502)
+hydro_summer_11502_named <- hydro_summer_11502
+colnames(hydro_summer_11502_named) <- varnames
+sommer11502GLM <- glm(Niedriwasserevent ~ Lufttemperatur + Niederschlag + KurzwelligeStrahlung + RelativeLuftfeuchte + Grundwasserstand + relOberflächennaheBodenfeuchte + Schneespeicher + Wasserleitfähigkeit, family = binomial(link='logit'), data = hydro_summer_11502_named)
 #20203
-sommer20203GLM <- glm(lowlevel ~ airtmp + precip + glorad + relhum + groundwaterdepth + soilwater100 + snowstorage, family = binomial(link='logit'), data = hydro_summer_20203)
+hydro_summer_20203_named <- hydro_summer_20203
+colnames(hydro_summer_20203_named) <- varnames
+sommer20203GLM <- glm(Niedriwasserevent ~ Lufttemperatur + Niederschlag + KurzwelligeStrahlung + RelativeLuftfeuchte + Grundwasserstand + relOberflächennaheBodenfeuchte + Schneespeicher + Wasserleitfähigkeit, family = binomial(link='logit'), data = hydro_summer_20203_named)
 
 ##Winter
 ##10304
-winter10304GLM <- glm(lowlevel ~ airtmp + precip + glorad + relhum + groundwaterdepth + soilwater100 + snowstorage, family = binomial(link='logit'), data = hydro_summer_10304)
+hydro_summer_10304_named <- hydro_summer_10304
+colnames(hydro_summer_10304_named) <- varnames
+winter10304GLM <- glm(Niedriwasserevent ~ Lufttemperatur + Niederschlag + KurzwelligeStrahlung + RelativeLuftfeuchte + Grundwasserstand + relOberflächennaheBodenfeuchte + Schneespeicher + Wasserleitfähigkeit, family = binomial(link='logit'), data = hydro_summer_10304_named)
 #11502
-winter11502GLM <- glm(lowlevel ~ airtmp + precip + glorad + relhum + groundwaterdepth + soilwater100 + snowstorage, family = binomial(link='logit'), data = hydro_winter_11502)
+hydro_winter_11502_named <- hydro_winter_11502
+colnames(hydro_winter_11502_named) <- varnames
+winter11502GLM <- glm(Niedriwasserevent ~ Lufttemperatur + Niederschlag + KurzwelligeStrahlung + RelativeLuftfeuchte + Grundwasserstand + relOberflächennaheBodenfeuchte + Schneespeicher + Wasserleitfähigkeit, family = binomial(link='logit'), data = hydro_winter_11502_named)
 #20203
-winter20203GLM <- glm(lowlevel ~ airtmp + precip + glorad + relhum + groundwaterdepth + soilwater100 + snowstorage, family = binomial(link='logit'), data = hydro_summer_20203)
+hydro_summer_20203_named <- hydro_summer_20203
+colnames(hydro_summer_20203_named) <- varnames
+winter20203GLM <- glm(Niedriwasserevent ~ Lufttemperatur + Niederschlag + KurzwelligeStrahlung + RelativeLuftfeuchte + Grundwasserstand + relOberflächennaheBodenfeuchte + Schneespeicher + Wasserleitfähigkeit, family = binomial(link='logit'), data = hydro_summer_20203_named)
 
 all.models <- list()
 all.models[[1]] <- sommer10304GLM
@@ -1832,14 +1854,13 @@ all.models[[4]] <- winter10304GLM
 all.models[[5]] <- winter11502GLM
 all.models[[6]] <- winter20203GLM
 plot_models(all.models)
-plot_models(sommer10304GLM)
 p <- last_plot() +
   scale_color_manual(values = c("yellow", "red", "blue","pink", "green", "purple" ), 
-                     name = "Gewässer/Halbsjahr", 
-                     labels = c("Winter 20203",  "Winter 11502",  "Winter 10304","Sommer 20203", 
-                                "Sommer 11502", "Sommer 10304")) +
-  theme(legend.title = element_text(size = 12, face = "bold"))
-print(p)
+                     name = "Gewässer/Halbjahr", 
+                     labels = c("Winter Fraenkische Saale Salz",  "Winter Iller Kempten",  "Winter Isar Mittenwald","Sommer Fraenkische Saale Salz", "Sommer Iller Kempten", "Sommer Isar Mittenwald")) +
+  theme(legend.title = element_text(size = 12, face = "bold"))+
+  ylab("Odds Ratio")
+
 print(p)
 ```
 
