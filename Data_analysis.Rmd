@@ -152,11 +152,11 @@ hydro_total_10304 <- hydro_total %>% filter(name_waterlevel == "10304")
 ggplot(data = subset(hydro_total_10304, YY %in% 2000), mapping = aes(x = date, y = drainage, color = member)) +
   geom_line() +
   geom_point() +
-  labs(title = "Abfluss des Pegels Isar/Mittenwald im Jahr 2000 getrennt \nnach Simulationsreihen",
+  labs(title = "Abfluss des Pegels Isar Mittenwald im Jahr 2000 getrennt \nnach Simulationsreihen",
        y = "Abflussmenge",
        x = "Datum") +
     theme(text = element_text(size = 20)) +
-    scale_color_brewer(palette = "Dark2")
+    scale_color_brewer(palette = "Paired")
 ggsave("Plots/Chris/analysis/all_member_drainage_Isar-Mittenwald_2000.png", width = 12, height = 9)
 
 # Tables for futher plots
@@ -220,78 +220,84 @@ ggsave("Plots/Chris/analysis/yearly_avg_number_of_low_flow_days_per_season.png",
 ```{r Chris: Analysis of drivers}
 # Tables for futher plots
 table_yearly_max_prec_by_member <- hydro_total %>%
-  group_by(waterlevel, YY, member) %>%
+  group_by(waterlevel, YY, hydro_year, member) %>%
   summarise(max_precip = max(precip))
 
-table_yearly_avg_max_prec <- table_yearly_max_prec_by_member %>% 
-  group_by(waterlevel, YY) %>%
+table_yearly_avg_max_prec <- hydro_total %>%
+  group_by(waterlevel, YY, hydro_year, member) %>%
+  summarise(max_precip = max(precip)) %>%
+  group_by(waterlevel, YY, hydro_year) %>%
   summarise(avg_max_precip = mean(max_precip)) 
 
 table_yearly_avg_max_airtmp <- hydro_total %>%
-  group_by(waterlevel, YY, member) %>%
+  group_by(waterlevel, YY, hydro_year, member) %>%
   summarise(max_airtmp = max(airtmp)) %>% 
-  group_by(waterlevel, YY) %>%
+  group_by(waterlevel, YY, hydro_year) %>%
   summarise(avg_max_airtemp = mean(max_airtmp)) 
 
 table_yearly_avg_max_snowstorage <- hydro_total %>%
-  group_by(waterlevel, YY, member) %>%
+  group_by(waterlevel, YY, hydro_year, member) %>%
   summarise(max_snowstorage = max(snowstorage)) %>% 
-  group_by(waterlevel, YY) %>%
+  group_by(waterlevel, YY, hydro_year) %>%
   summarise(avg_max_snowstorage = mean(max_snowstorage)) 
 
 table_yearly_avg_max_soilwater <- hydro_total %>%
-  group_by(waterlevel, YY, member) %>%
+  group_by(waterlevel, YY, hydro_year, member) %>%
   summarise(max_soilwater = max(soilwater)) %>% 
-  group_by(waterlevel, YY) %>%
+  group_by(waterlevel, YY, hydro_year) %>%
   summarise(avg_max_soilwater = mean(max_soilwater)) 
 
 # Plots
 ggplot(data = table_yearly_avg_max_prec, mapping = aes(x = YY, y = avg_max_precip, color = waterlevel)) +
   geom_line() +
   geom_point() +
-  labs(title = "Jährliches durchschnittliches Maximum an täglichem Niederschlag \nim Zeitverlauf (aller Member)",
+  labs(title = "Jährliches durchschnittliches Maximum an täglichem Niederschlag \nje Jahreszeit im Zeitverlauf (aller Member)",
        y = "Jährliches durchschnittliches Maximum an täglichem Niederschlag \n(in mm/24h)",
        x = "Datum") +
   guides(color=guide_legend(title="Pegel")) +
     theme(text = element_text(size = 20),
           legend.position="bottom") +
-    scale_color_brewer(palette = "Dark2")
+    scale_color_brewer(palette = "Dark2") +
+  facet_wrap(vars(hydro_year), labeller = as_labeller(c(`summer` = "Sommer", `winter` = "Winter")))
 ggsave("Plots/Chris/analysis/yearly_avg_max_prec.png", width = 12, height = 9)
 
 ggplot(data = table_yearly_avg_max_airtmp, mapping = aes(x = YY, y = avg_max_airtemp, color = waterlevel)) +
   geom_line() +
   geom_point() +
-  labs(title = "Jährliches durchschnittliches Maximum an täglicher Lufttemperatur \nim Zeitverlauf (aller Member)",
+  labs(title = "Jährliches durchschnittliches Maximum an täglicher Lufttemperatur \nje Jahreszeit im Zeitverlauf (aller Member)",
        y = "Jährliches durchschnittliches Maximum an täglicher Lufttemperatur \n(in °C)",
        x = "Datum") +
   guides(color=guide_legend(title="Pegel")) +
     theme(text = element_text(size = 20),
           legend.position="bottom") +
-    scale_color_brewer(palette = "Dark2")
+    scale_color_brewer(palette = "Dark2") +
+  facet_wrap(vars(hydro_year), labeller = as_labeller(c(`summer` = "Sommer", `winter` = "Winter")))
 ggsave("Plots/Chris/analysis/yearly_avg_max_airtemp.png", width = 12, height = 9)
 
 ggplot(data = table_yearly_avg_max_snowstorage, mapping = aes(x = YY, y = avg_max_snowstorage, color = waterlevel)) +
   geom_line() +
   geom_point() +
-  labs(title = "Jährliches durchschnittliches Maximum an täglichem Schneespeicher \nim Zeitverlauf (aller Member)",
+  labs(title = "Jährliches durchschnittliches Maximum an täglichem Schneespeicher \nje Jahreszeit im Zeitverlauf (aller Member)",
        y = "Jährliches durchschnittliches Maximum an täglichem Schneespeicher \n(in mm)",
        x = "Datum") +
   guides(color=guide_legend(title="Pegel")) +
     theme(text = element_text(size = 20),
           legend.position="bottom") +
-    scale_color_brewer(palette = "Dark2")
+    scale_color_brewer(palette = "Dark2") +
+  facet_wrap(vars(hydro_year), labeller = as_labeller(c(`summer` = "Sommer", `winter` = "Winter")))
 ggsave("Plots/Chris/analysis/yearly_avg_max_snowstorage.png", width = 12, height = 9)
 
 ggplot(data = table_yearly_avg_max_soilwater, mapping = aes(x = YY, y = avg_max_soilwater, color = waterlevel)) +
   geom_line() +
   geom_point() +
-  labs(title = "Jährliches durchschnittliches Maximum an täglicher Oberflächennahe \nrelative Bodenfeuchte im Zeitverlauf (aller Member)",
+  labs(title = "Jährliches durchschnittliches Maximum an täglicher Oberflächennahe \nrelative Bodenfeuchte je Jahreszeit im Zeitverlauf (aller Member)",
        y = "Jährliches durchschnittliches Maximum an täglicher \noberflächennaher relative Bodenfeuchte (in %)",
        x = "Datum") +
   guides(color=guide_legend(title="Pegel")) +
     theme(text = element_text(size = 20),
           legend.position="bottom") +
-    scale_color_brewer(palette = "Dark2")
+    scale_color_brewer(palette = "Dark2") +
+  facet_wrap(vars(hydro_year), labeller = as_labeller(c(`summer` = "Sommer", `winter` = "Winter")))
 ggsave("Plots/Chris/analysis/yearly_avg_max_soilwater.png", width = 12, height = 9)
 
 ```
