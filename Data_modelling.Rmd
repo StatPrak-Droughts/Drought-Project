@@ -5,7 +5,53 @@ date: '2023-03-17'
 ---
 
 ```{r setup, include=FALSE}
+# Import packages
+library(tidyverse)
+library(lubridate)
+library(timetk)
+library(RcppRoll)
+library(dLagM)
+library(dlnm)
+library(zoo)
+theme_set(theme_gray())
+# Mapping imports
+library(sf)
+library(leaflet)
+library(tmap)
+library(gridExtra)
+tmap_options(check.and.fix = TRUE)
 
+# Read data
+hydro_summer_20203 <- readRDS(file = "./data/hydro_summer_20203.RDS")
+hydro_summer_11502 <- readRDS(file = "./data/hydro_summer_11502.RDS")
+hydro_summer_10304 <- readRDS(file = "./data/hydro_summer_10304.RDS")
+hydro_winter_20203 <- readRDS(file = "./data/hydro_winter_20203.RDS")
+hydro_winter_11502 <- readRDS(file = "./data/hydro_winter_11502.RDS")
+hydro_winter_10304 <- readRDS(file = "./data/hydro_winter_10304.RDS")
+hydro_total <- readRDS(file = "./data/hydro_total.RDS")
+pegel_prop <- readRDS(file = "./data/pegel_prop.RDS")
+# Add rescaled soilwater
+hydro_summer_20203$soilwater100 <- hydro_summer_20203$soilwater * 100
+hydro_summer_11502$soilwater100 <- hydro_summer_11502$soilwater * 100
+hydro_summer_10304$soilwater100 <- hydro_summer_10304$soilwater * 100
+hydro_winter_20203$soilwater100 <- hydro_winter_20203$soilwater * 100
+hydro_winter_11502$soilwater100 <- hydro_winter_11502$soilwater * 100
+hydro_winter_10304$soilwater100 <- hydro_winter_10304$soilwater * 100
+
+# separate datasets for each waterlevel, season and member
+# winter
+for (i in pegel_ids) {
+  for (j in levels(hydro_total$member)) {
+    assign(paste0("hydro_winter_", i, "_", j), hydro_winter %>% filter(name_waterlevel %in% i) %>% filter(member %in% j))
+  }
+}
+
+# summer
+for (i in pegel_ids) {
+  for (j in levels(hydro_total$member)) {
+    assign(paste0("hydro_summer_", i, "_", j), hydro_summer %>% filter(name_waterlevel %in% i) %>% filter(member %in% j))
+  }
+}
 ```
 
 
@@ -1195,7 +1241,8 @@ library(lme4)
 glmer_1 <- glmer(lowlevel ~ precip + airtmp + glorad + relhum + soilwater + snowstorage + groundwaterdepth + infiltration + (1|member), data = hydro_winter_10304, family = binomial())
 summary(glmer_1)
 ```
-# GAM
+
+# GAM with "normal" drivers
 ```{r}
 library(mgcv)
 gam_1 <- gam(lowlevel ~ date + s(avg_airtmp) + s(avg_soilwater) + s(avg_precip) + avg_precip * avg_soilwater + avg_snowstorage + s(avg_glorad) + s(avg_infiltration), data = hydro_summer_10304_kbe, family = binomial(), method = "REML")
@@ -1252,6 +1299,18 @@ summary(gam_2)
 
 
 ```
+
+# GAM with avg drivers
+```{r}
+library(mgcv)
+
+## gam mit avg drivers glatten Effekten (penalized B-splines) für member kbe
+# 10304, winter
+gam_memberkbe_avg_10304_winter <- gam(lowlevel ~ date + s(avg_precip, bs = "ps") + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps") , data = hydro_winter_10304_kbe, family = binomial(), method = "REML")
+summary(gam_memberkbe_avg_10304_winter)
+plot(gam_memberkbe_avg_10304_winter)
+```
+
 # P Splines
 ```{r}
 gam_1_ps <- gam(lowlevel ~ date  + s(avg_airtmp, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_precip, bs = "ps") + avg_precip * avg_soilwater + avg_snowstorage + s(avg_glorad, bs = "ps")  + s(avg_infiltration, bs = "ps"), data = hydro_summer_10304_kbe, family = binomial(), method = "REML")

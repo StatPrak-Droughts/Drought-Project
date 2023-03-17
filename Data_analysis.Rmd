@@ -37,9 +37,8 @@ hydro_summer_10304$soilwater100 <- hydro_summer_10304$soilwater * 100
 hydro_winter_20203$soilwater100 <- hydro_winter_20203$soilwater * 100
 hydro_winter_11502$soilwater100 <- hydro_winter_11502$soilwater * 100
 hydro_winter_10304$soilwater100 <- hydro_winter_10304$soilwater * 100
-```
 
-```{r}
+
 # separate datasets for each waterlevel, season and member
 # winter
 for (i in pegel_ids) {
