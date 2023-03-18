@@ -53,6 +53,53 @@ for (i in pegel_ids) {
     assign(paste0("hydro_summer_", i, "_", j), hydro_summer %>% filter(name_waterlevel %in% i) %>% filter(member %in% j))
   }
 }
+
+# add column snowstorage_diff
+# winter
+for (i in pegel_ids) {
+  for (j in levels(hydro_total$member)) {
+    snowstorage_diff <- as.numeric(rep(NA, length = nrow(get(paste0("hydro_winter_", i, "_", j)))))
+    for (k in 2:length(snowstorage_diff)) {
+      if (!is.na(get(paste0("hydro_winter_", i, "_", j))$snowstorage[k]) &&
+          !(is.na(get(paste0("hydro_winter_", i, "_", j))$snowstorage[k - 1]))) {
+        if (get(paste0("hydro_winter_", i, "_", j))$MM[k] == 11) {
+          if (get(paste0("hydro_winter_", i, "_", j))$MM[k - 1] == 11) {
+            snowstorage_diff[k] <- get(paste0("hydro_winter_", i, "_", j))$snowstorage[k] -
+            get(paste0("hydro_winter_", i, "_", j))$snowstorage[k - 1]
+          }
+        } else {
+          snowstorage_diff[k] <- get(paste0("hydro_winter_", i, "_", j))$snowstorage[k] -
+            get(paste0("hydro_winter_", i, "_", j))$snowstorage[k - 1]
+      }
+      }
+      
+    }
+    assign(paste0("hydro_winter_", i, "_", j), cbind(get(paste0("hydro_winter_", i, "_", j)), snowstorage_diff))                            
+  }
+}
+
+# summer
+for (i in pegel_ids) {
+  for (j in levels(hydro_total$member)) {
+    snowstorage_diff <- as.numeric(rep(NA, length = nrow(get(paste0("hydro_summer_", i, "_", j)))))
+    for (k in 2:length(snowstorage_diff)) {
+      if (!is.na(get(paste0("hydro_summer_", i, "_", j))$snowstorage[k]) &&
+          !(is.na(get(paste0("hydro_summer_", i, "_", j))$snowstorage[k - 1]))) {
+        if (get(paste0("hydro_summer_", i, "_", j))$MM[k] == 5) {
+          if (get(paste0("hydro_summer_", i, "_", j))$MM[k - 1] == 5) {
+            snowstorage_diff[k] <- get(paste0("hydro_summer_", i, "_", j))$snowstorage[k] -
+            get(paste0("hydro_summer_", i, "_", j))$snowstorage[k - 1]
+          }
+        } else {
+          snowstorage_diff[k] <- get(paste0("hydro_summer_", i, "_", j))$snowstorage[k] -
+            get(paste0("hydro_summer_", i, "_", j))$snowstorage[k - 1]
+      }
+      }
+      
+    }
+    assign(paste0("hydro_summer_", i, "_", j), cbind(get(paste0("hydro_summer_", i, "_", j)), snowstorage_diff))                            
+  }
+}
 ```
 
 ## Geo Data (Map data)
