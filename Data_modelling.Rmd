@@ -1325,7 +1325,7 @@ glmer_1 <- glmer(lowlevel ~ precip + airtmp + glorad + relhum + soilwater + snow
 summary(glmer_1)
 ```
 
-# GAM with "normal" drivers
+# GAM for lowlevel with "normal" drivers
 ```{r}
 library(mgcv)
 gam_1 <- gam(lowlevel ~ date + s(avg_airtmp) + s(avg_soilwater) + s(avg_precip) + avg_precip * avg_soilwater + avg_snowstorage + s(avg_glorad) + s(avg_infiltration), data = hydro_summer_10304_kbe, family = binomial(), method = "REML")
@@ -1383,7 +1383,7 @@ summary(gam_2)
 
 ```
 
-# GAM with avg drivers
+# GAM for lowlevel with avg drivers
 ```{r}
 library(mgcv)
 
@@ -1443,6 +1443,50 @@ plot(gam_kbe_avg_10304_summer)
 gam_kbe_avg_11502_winter <- gam(lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps") , data = hydro_winter_11502_kbe, family = binomial(), method = "REML")
 summary(gam_kbe_avg_11502_winter)
 plot(gam_kbe_avg_11502_winter)
+```
+
+# GAM for lowlevel_first with avg drivers
+```{r}
+library(mgcv)
+
+# 10304, winter
+gam_kbe_avg_first_10304_winter <- gam(lowlevel_first ~ YY + s(avg_precip, bs = "ps") + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps"), data = hydro_winter_10304_kbe, family = binomial(), method = "REML")
+summary(gam_kbe_avg_first_10304_winter)
+plot(exp(predict(gam_kbe_avg_first_10304_winter)), residuals(gam_kbe_avg_first_10304_winter))
+plot(gam_kbe_avg_first_10304_winter)
+
+# 10304, summer
+gam_kbe_avg_first_10304_summer <- gam(lowlevel_first ~ YY + s(avg_precip, bs = "ps") + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps"), data = hydro_summer_10304_kbe, family = binomial(), method = "REML")
+summary(gam_kbe_avg_first_10304_summer)
+plot(exp(predict(gam_kbe_avg_first_10304_summer)), residuals(gam_kbe_avg_first_10304_summer))
+plot(gam_kbe_avg_first_10304_summer)
+
+# 11502, winter
+gam_kbe_avg_first_11502_winter <- gam(lowlevel_first ~ YY + s(avg_precip, bs = "ps") + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps"), data = hydro_winter_11502_kbe, family = binomial(), method = "REML")
+summary(gam_kbe_avg_first_11502_winter)
+plot(exp(predict(gam_kbe_avg_first_11502_winter)), residuals(gam_kbe_avg_first_11502_winter))
+plot(gam_kbe_avg_first_11502_winter)
+
+# 11502, summer
+gam_kbe_avg_first_11502_summer <- gam(lowlevel_first ~ YY + s(avg_precip, bs = "ps") + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps"), data = hydro_summer_11502_kbe, family = binomial(), method = "REML")
+summary(gam_kbe_avg_first_11502_summer)
+plot(exp(predict(gam_kbe_avg_first_11502_summer)), residuals(gam_kbe_avg_first_11502_summer))
+plot(gam_kbe_avg_first_11502_summer)
+
+# 20203, winter
+gam_kbe_avg_first_20203_winter <- gam(lowlevel_first ~ YY + s(avg_precip, bs = "ps") + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps"), data = hydro_winter_20203_kbe, family = binomial(), method = "REML")
+summary(gam_kbe_avg_first_20203_winter)
+plot(exp(predict(gam_kbe_avg_first_20203_winter)), residuals(gam_kbe_avg_first_20203_winter))
+plot(gam_kbe_avg_first_20203_winter)
+
+# 20203, summer
+gam_kbe_avg_first_20203_summer <- gam(lowlevel_first ~ YY + s(avg_precip, bs = "ps") + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps"), data = hydro_summer_20203_kbe, family = binomial(), method = "REML")
+summary(gam_kbe_avg_first_20203_summer)
+plot(exp(predict(gam_kbe_avg_first_20203_summer)), residuals(gam_kbe_avg_first_20203_summer))
+plot(gam_kbe_avg_first_20203_summer)
+
+# -> Variable lowlevel_first sehr unbalanciert -> schwer zu modellieren
+
 ```
 
 # P Splines
