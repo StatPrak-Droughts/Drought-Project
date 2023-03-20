@@ -1590,4 +1590,39 @@ fit_ardlm_across(drainage ~ soilwater + precip + snowstorage + airtmp, data = hy
 fit_ardlm_across(drainage ~ soilwater + precip + snowstorage + airtmp, data = hydro_winter_11502, p = 3, q = 2)
 fit_ardlm_across(drainage ~ soilwater + precip + snowstorage + airtmp, data = hydro_winter_20203, p = 3, q = 2)
 ```
+
+# Distributed lag on Perception
+```{r}
+library(dlnm)
+cb1.precip <- crossbasis(hydro_summer_10304_kbe$precip, lag= c(1,15), argvar=list(fun = "bs"),
+arglag = list(fun="lin"))
+gam_cb_precip <- gam(formula = lowlevel ~ soilwater + cb1.precip + snowstorage + airtmp, data = hydro_summer_10304_kbe, family = binomial())
+summary(gam_cb_precip)
+
+cb2.soilwater <- crossbasis(hydro_summer_10304_kbe$soilwater, lag= c(0,15), argvar=list(fun = "bs"),
+arglag = list(fun="lin"))
+gam_cb_soilwater <- gam(formula = lowlevel ~ cb2.soilwater + precip + snowstorage + airtmp, data = hydro_summer_10304_kbe, family = binomial())
+summary(gam_cb_soilwater)
+
+gam_cb_precip_soilwater <- gam(formula = lowlevel ~ cb2.soilwater + cb1.precip + snowstorage + s(airtmp) + precip * soilwater, data = hydro_summer_10304_kbe, family = binomial())
+summary(gam_cb_precip_soilwater)
+
+hydro_winter_10304_kbe <- hydro_winter_10304 %>% filter(member %in% "kbe")
+
+gam_cb_precip_soilwater <- gam(formula = lowlevel ~ cb2.soilwater + cb1.precip + snowstorage + s(airtmp) + precip * soilwater, data = hydro_winter_10304_kbe, family = binomial())
+summary(gam_cb_precip_soilwater)
+
+model_list <- list()
+i <- 1
+for (member in hydro_winter_10304$member) {
+  data <- hydro_winter_10304[hydro_winter_10304$member %in% member,]
+  cb1.precip <- crossbasis(data$precip, lag= c(1,15), argvar=list(fun = "bs"), arglag = list(fun="lin"))
+  cb2.soilwater <- crossbasis(data$soilwater, lag= c(0,15), argvar=list(fun = "bs"), arglag = list(fun="lin"))
+  
+  model_list[i] <- gam(formula = lowlevel ~ cb2.soilwater + cb1.precip + snowstorage + s(airtmp) + precip * soilwater, data = data, family = binomial())
+  i= i +1
+}
+
+lapply(model_list, summary)
 ```
+
