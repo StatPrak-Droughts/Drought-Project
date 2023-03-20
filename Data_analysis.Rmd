@@ -18,6 +18,7 @@ library(sf)
 library(leaflet)
 library(tmap)
 library(gridExtra)
+library(sjPlot)
 tmap_options(check.and.fix = TRUE)
 
 # Read data
@@ -1834,17 +1835,17 @@ sommer20203GLM <- glm(Niedriwasserevent ~ Lufttemperatur + Niederschlag + Kurzwe
 
 ##Winter
 ##10304
-hydro_summer_10304_named <- hydro_summer_10304
-colnames(hydro_summer_10304_named) <- varnames
-winter10304GLM <- glm(Niedriwasserevent ~ Lufttemperatur + Niederschlag + KurzwelligeStrahlung + RelativeLuftfeuchte + Grundwasserstand + relOberflächennaheBodenfeuchte + Schneespeicher + Wasserleitfähigkeit, family = binomial(link='logit'), data = hydro_summer_10304_named)
+hydro_winter_10304_named <- hydro_winter_10304
+colnames(hydro_winter_10304_named) <- varnames
+winter10304GLM <- glm(Niedriwasserevent ~ Lufttemperatur + Niederschlag + KurzwelligeStrahlung + RelativeLuftfeuchte + Grundwasserstand + relOberflächennaheBodenfeuchte + Schneespeicher + Wasserleitfähigkeit, family = binomial(link='logit'), data = hydro_winter_10304_named)
 #11502
 hydro_winter_11502_named <- hydro_winter_11502
 colnames(hydro_winter_11502_named) <- varnames
 winter11502GLM <- glm(Niedriwasserevent ~ Lufttemperatur + Niederschlag + KurzwelligeStrahlung + RelativeLuftfeuchte + Grundwasserstand + relOberflächennaheBodenfeuchte + Schneespeicher + Wasserleitfähigkeit, family = binomial(link='logit'), data = hydro_winter_11502_named)
 #20203
-hydro_summer_20203_named <- hydro_summer_20203
+hydro_winter_20203_named <- hydro_winter_20203
 colnames(hydro_summer_20203_named) <- varnames
-winter20203GLM <- glm(Niedriwasserevent ~ Lufttemperatur + Niederschlag + KurzwelligeStrahlung + RelativeLuftfeuchte + Grundwasserstand + relOberflächennaheBodenfeuchte + Schneespeicher + Wasserleitfähigkeit, family = binomial(link='logit'), data = hydro_summer_20203_named)
+winter20203GLM <- glm(Niedriwasserevent ~ Lufttemperatur + Niederschlag + KurzwelligeStrahlung + RelativeLuftfeuchte + Grundwasserstand + relOberflächennaheBodenfeuchte + Schneespeicher + Wasserleitfähigkeit, family = binomial(link='logit'), data = hydro_winter_20203_named)
 
 all.models <- list()
 all.models[[1]] <- sommer10304GLM
@@ -1864,6 +1865,111 @@ p <- last_plot() +
 print(p)
 ```
 
+```{r}
+
+## Sommer
+
+varnames <- colnames(hydro_summer_10304)
+varnames[15] <- "Lufttemperatur"
+varnames[18] <- "Niederschlag"
+varnames[16] <- "KurzwelligeStrahlung"
+varnames[19] <- "RelativeLuftfeuchte"
+varnames[17] <- "Grundwasserstand"
+varnames[37] <- "relOberflächennaheBodenfeuchte"
+varnames[20] <- "Schneespeicher"
+varnames[26] <- "Niedriwasserevent"
+varnames[22] <- "Wasserleitfähigkeit"
+## 10304
+hydro_summer_10304_named <- hydro_summer_10304
+colnames(hydro_summer_10304_named) <- varnames
+hydro_summer_10304_named$Niederschlag <- hydro_summer_10304_named$Niederschlag / 3
+hydro_summer_10304_named$KurzwelligeStrahlung <- hydro_summer_10304_named$KurzwelligeStrahlung / 40
+hydro_summer_10304_named$RelativeLuftfeuchte <- hydro_summer_10304_named$RelativeLuftfeuchte * 30
+hydro_summer_10304_named$Grundwasserstand <- hydro_summer_10304_named$Grundwasserstand * 5
+hydro_summer_10304_named$relOberflächennaheBodenfeuchte <- hydro_summer_10304_named$relOberflächennaheBodenfeuchte * 100
+hydro_summer_10304_named$Schneespeicher <- hydro_summer_10304_named$Schneespeicher / 20
+hydro_summer_10304_named$Wasserleitfähigkeit <- hydro_summer_10304_named$Wasserleitfähigkeit * 3
+
+sommer10304GLM <- glm(Niedriwasserevent ~ Lufttemperatur + Niederschlag + KurzwelligeStrahlung + RelativeLuftfeuchte + Grundwasserstand + relOberflächennaheBodenfeuchte + Schneespeicher + Wasserleitfähigkeit, family = binomial(link='logit'), data = hydro_summer_10304_named)
+#11502
+hydro_summer_11502_named <- hydro_summer_11502
+colnames(hydro_summer_11502_named) <- varnames
+hydro_summer_11502_named$Niederschlag <- hydro_summer_11502_named$Niederschlag/3
+hydro_summer_11502_named$KurzwelligeStrahlung <- hydro_summer_11502_named$KurzwelligeStrahlung / 40
+hydro_summer_11502_named$RelativeLuftfeuchte <- hydro_summer_11502_named$RelativeLuftfeuchte * 30
+hydro_summer_11502_named$Grundwasserstand <- hydro_summer_11502_named$Grundwasserstand * 5
+hydro_summer_11502_named$relOberflächennaheBodenfeuchte <- hydro_summer_11502_named$relOberflächennaheBodenfeuchte * 100
+hydro_summer_11502_named$Schneespeicher <- hydro_summer_11502_named$Schneespeicher / 20
+hydro_summer_11502_named$Wasserleitfähigkeit <- hydro_summer_11502_named$Wasserleitfähigkeit * 3
+
+sommer11502GLM <- glm(Niedriwasserevent ~ Lufttemperatur + Niederschlag + KurzwelligeStrahlung + RelativeLuftfeuchte + Grundwasserstand + relOberflächennaheBodenfeuchte + Schneespeicher + Wasserleitfähigkeit, family = binomial(link='logit'), data = hydro_summer_11502_named)
+#20203
+hydro_summer_20203_named <- hydro_summer_20203
+colnames(hydro_summer_20203_named) <- varnames
+hydro_summer_20203_named$Niederschlag <- hydro_summer_20203_named$Niederschlag/3
+hydro_summer_20203_named$KurzwelligeStrahlung <- hydro_summer_20203_named$KurzwelligeStrahlung / 40
+hydro_summer_20203_named$RelativeLuftfeuchte <- hydro_summer_20203_named$RelativeLuftfeuchte * 30
+hydro_summer_20203_named$Grundwasserstand <- hydro_summer_20203_named$Grundwasserstand * 5
+hydro_summer_20203_named$relOberflächennaheBodenfeuchte <- hydro_summer_20203_named$relOberflächennaheBodenfeuchte * 100
+hydro_summer_20203_named$Schneespeicher <- hydro_summer_20203_named$Schneespeicher / 20
+hydro_summer_20203_named$Wasserleitfähigkeit <- hydro_summer_20203_named$Wasserleitfähigkeit * 3
+
+sommer20203GLM <- glm(Niedriwasserevent ~ Lufttemperatur + Niederschlag + KurzwelligeStrahlung + RelativeLuftfeuchte + Grundwasserstand + relOberflächennaheBodenfeuchte + Schneespeicher  + Wasserleitfähigkeit, family = binomial(link='logit'), data = hydro_summer_20203_named)
+
+##Winter
+##10304
+hydro_winter_10304_named <- hydro_winter_10304
+colnames(hydro_winter_10304_named) <- varnames
+hydro_winter_10304_named$Niederschlag <- hydro_winter_10304_named$Niederschlag/3
+hydro_winter_10304_named$KurzwelligeStrahlung <- hydro_winter_10304_named$KurzwelligeStrahlung / 40
+hydro_winter_10304_named$RelativeLuftfeuchte <- hydro_winter_10304_named$RelativeLuftfeuchte * 30
+hydro_winter_10304_named$Grundwasserstand <- hydro_winter_10304_named$Grundwasserstand * 5
+hydro_winter_10304_named$relOberflächennaheBodenfeuchte <- hydro_winter_10304_named$relOberflächennaheBodenfeuchte * 100
+hydro_winter_10304_named$Schneespeicher <- hydro_winter_10304_named$Schneespeicher / 20
+hydro_winter_10304_named$Wasserleitfähigkeit <- hydro_winter_10304_named$Wasserleitfähigkeit * 3
+
+winter10304GLM <- glm(Niedriwasserevent ~ Lufttemperatur + Niederschlag + KurzwelligeStrahlung + RelativeLuftfeuchte + Grundwasserstand + relOberflächennaheBodenfeuchte + Schneespeicher + Wasserleitfähigkeit, family = binomial(link='logit'), data = hydro_winter_10304_named)
+#11502
+hydro_winter_11502_named <- hydro_winter_11502
+colnames(hydro_winter_11502_named) <- varnames
+hydro_winter_11502_named$Niederschlag <- hydro_winter_11502_named$Niederschlag/3
+hydro_winter_11502_named$KurzwelligeStrahlung <- hydro_winter_11502_named$KurzwelligeStrahlung / 40
+hydro_winter_11502_named$RelativeLuftfeuchte <- hydro_winter_11502_named$RelativeLuftfeuchte * 30
+hydro_winter_11502_named$Grundwasserstand <- hydro_winter_11502_named$Grundwasserstand * 5
+hydro_winter_11502_named$relOberflächennaheBodenfeuchte <- hydro_winter_11502_named$relOberflächennaheBodenfeuchte * 100
+hydro_winter_11502_named$Schneespeicher <- hydro_winter_11502_named$Schneespeicher / 20
+hydro_winter_11502_named$Wasserleitfähigkeit <- hydro_winter_11502_named$Wasserleitfähigkeit * 3
+
+winter11502GLM <- glm(Niedriwasserevent ~ Lufttemperatur + Niederschlag + KurzwelligeStrahlung + RelativeLuftfeuchte + Grundwasserstand + relOberflächennaheBodenfeuchte + Schneespeicher + Wasserleitfähigkeit, family = binomial(link='logit'), data = hydro_winter_11502_named)
+#20203
+hydro_winter_20203_named <- hydro_winter_20203
+colnames(hydro_winter_20203_named) <- varnames
+hydro_winter_20203_named$Niederschlag <- hydro_winter_20203_named$Niederschlag/3
+hydro_winter_20203_named$KurzwelligeStrahlung <- hydro_winter_20203_named$KurzwelligeStrahlung / 40
+hydro_winter_20203_named$RelativeLuftfeuchte <- hydro_winter_20203_named$RelativeLuftfeuchte * 30
+hydro_winter_20203_named$Grundwasserstand <- hydro_winter_20203_named$Grundwasserstand * 5
+hydro_winter_20203_named$relOberflächennaheBodenfeuchte <- hydro_winter_20203_named$relOberflächennaheBodenfeuchte * 100
+hydro_winter_20203_named$Schneespeicher <- hydro_winter_20203_named$Schneespeicher / 20
+hydro_winter_20203_named$Wasserleitfähigkeit <- hydro_winter_20203_named$Wasserleitfähigkeit * 3
+
+winter20203GLM <- glm(Niedriwasserevent ~ Lufttemperatur + Niederschlag + KurzwelligeStrahlung + RelativeLuftfeuchte + Grundwasserstand + relOberflächennaheBodenfeuchte + Schneespeicher + Wasserleitfähigkeit, family = binomial(link='logit'), data = hydro_winter_20203_named)
+
+all.models <- list()
+all.models[[1]] <- sommer10304GLM
+all.models[[2]] <- sommer11502GLM
+all.models[[3]] <- sommer20203GLM
+all.models[[4]] <- winter10304GLM
+all.models[[5]] <- winter11502GLM
+all.models[[6]] <- winter20203GLM
+plot_models(all.models)
+p <- last_plot() +
+  scale_color_manual(values = c("yellow", "red", "blue","pink", "green", "purple" ), 
+                     name = "Gewässer/Halbjahr", 
+                     labels = c("Winter Fraenkische Saale Salz",  "Winter Iller Kempten",  "Winter Isar Mittenwald","Sommer Fraenkische Saale Salz", "Sommer Iller Kempten", "Sommer Isar Mittenwald")) +
+  theme(legend.title = element_text(size = 12, face = "bold"))+
+  ylab("Odds Ratio")
+
+print(p)
 ```
 
 
