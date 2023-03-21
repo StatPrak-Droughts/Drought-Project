@@ -31,9 +31,11 @@ hydro_winter_10304 <- readRDS(file = "./data/hydro_winter_10304.RDS")
 hydro_total <- readRDS(file = "./data/hydro_total.RDS")
 pegel_prop <- readRDS(file = "./data/pegel_prop.RDS")
 # Add rescaled soilwater
+hydro_summer$soilwater100 <- hydro_summer$soilwater * 100
 hydro_summer_20203$soilwater100 <- hydro_summer_20203$soilwater * 100
 hydro_summer_11502$soilwater100 <- hydro_summer_11502$soilwater * 100
 hydro_summer_10304$soilwater100 <- hydro_summer_10304$soilwater * 100
+hydro_winter$soilwater100 <- hydro_winter$soilwater * 100
 hydro_winter_20203$soilwater100 <- hydro_winter_20203$soilwater * 100
 hydro_winter_11502$soilwater100 <- hydro_winter_11502$soilwater * 100
 hydro_winter_10304$soilwater100 <- hydro_winter_10304$soilwater * 100

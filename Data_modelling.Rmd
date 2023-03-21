@@ -33,9 +33,11 @@ hydro_winter_10304 <- readRDS(file = "./data/hydro_winter_10304.RDS")
 hydro_total <- readRDS(file = "./data/hydro_total.RDS")
 pegel_prop <- readRDS(file = "./data/pegel_prop.RDS")
 # Add rescaled soilwater
+hydro_summer$soilwater100 <- hydro_summer$soilwater * 100
 hydro_summer_20203$soilwater100 <- hydro_summer_20203$soilwater * 100
 hydro_summer_11502$soilwater100 <- hydro_summer_11502$soilwater * 100
 hydro_summer_10304$soilwater100 <- hydro_summer_10304$soilwater * 100
+hydro_winter$soilwater100 <- hydro_winter$soilwater * 100
 hydro_winter_20203$soilwater100 <- hydro_winter_20203$soilwater * 100
 hydro_winter_11502$soilwater100 <- hydro_winter_11502$soilwater * 100
 hydro_winter_10304$soilwater100 <- hydro_winter_10304$soilwater * 100
@@ -101,6 +103,49 @@ for (i in pegel_ids) {
     assign(paste0("hydro_summer_", i, "_", j), cbind(get(paste0("hydro_summer_", i, "_", j)), snowstorage_diff))     
   }
 }
+
+
+## add column max_precip
+# winter
+for (i in pegel_ids) {
+  for (j in levels(hydro_total$member)) {
+    max_precip <- as.numeric(rep(NA, length = nrow(get(paste0("hydro_winter_", i, "_", j)))))
+    for (k in 7:length(max_precip)) {
+      if (all(!is.na(get(paste0("hydro_winter_", i, "_", j))$precip[(k - 6):k]))) {
+        if (get(paste0("hydro_winter_", i, "_", j))$MM[k] == 11) {
+          if (all(get(paste0("hydro_winter_", i, "_", j))$MM[(k - 6):k] == 11)) {
+            max_precip[k] <- max(get(paste0("hydro_winter_", i, "_", j))$precip[(k - 6):k])
+          }
+        } else {
+          max_precip[k] <- max(get(paste0("hydro_winter_", i, "_", j))$precip[(k - 6):k])
+      }
+      }
+      
+    }
+    assign(paste0("hydro_winter_", i, "_", j), cbind(get(paste0("hydro_winter_", i, "_", j)), max_precip))  
+  }
+}
+
+# summer
+for (i in pegel_ids) {
+  for (j in levels(hydro_total$member)) {
+    max_precip <- as.numeric(rep(NA, length = nrow(get(paste0("hydro_summer_", i, "_", j)))))
+    for (k in 7:length(max_precip)) {
+      if (all(!is.na(get(paste0("hydro_summer_", i, "_", j))$precip[(k - 6):k]))) {
+        if (get(paste0("hydro_summer_", i, "_", j))$MM[k] == 5) {
+          if (all(get(paste0("hydro_summer_", i, "_", j))$MM[(k - 6):k] == 5)) {
+            max_precip[k] <- max(get(paste0("hydro_summer_", i, "_", j))$precip[(k - 6):k])
+          }
+        } else {
+          max_precip[k] <- max(get(paste0("hydro_summer_", i, "_", j))$precip[(k - 6):k])
+      }
+      }
+      
+    }
+    assign(paste0("hydro_winter_", i, "_", j), cbind(get(paste0("hydro_summer_", i, "_", j)), max_precip))      
+  }
+}
+
 
 ## add coulmn lowlevel_first
 # winter
@@ -1490,47 +1535,46 @@ summary(gam_2)
 
 ```
 
-# GAM for lowlevel with avg drivers
+# GAM for lowlevel with avg/max drivers
 ```{r}
 library(mgcv)
 
 ## which drivers have a high explanatory power per water level and per season 
 # 10304, winter
-levels(hydro_total$member)
-gam_kbe_avg_10304_winter_test <- gam(lowlevel ~ s(avg_infiltration, bs = "ps"), data = hydro_winter_10304_kbe, family = binomial(), method = "REML")
+gam_kbe_avg_10304_winter_test <- gam(lowlevel ~ s(max_precip, bs = "ps"), data = hydro_winter_10304_kbe, family = binomial(), method = "REML")
 summary(gam_kbe_avg_10304_winter_test)
-# viel Erklärungskraft alleine (>= 10%): avg_airtmp, avg_glorad, avg_soilwater, avg_snowstorage, groundwaterdepth, avg_infiltration
+# viel Erklärungskraft alleine (>= 10%): avg_airtmp, avg_glorad, avg_soilwater, avg_snowstorage, groundwaterdepth, avg_infiltration, max_precip
 # wenig Erklärungskraft alleine (< 10%): avg_precip, avg_relhum
 
 # 10304, summer
-gam_kbe_avg_10304_summer_test <- gam(lowlevel ~ s(avg_infiltration, bs = "ps"), data = hydro_summer_10304_kbe, family = binomial(), method = "REML")
+gam_kbe_avg_10304_summer_test <- gam(lowlevel ~ s(max_precip, bs = "ps"), data = hydro_summer_10304_kbe, family = binomial(), method = "REML")
 summary(gam_kbe_avg_10304_summer_test)
 # viel Erklärungskraft alleine: avg_precip, avg_glorad, avg_soilwater, avg_snowstorage , avg_infiltration
-# wenig Erklärungskraft alleine: avg_airtmp, avg_relhum, groundwaterdepth
+# wenig Erklärungskraft alleine: avg_airtmp, avg_relhum, groundwaterdepth, max_precip
 
 # 11502, winter
-gam_kbe_avg_11502_winter_test <- gam(lowlevel ~ s(avg_infiltration, bs = "ps"), data = hydro_winter_11502_kbe, family = binomial(), method = "REML")
+gam_kbe_avg_11502_winter_test <- gam(lowlevel ~ s(max_precip, bs = "ps"), data = hydro_winter_11502_kbe, family = binomial(), method = "REML")
 summary(gam_kbe_avg_11502_winter_test)
-# viel Erklärungskraft alleine: avg_precip, avg_glorad, avg_soilwater, avg_snowstorage, avg_infiltration
+# viel Erklärungskraft alleine: avg_precip, avg_glorad, avg_soilwater, avg_snowstorage, avg_infiltration, max_precip
 # wenig Erklärungskraft alleine: avg_airtmp, avg_relhum, groundwaterdepth
 
 # 11502, summer
-gam_kbe_avg_11502_summer_test <- gam(lowlevel ~ s(avg_infiltration, bs = "ps"), data = hydro_summer_11502_kbe, family = binomial(), method = "REML")
+gam_kbe_avg_11502_summer_test <- gam(lowlevel ~ s(max_precip, bs = "ps"), data = hydro_summer_11502_kbe, family = binomial(), method = "REML")
 summary(gam_kbe_avg_11502_summer_test)
 # viel Erklärungskraft alleine: avg_precip, avg_soilwater, avg_snowstorage, groundwaterdepth, avg_infiltration
-# wenig Erklärungskraft alleine: avg_airtmp, avg_glorad, avg_relhum
+# wenig Erklärungskraft alleine: avg_airtmp, avg_glorad, avg_relhum, max_precip
 
 # 20203, winter
-gam_kbe_avg_20203_winter_test <- gam(lowlevel ~ s(avg_infiltration, bs = "ps"), data = hydro_winter_20203_kbe, family = binomial(), method = "REML")
+gam_kbe_avg_20203_winter_test <- gam(lowlevel ~ s(max_precip, bs = "ps"), data = hydro_winter_20203_kbe, family = binomial(), method = "REML")
 summary(gam_kbe_avg_20203_winter_test)
 # viel Erklärungskraft alleine: avg_precip, avg_relhum, avg_soilwater, avg_snowstorage, avg_infiltration
-# wenig Erklärungskraft alleine: avg_airtmp, avg_glorad, groundwaterdepth
+# wenig Erklärungskraft alleine: avg_airtmp, avg_glorad, groundwaterdepth, max_precip
 
 # 20203, summer
-gam_kbe_avg_20203_summer_test <- gam(lowlevel ~ s(avg_infiltration, bs = "ps"), data = hydro_summer_20203_kbe, family = binomial(), method = "REML")
+gam_kbe_avg_20203_summer_test <- gam(lowlevel ~ s(max_precip, bs = "ps"), data = hydro_summer_20203_kbe, family = binomial(), method = "REML")
 summary(gam_kbe_avg_20203_summer_test)
 # viel Erklärungskraft alleine: avg_soilwater
-# wenig Erklärungskraft alleine: avg_precip, avg_airtmp, avg_glorad, avg_relhum, avg_snowstorage, groundwaterdepth, avg_infiltration
+# wenig Erklärungskraft alleine: avg_precip, avg_airtmp, avg_glorad, avg_relhum, avg_snowstorage, groundwaterdepth, avg_infiltration, max_precip
 
 
 
