@@ -41,6 +41,40 @@ hydro_winter_11502$soilwater100 <- hydro_winter_11502$soilwater * 100
 hydro_winter_10304$soilwater100 <- hydro_winter_10304$soilwater * 100
 
 
+## add column max_precip
+# winter
+max_precip_winter <- as.numeric(rep(NA, length = nrow(hydro_winter)))
+for(k in 7:length(max_precip_winter)) {
+  if (all(hydro_winter$member[(k - 6):(k - 1)] == hydro_winter$member[k]) &&
+      all(hydro_winter$name_waterlevel[(k - 6):(k - 1)] == hydro_winter$name_waterlevel[k])) {
+    if (hydro_winter$MM[k] == 11) {
+      if (all(hydro_winter$MM[(k - 6):(k - 1)] == 11)) {
+        max_precip_winter[k] <- max(hydro_winter$precip[(k - 6):k])
+      }
+    } else {
+    max_precip_winter[k] <- max(hydro_winter$precip[(k - 6):k])
+    }
+  }
+}
+hydro_winter <- cbind(hydro_winter, max_precip_winter)
+
+# summer
+max_precip_summer <- as.numeric(rep(NA, length = nrow(hydro_summer)))
+for(k in 7:length(max_precip_summer)) {
+  if (all(hydro_summer$member[(k - 6):(k - 1)] == hydro_summer$member[k]) &&
+      all(hydro_summer$name_waterlevel[(k - 6):(k - 1)] == hydro_summer$name_waterlevel[k])) {
+    if (hydro_summer$MM[k] == 5) {
+      if (all(hydro_summer$MM[(k - 6):(k - 1)] == 5)) {
+        max_precip_summer[k] <- max(hydro_summer$precip[(k - 6):k])
+      }
+    } else {
+    max_precip_summer[k] <- max(hydro_summer$precip[(k - 6):k])
+    }
+  }
+}
+hydro_summer <- cbind(hydro_summer, max_precip_summer)
+
+
 # separate datasets for each waterlevel, season and member
 # winter
 for (i in pegel_ids) {
@@ -100,6 +134,41 @@ for (i in pegel_ids) {
       
     }
     assign(paste0("hydro_summer_", i, "_", j), cbind(get(paste0("hydro_summer_", i, "_", j)), snowstorage_diff))                            
+  }
+}
+
+## add coulmn lowlevel_first
+# winter
+for (i in pegel_ids) {
+  for (j in levels(hydro_total$member)) {
+    lowlevel_first <- as.logical(rep(NA, length = nrow(get(paste0("hydro_winter_", i, "_", j)))))
+    for (k in 1:length(lowlevel_first)) {
+      if (!is.na(get(paste0("hydro_winter_", i, "_", j))$lowlevel_days[k])) {
+        if (get(paste0("hydro_winter_", i, "_", j))$lowlevel_days[k] == 1) {
+          lowlevel_first[k] <- TRUE
+        } else {
+          lowlevel_first[k] <- FALSE
+        }
+      }
+    }
+    assign(paste0("hydro_winter_", i, "_", j), cbind(get(paste0("hydro_winter_", i, "_", j)), lowlevel_first))
+  }
+}
+
+# summer
+for (i in pegel_ids) {
+  for (j in levels(hydro_total$member)) {
+    lowlevel_first <- as.logical(rep(NA, length = nrow(get(paste0("hydro_summer_", i, "_", j)))))
+    for (k in 1:length(lowlevel_first)) {
+      if (!is.na(get(paste0("hydro_summer_", i, "_", j))$lowlevel_days[k])) {
+        if (get(paste0("hydro_summer_", i, "_", j))$lowlevel_days[k] == 1) {
+          lowlevel_first[k] <- TRUE
+        } else {
+          lowlevel_first[k] <- FALSE
+        }
+      }
+    }
+    assign(paste0("hydro_summer_", i, "_", j), cbind(get(paste0("hydro_summer_", i, "_", j)), lowlevel_first))
   }
 }
 ```
@@ -1229,23 +1298,23 @@ library(corrplot)
 ## winter
 
 # 10304
-correlationm_pearson_winter_10304 <- cor(subset(hydro_winter_10304, select = c(drainage, airtmp, soilwater, precip, glorad, relhum, snowstorage, groundwaterdepth, infiltration)), method = "pearson")
+correlationm_pearson_winter_10304 <- cor(subset(hydro_winter_10304, select = c(drainage, avg_airtmp, avg_soilwater, avg_precip, avg_glorad, avg_relhum, avg_snowstorage, groundwaterdepth, avg_infiltration)), method = "pearson", use = "complete.obs")
 correlationp_pearson_winter_10304 <- cor.mtest(correlationm_pearson_winter_10304)
-# correlation drainage with airtmp, with soilwater and with infiltration significant at level = 0.05
+# correlation drainage with avg_airtmp, with avg_soilwater and with avg_infiltration significant at level = 0.05
 corrplot.mixed(correlationm_pearson_winter_10304, upper = "circle", lower = "number", lower.col = "black")
 corrplot.mixed(correlationm_pearson_winter_10304, upper = "circle", lower = "number", lower.col = "black", p.mat = correlationp_pearson_winter_10304$p)
 
 # 11502
-correlationm_pearson_winter_11502 <- cor(subset(hydro_winter_11502, select = c(drainage, airtmp, soilwater, precip, glorad, relhum, snowstorage, groundwaterdepth, infiltration)), method = "pearson")
+correlationm_pearson_winter_11502 <- cor(subset(hydro_winter_11502, select = c(drainage, avg_airtmp, avg_soilwater, avg_precip, avg_glorad, avg_relhum, avg_snowstorage, groundwaterdepth, avg_infiltration)), method = "pearson", use = "complete.obs")
 correlationp_pearson_winter_11502 <- cor.mtest(correlationm_pearson_winter_11502)
-# correlation drainage with soilwater significant at level = 0.05
+# correlation drainage with avg_soilwater significant at level = 0.05
 corrplot.mixed(correlationm_pearson_winter_11502, upper = "circle", lower = "number", lower.col = "black")
 corrplot.mixed(correlationm_pearson_winter_11502, upper = "circle", lower = "number", lower.col = "black", p.mat = correlationp_pearson_winter_11502$p)
 
 # 20203
-correlationm_pearson_winter_20203 <- cor(subset(hydro_winter_20203, select = c(drainage, airtmp, soilwater, precip, glorad, relhum, snowstorage, groundwaterdepth, infiltration)), method = "pearson")
+correlationm_pearson_winter_20203 <- cor(subset(hydro_winter_20203, select = c(drainage, avg_airtmp, avg_soilwater, avg_precip, avg_glorad, avg_relhum, avg_snowstorage, groundwaterdepth, avg_infiltration)), method = "pearson", use = "complete.obs")
 correlationp_pearson_winter_20203 <- cor.mtest(correlationm_pearson_winter_20203)
-# correlation drainage with soilwater significant at level = 0.05
+# correlation drainage with avg_soilwater significant at level = 0.05
 corrplot.mixed(correlationm_pearson_winter_20203, upper = "circle", lower = "number", lower.col = "black")
 corrplot.mixed(correlationm_pearson_winter_20203, upper = "circle", lower = "number", lower.col = "black", p.mat = correlationp_pearson_winter_20203$p)
 
@@ -1253,23 +1322,23 @@ corrplot.mixed(correlationm_pearson_winter_20203, upper = "circle", lower = "num
 ## summer
 
 # 10304
-correlationm_pearson_summer_10304 <- cor(subset(hydro_summer_10304, select = c(drainage, airtmp, soilwater, precip, glorad, relhum, snowstorage, groundwaterdepth, infiltration)), method = "pearson")
+correlationm_pearson_summer_10304 <- cor(subset(hydro_summer_10304, select = c(drainage, avg_airtmp, avg_soilwater, avg_precip, avg_glorad, avg_relhum, avg_snowstorage, groundwaterdepth, avg_infiltration)), method = "pearson")
 correlationp_pearson_summer_10304 <- cor.mtest(correlationm_pearson_summer_10304)
-# correlation drainage with soilwater and snowstorage significant at level = 0.05
+# correlation drainage with avg_soilwater and avg_snowstorage significant at level = 0.05
 corrplot.mixed(correlationm_pearson_summer_10304, upper = "circle", lower = "number", lower.col = "black")
 corrplot.mixed(correlationm_pearson_summer_10304, upper = "circle", lower = "number", lower.col = "black", p.mat = correlationp_pearson_summer_10304$p)
 
 # 11502
-correlationm_pearson_summer_11502 <- cor(subset(hydro_summer_11502, select = c(drainage, airtmp, soilwater, precip, glorad, relhum, snowstorage, groundwaterdepth, infiltration)), method = "pearson")
+correlationm_pearson_summer_11502 <- cor(subset(hydro_summer_11502, select = c(drainage, avg_airtmp, avg_soilwater, avg_precip, avg_glorad, avg_relhum, avg_snowstorage, groundwaterdepth, avg_infiltration)), method = "pearson")
 correlationp_pearson_summer_11502 <- cor.mtest(correlationm_pearson_summer_11502)
-# correlation drainage with soilwater and snowstorage significant at level = 0.05
+# correlation drainage with avg_soilwater and avg_snowstorage significant at level = 0.05
 corrplot.mixed(correlationm_pearson_summer_11502, upper = "circle", lower = "number", lower.col = "black")
 corrplot.mixed(correlationm_pearson_summer_11502, upper = "circle", lower = "number", lower.col = "black", p.mat = correlationp_pearson_summer_11502$p)
 
 # 20203
-correlationm_pearson_summer_20203 <- cor(subset(hydro_summer_20203, select = c(drainage, airtmp, soilwater, precip, glorad, relhum, snowstorage, groundwaterdepth, infiltration)), method = "pearson")
+correlationm_pearson_summer_20203 <- cor(subset(hydro_summer_20203, select = c(drainage, avg_airtmp, avg_soilwater, avg_precip, avg_glorad, avg_relhum, avg_snowstorage, groundwaterdepth, avg_infiltration)), method = "pearson")
 correlationp_pearson_summer_20203 <- cor.mtest(correlationm_pearson_summer_20203)
-# correlation drainage with soilwater significant at level = 0.05
+# correlation drainage with avg_soilwater significant at level = 0.05
 corrplot.mixed(correlationm_pearson_summer_20203, upper = "circle", lower = "number", lower.col = "black")
 corrplot.mixed(correlationm_pearson_summer_20203, upper = "circle", lower = "number", lower.col = "black", p.mat = correlationp_pearson_summer_20203$p)
 
@@ -1280,23 +1349,23 @@ corrplot.mixed(correlationm_pearson_summer_20203, upper = "circle", lower = "num
 ## winter
 
 # 10304
-correlationm_spearman_winter_10304 <- cor(subset(hydro_winter_10304, select = c(drainage, airtmp, soilwater, precip, glorad, relhum, snowstorage, groundwaterdepth, infiltration)), method = "spearman")
+correlationm_spearman_winter_10304 <- cor(subset(hydro_winter_10304, select = c(drainage, avg_airtmp, avg_soilwater, avg_precip, avg_glorad, avg_relhum, avg_snowstorage, groundwaterdepth, avg_infiltration)), method = "spearman", use = "complete.obs")
 correlationp_spearman_winter_10304 <- cor.mtest(correlationm_spearman_winter_10304)
-# correlation drainage with airtmp, with soilwater and with infiltration significant at level = 0.05
+# correlation drainage with avg_airtmp, with avg_soilwater and with avg_infiltration significant at level = 0.05
 corrplot.mixed(correlationm_spearman_winter_10304, upper = "circle", lower = "number", lower.col = "black")
 corrplot.mixed(correlationm_spearman_winter_10304, upper = "circle", lower = "number", lower.col = "black", p.mat = correlationp_spearman_winter_10304$p)
 
 # 11502
-correlationm_spearman_winter_11502 <- cor(subset(hydro_winter_11502, select = c(drainage, airtmp, soilwater, precip, glorad, relhum, snowstorage, groundwaterdepth, infiltration)), method = "spearman")
+correlationm_spearman_winter_11502 <- cor(subset(hydro_winter_11502, select = c(drainage, avg_airtmp, avg_soilwater, avg_precip, avg_glorad, avg_relhum, avg_snowstorage, groundwaterdepth, avg_infiltration)), method = "spearman", use = "complete.obs")
 correlationp_spearman_winter_11502 <- cor.mtest(correlationm_spearman_winter_11502)
-# correlation drainage with soilwater significant at level = 0.05
+# correlation drainage with avg_soilwater significant at level = 0.05
 corrplot.mixed(correlationm_spearman_winter_11502, upper = "circle", lower = "number", lower.col = "black")
 corrplot.mixed(correlationm_spearman_winter_11502, upper = "circle", lower = "number", lower.col = "black", p.mat = correlationp_spearman_winter_11502$p)
 
 # 20203
-correlationm_spearman_winter_20203 <- cor(subset(hydro_winter_20203, select = c(drainage, airtmp, soilwater, precip, glorad, relhum, snowstorage, groundwaterdepth, infiltration)), method = "spearman")
+correlationm_spearman_winter_20203 <- cor(subset(hydro_winter_20203, select = c(drainage, avg_airtmp, avg_soilwater, avg_precip, avg_glorad, avg_relhum, avg_snowstorage, groundwaterdepth, avg_infiltration)), method = "spearman", use = "complete.obs")
 correlationp_spearman_winter_20203 <- cor.mtest(correlationm_spearman_winter_20203)
-# correlation drainage with soilwater significant at level = 0.05
+# correlation drainage with avg_soilwater significant at level = 0.05
 corrplot.mixed(correlationm_spearman_winter_20203, upper = "circle", lower = "number", lower.col = "black")
 corrplot.mixed(correlationm_spearman_winter_20203, upper = "circle", lower = "number", lower.col = "black", p.mat = correlationp_spearman_winter_20203$p)
 
@@ -1304,23 +1373,23 @@ corrplot.mixed(correlationm_spearman_winter_20203, upper = "circle", lower = "nu
 ## summer
 
 # 10304
-correlationm_spearman_summer_10304 <- cor(subset(hydro_summer_10304, select = c(drainage, airtmp, soilwater, precip, glorad, relhum, snowstorage, groundwaterdepth, infiltration)), method = "spearman")
+correlationm_spearman_summer_10304 <- cor(subset(hydro_summer_10304, select = c(drainage, avg_airtmp, avg_soilwater, avg_precip, avg_glorad, avg_relhum, avg_snowstorage, groundwaterdepth, avg_infiltration)), method = "spearman")
 correlationp_spearman_summer_10304 <- cor.mtest(correlationm_spearman_summer_10304)
-# correlation drainage with soilwater and snowstorage significant at level = 0.05
+# correlation drainage with avg_soilwater and avg_snowstorage significant at level = 0.05
 corrplot.mixed(correlationm_spearman_summer_10304, upper = "circle", lower = "number", lower.col = "black")
 corrplot.mixed(correlationm_spearman_summer_10304, upper = "circle", lower = "number", lower.col = "black", p.mat = correlationp_spearman_summer_10304$p)
 
 # 11502
-correlationm_spearman_summer_11502 <- cor(subset(hydro_summer_11502, select = c(drainage, airtmp, soilwater, precip, glorad, relhum, snowstorage, groundwaterdepth, infiltration)), method = "spearman")
+correlationm_spearman_summer_11502 <- cor(subset(hydro_summer_11502, select = c(drainage, avg_airtmp, avg_soilwater, avg_precip, avg_glorad, avg_relhum, avg_snowstorage, groundwaterdepth, avg_infiltration)), method = "spearman")
 correlationp_spearman_summer_11502 <- cor.mtest(correlationm_spearman_summer_11502)
-# correlation drainage with soilwater and snowstorage significant at level = 0.05
+# correlation drainage with avg_soilwater and avg_snowstorage significant at level = 0.05
 corrplot.mixed(correlationm_spearman_summer_11502, upper = "circle", lower = "number", lower.col = "black")
 corrplot.mixed(correlationm_spearman_summer_11502, upper = "circle", lower = "number", lower.col = "black", p.mat = correlationp_spearman_summer_11502$p)
 
 # 20203
-correlationm_spearman_summer_20203 <- cor(subset(hydro_summer_20203, select = c(drainage, airtmp, soilwater, precip, glorad, relhum, snowstorage, groundwaterdepth, infiltration)), method = "spearman")
+correlationm_spearman_summer_20203 <- cor(subset(hydro_summer_20203, select = c(drainage, avg_airtmp, avg_soilwater, avg_precip, avg_glorad, avg_relhum, avg_snowstorage, groundwaterdepth, avg_infiltration)), method = "spearman")
 correlationp_spearman_summer_20203 <- cor.mtest(correlationm_spearman_summer_20203)
-# correlation drainage with soilwater significant at level = 0.05
+# correlation drainage with avg_soilwater significant at level = 0.05
 corrplot.mixed(correlationm_spearman_summer_20203, upper = "circle", lower = "number", lower.col = "black")
 corrplot.mixed(correlationm_spearman_summer_20203, upper = "circle", lower = "number", lower.col = "black", p.mat = correlationp_spearman_summer_20203$p)
 ```

@@ -42,6 +42,42 @@ hydro_winter_20203$soilwater100 <- hydro_winter_20203$soilwater * 100
 hydro_winter_11502$soilwater100 <- hydro_winter_11502$soilwater * 100
 hydro_winter_10304$soilwater100 <- hydro_winter_10304$soilwater * 100
 
+
+## add column max_precip
+# winter
+max_precip_winter <- as.numeric(rep(NA, length = nrow(hydro_winter)))
+for(k in 7:length(max_precip_winter)) {
+  if (all(hydro_winter$member[(k - 6):(k - 1)] == hydro_winter$member[k]) &&
+      all(hydro_winter$name_waterlevel[(k - 6):(k - 1)] == hydro_winter$name_waterlevel[k])) {
+    if (hydro_winter$MM[k] == 11) {
+      if (all(hydro_winter$MM[(k - 6):(k - 1)] == 11)) {
+        max_precip_winter[k] <- max(hydro_winter$precip[(k - 6):k])
+      }
+    } else {
+    max_precip_winter[k] <- max(hydro_winter$precip[(k - 6):k])
+    }
+  }
+}
+hydro_winter <- cbind(hydro_winter, max_precip_winter)
+
+# summer
+max_precip_summer <- as.numeric(rep(NA, length = nrow(hydro_summer)))
+for(k in 7:length(max_precip_summer)) {
+  if (all(hydro_summer$member[(k - 6):(k - 1)] == hydro_summer$member[k]) &&
+      all(hydro_summer$name_waterlevel[(k - 6):(k - 1)] == hydro_summer$name_waterlevel[k])) {
+    if (hydro_summer$MM[k] == 5) {
+      if (all(hydro_summer$MM[(k - 6):(k - 1)] == 5)) {
+        max_precip_summer[k] <- max(hydro_summer$precip[(k - 6):k])
+      }
+    } else {
+    max_precip_summer[k] <- max(hydro_summer$precip[(k - 6):k])
+    }
+  }
+}
+hydro_summer <- cbind(hydro_summer, max_precip_summer)
+
+
+
 # separate datasets for each waterlevel, season and member
 # winter
 for (i in pegel_ids) {
@@ -101,48 +137,6 @@ for (i in pegel_ids) {
       
     }
     assign(paste0("hydro_summer_", i, "_", j), cbind(get(paste0("hydro_summer_", i, "_", j)), snowstorage_diff))     
-  }
-}
-
-
-## add column max_precip
-# winter
-for (i in pegel_ids) {
-  for (j in levels(hydro_total$member)) {
-    max_precip <- as.numeric(rep(NA, length = nrow(get(paste0("hydro_winter_", i, "_", j)))))
-    for (k in 7:length(max_precip)) {
-      if (all(!is.na(get(paste0("hydro_winter_", i, "_", j))$precip[(k - 6):k]))) {
-        if (get(paste0("hydro_winter_", i, "_", j))$MM[k] == 11) {
-          if (all(get(paste0("hydro_winter_", i, "_", j))$MM[(k - 6):k] == 11)) {
-            max_precip[k] <- max(get(paste0("hydro_winter_", i, "_", j))$precip[(k - 6):k])
-          }
-        } else {
-          max_precip[k] <- max(get(paste0("hydro_winter_", i, "_", j))$precip[(k - 6):k])
-      }
-      }
-      
-    }
-    assign(paste0("hydro_winter_", i, "_", j), cbind(get(paste0("hydro_winter_", i, "_", j)), max_precip))  
-  }
-}
-
-# summer
-for (i in pegel_ids) {
-  for (j in levels(hydro_total$member)) {
-    max_precip <- as.numeric(rep(NA, length = nrow(get(paste0("hydro_summer_", i, "_", j)))))
-    for (k in 7:length(max_precip)) {
-      if (all(!is.na(get(paste0("hydro_summer_", i, "_", j))$precip[(k - 6):k]))) {
-        if (get(paste0("hydro_summer_", i, "_", j))$MM[k] == 5) {
-          if (all(get(paste0("hydro_summer_", i, "_", j))$MM[(k - 6):k] == 5)) {
-            max_precip[k] <- max(get(paste0("hydro_summer_", i, "_", j))$precip[(k - 6):k])
-          }
-        } else {
-          max_precip[k] <- max(get(paste0("hydro_summer_", i, "_", j))$precip[(k - 6):k])
-      }
-      }
-      
-    }
-    assign(paste0("hydro_winter_", i, "_", j), cbind(get(paste0("hydro_summer_", i, "_", j)), max_precip))      
   }
 }
 
@@ -1549,7 +1543,7 @@ summary(gam_kbe_avg_10304_winter_test)
 # 10304, summer
 gam_kbe_avg_10304_summer_test <- gam(lowlevel ~ s(max_precip, bs = "ps"), data = hydro_summer_10304_kbe, family = binomial(), method = "REML")
 summary(gam_kbe_avg_10304_summer_test)
-# viel Erklärungskraft alleine: avg_precip, avg_glorad, avg_soilwater, avg_snowstorage , avg_infiltration
+# viel Erklärungskraft alleine: avg_precip, avg_glorad, avg_soilwater, avg_snowstorage, avg_infiltration
 # wenig Erklärungskraft alleine: avg_airtmp, avg_relhum, groundwaterdepth, max_precip
 
 # 11502, winter
