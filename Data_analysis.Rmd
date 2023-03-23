@@ -269,9 +269,8 @@ ggsave("Plots/Chris/analysis/drainage_total_unmarked_2000_kbe.png", width = 12, 
 
 # Visualisierung der 10 Member für 10304, Jahr 2000
 hydro_total_10304 <- hydro_total %>% filter(name_waterlevel == "10304")
-ggplot(data = subset(hydro_total_10304, YY %in% 2000), mapping = aes(x = date, y = drainage, color = member)) +
+ggplot(data = subset(hydro_total_10304, YY %in% 2000), mapping = aes(x = date, y = drainage, color = member, alpha = 0.01)) +
   geom_line() +
-  geom_point() +
   labs(title = "Abfluss des Pegels Isar Mittenwald im Jahr 2000 getrennt \nnach Simulationsreihen",
        y = "Abflussmenge",
        x = "Datum") +
