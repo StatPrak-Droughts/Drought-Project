@@ -42,6 +42,41 @@ hydro_winter_20203$soilwater100 <- hydro_winter_20203$soilwater * 100
 hydro_winter_11502$soilwater100 <- hydro_winter_11502$soilwater * 100
 hydro_winter_10304$soilwater100 <- hydro_winter_10304$soilwater * 100
 
+
+## add column max_precip
+# winter
+max_precip <- as.numeric(rep(NA, length = nrow(hydro_winter)))
+for(k in 7:length(max_precip)) {
+  if (all(hydro_winter$member[(k - 6):(k - 1)] == hydro_winter$member[k]) &&
+      all(hydro_winter$name_waterlevel[(k - 6):(k - 1)] == hydro_winter$name_waterlevel[k])) {
+    if (hydro_winter$MM[k] == 11) {
+      if (all(hydro_winter$MM[(k - 6):(k - 1)] == 11)) {
+        max_precip[k] <- max(hydro_winter$precip[(k - 6):k])
+      }
+    } else {
+    max_precip[k] <- max(hydro_winter$precip[(k - 6):k])
+    }
+  }
+}
+hydro_winter <- cbind(hydro_winter, max_precip)
+
+# summer
+max_precip <- as.numeric(rep(NA, length = nrow(hydro_summer)))
+for(k in 7:length(max_precip)) {
+  if (all(hydro_summer$member[(k - 6):(k - 1)] == hydro_summer$member[k]) &&
+      all(hydro_summer$name_waterlevel[(k - 6):(k - 1)] == hydro_summer$name_waterlevel[k])) {
+    if (hydro_summer$MM[k] == 5) {
+      if (all(hydro_summer$MM[(k - 6):(k - 1)] == 5)) {
+        max_precip[k] <- max(hydro_summer$precip[(k - 6):k])
+      }
+    } else {
+    max_precip[k] <- max(hydro_summer$precip[(k - 6):k])
+    }
+  }
+}
+hydro_summer <- cbind(hydro_summer, max_precip)
+
+
 ##Rescaling avg variables
 hydro_winter$max_precip_scaled <- hydro_winter$max_precip * 1.25
 hydro_summer$max_precip_scaled <- hydro_summer$max_precip * 1.25
@@ -165,41 +200,6 @@ hydro_summer_20203$avg12_snowstorage <- zoo::rollmean(hydro_summer_20203$snowsto
 hydro_summer_20203$med_precpip <- zoo::rollmedian(hydro_summer_20203$precip, k = 7, fill = NA)
 hydro_summer_20203$med_soilwater <- zoo::rollmedian(hydro_summer_20203$soilwater, k = 7, fill = NA)
 hydro_summer_20203$med_snowstorage <- zoo::rollmedian(hydro_summer_20203$snowstorage, k = 7, fill = NA)
-
-
-## add column max_precip
-# winter
-max_precip_winter <- as.numeric(rep(NA, length = nrow(hydro_winter)))
-for(k in 7:length(max_precip_winter)) {
-  if (all(hydro_winter$member[(k - 6):(k - 1)] == hydro_winter$member[k]) &&
-      all(hydro_winter$name_waterlevel[(k - 6):(k - 1)] == hydro_winter$name_waterlevel[k])) {
-    if (hydro_winter$MM[k] == 11) {
-      if (all(hydro_winter$MM[(k - 6):(k - 1)] == 11)) {
-        max_precip_winter[k] <- max(hydro_winter$precip[(k - 6):k])
-      }
-    } else {
-    max_precip_winter[k] <- max(hydro_winter$precip[(k - 6):k])
-    }
-  }
-}
-hydro_winter <- cbind(hydro_winter, max_precip_winter)
-
-# summer
-max_precip_summer <- as.numeric(rep(NA, length = nrow(hydro_summer)))
-for(k in 7:length(max_precip_summer)) {
-  if (all(hydro_summer$member[(k - 6):(k - 1)] == hydro_summer$member[k]) &&
-      all(hydro_summer$name_waterlevel[(k - 6):(k - 1)] == hydro_summer$name_waterlevel[k])) {
-    if (hydro_summer$MM[k] == 5) {
-      if (all(hydro_summer$MM[(k - 6):(k - 1)] == 5)) {
-        max_precip_summer[k] <- max(hydro_summer$precip[(k - 6):k])
-      }
-    } else {
-    max_precip_summer[k] <- max(hydro_summer$precip[(k - 6):k])
-    }
-  }
-}
-hydro_summer <- cbind(hydro_summer, max_precip_summer)
-
 
 
 # separate datasets for each waterlevel, season and member
@@ -1653,14 +1653,14 @@ summary(gam_2)
 
 ```
 
-# GAM for lowlevel with avg/max drivers
+# GAM for lowlevel with only one avg/max driver
 ```{r}
 library(mgcv)
-
 ## which drivers have a high explanatory power per water level and per season 
 # 10304, winter
-gam_kbe_avg_10304_winter_test <- gam(lowlevel ~ s(max_precip, bs = "ps"), data = hydro_winter_10304_kbe, family = binomial(), method = "REML")
+gam_kbe_avg_10304_winter_test <- gam(lowlevel ~ s(avg_snowstorage, bs = "ps"), data = hydro_winter_10304_kbe, family = binomial(), method = "REML")
 summary(gam_kbe_avg_10304_winter_test)
+plot(gam_kbe_avg_10304_winter_test)
 # viel Erklärungskraft alleine (>= 10%): avg_airtmp, avg_glorad, avg_soilwater, avg_snowstorage, groundwaterdepth, avg_infiltration, max_precip
 # wenig Erklärungskraft alleine (< 10%): avg_precip, avg_relhum
 
@@ -1693,26 +1693,80 @@ gam_kbe_avg_20203_summer_test <- gam(lowlevel ~ s(max_precip, bs = "ps"), data =
 summary(gam_kbe_avg_20203_summer_test)
 # viel Erklärungskraft alleine: avg_soilwater
 # wenig Erklärungskraft alleine: avg_precip, avg_airtmp, avg_glorad, avg_relhum, avg_snowstorage, groundwaterdepth, avg_infiltration, max_precip
+```
 
-
-
-
-## gam mit avg drivers glatten Effekten (penalized B-splines) für member kbe
+# GAM for lowlevel with avg/max drivers: full models without interactions etc.
+```{r}
+## gam mit avg/max drivers glatten Effekten (penalized B-splines) für member kbe
 # 10304, winter
-gam_kbe_avg_10304_winter <- gam(lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps") , data = hydro_winter_10304_kbe, family = binomial(), method = "REML")
+gam_kbe_avg_10304_winter <- gam(lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps") + s(max_precip, bs = "ps"), data = hydro_winter_10304_kbe, family = binomial(), method = "REML")
 summary(gam_kbe_avg_10304_winter)
 plot(gam_kbe_avg_10304_winter)
 
 # 10304, summer
-gam_kbe_avg_10304_summer <- gam(lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps") , data = hydro_summer_10304_kbe, family = binomial(), method = "REML")
+gam_kbe_avg_10304_summer <- gam(lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps") + s(max_precip, bs = "ps"), data = hydro_summer_10304_kbe, family = binomial(), method = "REML")
 summary(gam_kbe_avg_10304_summer)
 plot(gam_kbe_avg_10304_summer)
 
 # 11502, winter
-gam_kbe_avg_11502_winter <- gam(lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps") , data = hydro_winter_11502_kbe, family = binomial(), method = "REML")
+gam_kbe_avg_11502_winter <- gam(lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps") + s(max_precip, bs = "ps"), data = hydro_winter_11502_kbe, family = binomial(), method = "REML")
 summary(gam_kbe_avg_11502_winter)
 plot(gam_kbe_avg_11502_winter)
+
+# 11502, summer
+gam_kbe_avg_11502_summer <- gam(lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps") + s(max_precip, bs = "ps"), data = hydro_summer_11502_kbe, family = binomial(), method = "REML")
+summary(gam_kbe_avg_11502_summer)
+plot(gam_kbe_avg_11502_summer)
+
+# 20203, winter
+gam_kbe_avg_20203_winter <- gam(lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps") + s(max_precip, bs = "ps"), data = hydro_winter_20203_kbe, family = binomial(), method = "REML")
+summary(gam_kbe_avg_20203_winter)
+plot(gam_kbe_avg_20203_winter)
+
+# 20203, summer
+gam_kbe_avg_20203_summer <- gam(lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps") + s(max_precip, bs = "ps"), data = hydro_summer_20203_kbe, family = binomial(), method = "REML")
+summary(gam_kbe_avg_20203_summer)
+plot(gam_kbe_avg_20203_summer)
 ```
+# Variable selection of full models
+```{r}
+# 10304, winter
+# NAs durch Mittelwert der Spalte imputieren
+for (i in 1:length(names(hydro_winter_10304_kbe))) {
+  if (is.numeric(hydro_winter_10304_kbe[, i])) {
+    for (k in 1:nrow(hydro_winter_10304_kbe)) {
+    if (is.na(hydro_winter_10304_kbe[k, i])) {
+      hydro_winter_10304_kbe[k, i] <- mean(hydro_winter_10304_kbe[, i], na.rm = TRUE)
+    }
+  }
+  }
+}
+
+gam_kbe_avg_10304_winter <- gam(lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps") + s(max_precip, bs = "ps"), data = hydro_winter_10304_kbe, family = binomial(), method = "REML")
+summary(gam_kbe_avg_10304_winter)
+## wie stepAIC?
+gam_kbe_avg_10304_winter_aic <- stepAIC(gam_kbe_avg_10304_winter, direction = "backward")
+
+
+gam_kbe_avg_10304_winter_select <- gam(lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps") + s(max_precip, bs = "ps"), data = hydro_winter_10304_kbe, family = binomial(), method = "REML", select = TRUE)
+summary(gam_kbe_avg_10304_winter_select)
+plot(gam_kbe_avg_10304_winter_select)
+
+gam_kbe_avg_10304_winter_ts <- gam(lowlevel ~ YY + s(avg_precip, bs = "ts") + s(avg_airtmp, bs = "ts") + s(avg_glorad, bs = "ts") + s(avg_relhum, bs = "ts") + s(avg_soilwater, bs = "ts") + s(avg_snowstorage, bs = "ts") + s(groundwaterdepth, bs = "ts") + s(avg_infiltration, bs = "ts") + s(max_precip, bs = "ts"), data = hydro_winter_10304_kbe, family = binomial(), method = "REML")
+summary(gam_kbe_avg_10304_winter_ts)
+plot(gam_kbe_avg_10304_winter_ts)
+
+# 10304, summer
+gam_kbe_avg_10304_summer_select <- gam(lowlevel ~ YY + s(avg_precip) + s(avg_airtmp) + s(avg_glorad) + s(avg_relhum) + s(avg_soilwater) + s(avg_snowstorage) + s(groundwaterdepth) + s(avg_infiltration) + s(max_precip), data = hydro_summer_10304_kbe, family = binomial(), method = "REML", select = TRUE)
+summary(gam_kbe_avg_10304_summer_select)
+plot(gam_kbe_avg_10304_summer_select)
+
+# 11502, winter
+gam_kbe_avg_11502_winter_select <- gam(lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps") + s(max_precip, bs = "ps"), data = hydro_winter_11502_kbe, family = binomial(), method = "REML", select = TRUE)
+summary(gam_kbe_avg_11502_winter_select)
+plot(gam_kbe_avg_11502_winter_select)
+```
+
 
 # GAM for lowlevel_first with avg drivers
 ```{r}
