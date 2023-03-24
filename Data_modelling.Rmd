@@ -99,6 +99,73 @@ hydro_winter_11502$avg_glorad_scaled <- hydro_winter_11502$avg_glorad * 0.062
 hydro_winter_11502$avg_relhum_scaled <- hydro_winter_11502$avg_relhum * 1.4
 hydro_winter_11502$avg_infiltration_scaled <- hydro_winter_11502$avg_infiltration * 43
 
+# Read data
+hydro_summer_20203 <- readRDS(file = "./data/hydro_summer_20203.RDS")
+hydro_summer_11502 <- readRDS(file = "./data/hydro_summer_11502.RDS")
+hydro_summer_10304 <- readRDS(file = "./data/hydro_summer_10304.RDS")
+hydro_winter_20203 <- readRDS(file = "./data/hydro_winter_20203.RDS")
+hydro_winter_11502 <- readRDS(file = "./data/hydro_winter_11502.RDS")
+hydro_winter_10304 <- readRDS(file = "./data/hydro_winter_10304.RDS")
+hydro_total <- readRDS(file = "./data/hydro_total.RDS")
+pegel_prop <- readRDS(file = "./data/pegel_prop.RDS")
+# Add rescaled soilwater
+hydro_summer$soilwater100 <- hydro_summer$soilwater * 100
+hydro_summer_20203$soilwater100 <- hydro_summer_20203$soilwater * 100
+hydro_summer_11502$soilwater100 <- hydro_summer_11502$soilwater * 100
+hydro_summer_10304$soilwater100 <- hydro_summer_10304$soilwater * 100
+hydro_winter$soilwater100 <- hydro_winter$soilwater * 100
+hydro_winter_20203$soilwater100 <- hydro_winter_20203$soilwater * 100
+hydro_winter_11502$soilwater100 <- hydro_winter_11502$soilwater * 100
+hydro_winter_10304$soilwater100 <- hydro_winter_10304$soilwater * 100
+
+# Rolling means longer duration
+# 10304
+# Winter
+hydro_winter_10304$avg12_precip <- zoo::rollmean(hydro_winter_10304$precip, k = 12, fill = NA)
+hydro_winter_10304$avg12_soilwater <- zoo::rollmean(hydro_winter_10304$soilwater, k = 12, fill = NA)
+hydro_winter_10304$avg12_snowstorage <- zoo::rollmean(hydro_winter_10304$snowstorage, k = 12, fill = NA)
+hydro_winter_10304$med_precpip <- zoo::rollmedian(hydro_winter_10304$precip, k = 7, fill = NA)
+hydro_winter_10304$med_soilwater <- zoo::rollmedian(hydro_winter_10304$soilwater, k = 7, fill = NA)
+hydro_winter_10304$med_snowstorage <- zoo::rollmedian(hydro_winter_10304$snowstorage, k = 7, fill = NA)
+# Summer
+hydro_summer_10304$avg12_precip <- zoo::rollmean(hydro_summer_10304$precip, k = 12, fill = NA)
+hydro_summer_10304$avg12_soilwater <- zoo::rollmean(hydro_summer_10304$soilwater, k = 12, fill = NA)
+hydro_summer_10304$avg12_snowstorage <- zoo::rollmean(hydro_summer_10304$snowstorage, k = 12, fill = NA)
+hydro_summer_10304$med_precpip <- zoo::rollmedian(hydro_summer_10304$precip, k = 7, fill = NA)
+hydro_summer_10304$med_soilwater <- zoo::rollmedian(hydro_summer_10304$soilwater, k = 7, fill = NA)
+hydro_summer_10304$med_snowstorage <- zoo::rollmedian(hydro_summer_10304$snowstorage, k = 7, fill = NA)
+
+# 11502
+# Winter
+hydro_winter_11502$avg12_precip <- zoo::rollmean(hydro_winter_11502$precip, k = 12, fill = NA)
+hydro_winter_11502$avg12_soilwater <- zoo::rollmean(hydro_winter_11502$soilwater, k = 12, fill = NA)
+hydro_winter_11502$avg12_snowstorage <- zoo::rollmean(hydro_winter_11502$snowstorage, k = 12, fill = NA)
+hydro_winter_11502$med_precpip <- zoo::rollmedian(hydro_winter_11502$precip, k = 7 , fill = NA)
+hydro_winter_11502$med_soilwater <- zoo::rollmedian(hydro_winter_11502$soilwater, k = 7, fill = NA)
+hydro_winter_11502$med_snowstorage <- zoo::rollmedian(hydro_winter_11502$snowstorage, k = 7, fill = NA)
+#Summer
+hydro_summer_11502$avg12_precip <- zoo::rollmean(hydro_summer_11502$precip, k = 12, fill = NA)
+hydro_summer_11502$avg12_soilwater <- zoo::rollmean(hydro_summer_11502$soilwater, k = 12, fill = NA)
+hydro_summer_11502$avg12_snowstorage <- zoo::rollmean(hydro_summer_11502$snowstorage, k = 12, fill = NA)
+hydro_summer_11502$med_precpip <- zoo::rollmedian(hydro_summer_11502$precip, k = 7, fill = NA)
+hydro_summer_11502$med_soilwater <- zoo::rollmedian(hydro_summer_11502$soilwater, k = 7, fill = NA)
+hydro_summer_11502$med_snowstorage <- zoo::rollmedian(hydro_summer_11502$snowstorage, k = 7, fill = NA)
+
+# 20203
+hydro_winter_20203$avg12_precip <- zoo::rollmean(hydro_winter_20203$precip, k = 12, fill = NA)
+hydro_winter_20203$avg12_soilwater <- zoo::rollmean(hydro_winter_20203$soilwater, k = 12, fill = NA)
+hydro_winter_20203$avg12_snowstorage <- zoo::rollmean(hydro_winter_20203$snowstorage, k = 12, fill = NA)
+hydro_winter_20203$med_precpip <- zoo::rollmedian(hydro_winter_20203$precip, k = 7, fill = NA)
+hydro_winter_20203$med_soilwater <- zoo::rollmedian(hydro_winter_20203$soilwater, k = 7, fill = NA)
+hydro_winter_20203$med_snowstorage <- zoo::rollmedian(hydro_winter_20203$snowstorage, k = 7, fill = NA)
+#Summer
+hydro_summer_20203$avg12_precip <- zoo::rollmean(hydro_summer_20203$precip, k = 12, fill = NA)
+hydro_summer_20203$avg12_soilwater <- zoo::rollmean(hydro_summer_20203$soilwater, k = 12, fill = NA)
+hydro_summer_20203$avg12_snowstorage <- zoo::rollmean(hydro_summer_20203$snowstorage, k = 12, fill = NA)
+hydro_summer_20203$med_precpip <- zoo::rollmedian(hydro_summer_20203$precip, k = 7, fill = NA)
+hydro_summer_20203$med_soilwater <- zoo::rollmedian(hydro_summer_20203$soilwater, k = 7, fill = NA)
+hydro_summer_20203$med_snowstorage <- zoo::rollmedian(hydro_summer_20203$snowstorage, k = 7, fill = NA)
+
 
 ## add column max_precip
 # winter
