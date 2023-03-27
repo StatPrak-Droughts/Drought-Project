@@ -14,6 +14,8 @@ library(dLagM)
 library(dlnm)
 library(zoo)
 theme_set(theme_gray())
+library(knitr)
+library(kableExtra)
 # Mapping imports
 library(sf)
 library(leaflet)
@@ -420,6 +422,70 @@ ggplot(data = table_yearly_avg_max_soilwater, mapping = aes(x = YY, y = avg_max_
 ggsave("Plots/Chris/analysis/yearly_avg_max_soilwater.png", width = 12, height = 9)
 
 ```
+
+## Chris: Extreme value analysis
+```{r Chris: Extreme value analysis}
+### Quantile: -------------------------------------------------------------
+
+# Define the quantiles for which you want to calculate the percentage of the target variable
+quantiles <- c(0.05, 0.1, 0.25, 0.75, 0.9, 0.95)
+
+# Create an empty matrix to store the percentage values
+quantile_percents <- matrix(nrow=length(quantiles), ncol=ncol(hydro_total[, 15:22]))
+
+# Loop over each predictor variable and calculate the percentage of the target variable for each quantile
+for (i in 15:22) {
+  # Get the quantile values for the current predictor variable
+  quantile_values <- quantile(hydro_total[, i], probs=quantiles)
+  for (j in 1:length(quantiles)) {
+    # Calculate the percentage of the target variable for the current quantile and predictor variable
+    quantile_percents[j, i - 14] <- sum((hydro_total[hydro_total[, i] >= quantile_values[j], "lowlevel"]) == "TRUE")/sum(hydro_total[, "lowlevel"] == "TRUE")
+  }
+}
+
+# Print the results
+colnames(quantile_percents) <- colnames(hydro_total)[15:22]
+rownames(quantile_percents) <- paste0(quantiles*100, "%")
+quantile_percents <- round(quantile_percents, digits = 3)
+quantile_percents
+
+# Save the table as a PDF file
+pdf("tables/quantile_percents.pdf", height=4, width=10)
+grid.table(quantile_percents)
+dev.off()
+
+### Ranges: ---------------------------------------------------------------
+# Define the quantiles for which you want to calculate the percentage of the target variable
+quantiles_ranges <- seq(0, 1, by=0.1)
+
+# Create an empty matrix to store the percentage values
+quantile_percents_ranges <- matrix(nrow=length(quantiles_ranges)-1, ncol=ncol(hydro_total[, 15:22]))
+
+# Loop over each predictor variable and calculate the percentage of the target variable for each range
+for (i in 15:22) {
+  # Get the quantile values for the current predictor variable
+  quantile_values <- quantile(hydro_total[, i], probs=quantiles_ranges)
+  for (j in 1:(length(quantiles_ranges)-1)) {
+    # Calculate the percentage of the target variable for the current range and predictor variable
+    quantile_percents_ranges[j, i - 14] <- sum((hydro_total[hydro_total[, i] >= quantile_values[j] & hydro_total[, i] < quantile_values[j+1], "lowlevel"]) == "TRUE")/sum((hydro_total[, "lowlevel"]) == "TRUE")
+  }
+}
+
+# Print the results
+colnames(quantile_percents_ranges) <- colnames(hydro_total)[15:22]
+rownames(quantile_percents_ranges) <- paste0(quantiles[-length(quantiles)]*100, "% - ", quantiles[-1]*100, "%")
+quantile_percents_ranges <- round(quantile_percents_ranges, digits = 3)
+quantile_percents_ranges
+
+# Save the table as a PDF file
+pdf("tables/quantile_percents_ranges.pdf", height=4, width=10)
+grid.table(quantile_percents_ranges)
+dev.off()
+
+
+
+```
+
 
 ## Stationary analysis
 ```{r}
