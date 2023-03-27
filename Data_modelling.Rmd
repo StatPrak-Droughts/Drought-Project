@@ -159,6 +159,7 @@ hydro_winter_10304$soilwater100 <- hydro_winter_10304$soilwater * 100
 hydro_winter_10304$avg12_precip <- zoo::rollmean(hydro_winter_10304$precip, k = 12, fill = NA)
 hydro_winter_10304$avg12_soilwater <- zoo::rollmean(hydro_winter_10304$soilwater, k = 12, fill = NA)
 hydro_winter_10304$avg12_snowstorage <- zoo::rollmean(hydro_winter_10304$snowstorage, k = 12, fill = NA)
+hydro_winter_10304$avg30_snowstorage <- zoo::rollmean(hydro_winter_10304$snowstorage, k = 30, fill = mean(hydro_winter_10304$snowstorage))
 hydro_winter_10304$med_precpip <- zoo::rollmedian(hydro_winter_10304$precip, k = 7, fill = NA)
 hydro_winter_10304$med_soilwater <- zoo::rollmedian(hydro_winter_10304$soilwater, k = 7, fill = NA)
 hydro_winter_10304$med_snowstorage <- zoo::rollmedian(hydro_winter_10304$snowstorage, k = 7, fill = NA)
@@ -166,6 +167,7 @@ hydro_winter_10304$med_snowstorage <- zoo::rollmedian(hydro_winter_10304$snowsto
 hydro_summer_10304$avg12_precip <- zoo::rollmean(hydro_summer_10304$precip, k = 12, fill = NA)
 hydro_summer_10304$avg12_soilwater <- zoo::rollmean(hydro_summer_10304$soilwater, k = 12, fill = NA)
 hydro_summer_10304$avg12_snowstorage <- zoo::rollmean(hydro_summer_10304$snowstorage, k = 12, fill = NA)
+hydro_summer_10304$avg30_snowstorage <- zoo::rollmean(hydro_summer_10304$snowstorage, k = 30, fill = mean(hydro_summer_10304$snowstorage))
 hydro_summer_10304$med_precpip <- zoo::rollmedian(hydro_summer_10304$precip, k = 7, fill = NA)
 hydro_summer_10304$med_soilwater <- zoo::rollmedian(hydro_summer_10304$soilwater, k = 7, fill = NA)
 hydro_summer_10304$med_snowstorage <- zoo::rollmedian(hydro_summer_10304$snowstorage, k = 7, fill = NA)
@@ -2018,5 +2020,65 @@ for (member in hydro_winter_10304$member) {
 }
 
 lapply(model_list, summary)
+```
+# AIC comparison for member kbe
+```{r}
+hydro_summer_10304_kbe <- hydro_summer_10304 %>% filter(member %in% "kbe")
+hydro_summer_11502_kbe <- hydro_summer_11502 %>% filter(member %in% "kbe")
+hydro_summer_20203_kbe <- hydro_summer_20203 %>% filter(member %in% "kbe")
+
+hydro_summer_10304_kbe$avg30_snowstorage <- zoo::rollmean(hydro_summer_10304_kbe$snowstorage, k = 30, fill = mean(hydro_summer_10304_kbe$snowstorage))
+hydro_summer_11502_kbe$avg30_snowstorage <- zoo::rollmean(hydro_summer_11502_kbe$snowstorage, k = 30, fill = mean(hydro_summer_11502_kbe$snowstorage))
+hydro_summer_20203_kbe$avg30_snowstorage <- zoo::rollmean(hydro_summer_20203_kbe$snowstorage, k = 30, fill = mean(hydro_summer_20203_kbe$snowstorage))
+```
+
+```{r}
+hydro_winter_10304_kbe <- hydro_winter_10304 %>% filter(member %in% "kbe")
+hydro_winter_11502_kbe <- hydro_winter_11502 %>% filter(member %in% "kbe")
+hydro_winter_20203_kbe <- hydro_winter_20203 %>% filter(member %in% "kbe")
+
+hydro_winter_10304_kbe$avg30_snowstorage <- zoo::rollmean(hydro_winter_10304_kbe$snowstorage, k = 30, fill = mean(hydro_winter_10304_kbe$snowstorage))
+hydro_winter_11502_kbe$avg30_snowstorage <- zoo::rollmean(hydro_winter_11502_kbe$snowstorage, k = 30, fill = mean(hydro_winter_11502_kbe$snowstorage))
+hydro_winter_20203_kbe$avg30_snowstorage <- zoo::rollmean(hydro_winter_20203_kbe$snowstorage, k = 30, fill = mean(hydro_winter_20203_kbe$snowstorage))
+```
+
+## Winter
+### Mittenwald
+# GLM
+```{r}
+glm_all_10304 <- glm(formula = lowlevel ~ YY + avg_precip + avg_airtmp+ avg_glorad + avg_relhum + avg_soilwater + avg_snowstorage + groundwaterdepth + avg_infiltration, family = binomial(), data = hydro_winter_10304_kbe)
+
+stepAIC(object = glm_all_10304, direction = "both",
+k = log(nrow(hydro_winter_10304_kbe)), trace = FALSE)
+```
+
+```{r}
+gam_1_10304 <- gam(lowlevel ~ YY + avg_precip + avg_airtmp+ avg_glorad + avg_relhum + avg_soilwater + avg_snowstorage + groundwaterdepth + avg_infiltration, data = hydro_winter_10304_kbe, family = binomial())
+gam_2_10304 <- gam(lowlevel ~ YY + avg_precip + avg_airtmp + avg_glorad + avg_relhum + avg_soilwater + avg30_snowstorage + groundwaterdepth + avg_infiltration, data = hydro_winter_10304_kbe, family = binomial())
+gam_3_10304 <- gam(lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_airtmp, bs = "ps") + avg_glorad + avg_relhum + avg_soilwater + avg_snowstorage + groundwaterdepth + avg_infiltration, data = hydro_winter_10304_kbe, family = binomial())
+gam_4_10304 <- gam(lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_airtmp, bs = "ps") + avg_glorad + avg_relhum + avg_soilwater + s(avg30_snowstorage, bs = "ps") + groundwaterdepth + avg_infiltration, data = hydro_winter_10304_kbe, family = binomial())
+gam_5_10304 <- gam(lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_airtmp, bs = "ps") + avg_glorad + avg_relhum + s(avg_soilwater, bs = "ps") + s(avg30_snowstorage, bs = "ps") + groundwaterdepth + avg_infiltration, data = hydro_winter_10304_kbe, family = binomial())
+gam_6_10304 <- gam(lowlevel ~ YY + s(avg_precip, bs = "ps") + avg_airtmp + avg_glorad + avg_relhum + s(avg_soilwater, bs = "ps") + s(avg30_snowstorage, bs = "ps") + groundwaterdepth + avg_infiltration, data = hydro_winter_10304_kbe, family = binomial())
+gam_7_10304 <- gam(lowlevel ~ YY + s(avg_precip, bs = "ps") + avg_airtmp + avg_relhum + s(avg_soilwater, bs = "ps") + s(avg30_snowstorage, bs = "ps") + groundwaterdepth + avg_infiltration, data = hydro_winter_10304_kbe, family = binomial())
+gam_8_10304 <- gam(lowlevel ~ s(avg_precip, bs = "ps") + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps"), data = hydro_winter_10304_kbe, family = binomial())
+
+gam_9_10304 <- gam(lowlevel ~ s(avg_precip, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps"), data = hydro_winter_10304_kbe, family = binomial())
+
+gam_10_10304 <- gam(lowlevel ~ s(avg_precip, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg30_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps"), data = hydro_winter_10304_kbe, family = binomial())
+
+gam_11_10304 <- gam(lowlevel ~ s(avg_precip, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg30_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps") + s(avg_soilwater, by = avg_precip) , data = hydro_winter_10304_kbe, family = binomial())
+
+gam_12_10304 <- gam(lowlevel ~ s(avg_precip, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg30_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps") + ti(avg_precip, airtmp), data = hydro_winter_10304_kbe, family = binomial())
+
+gam_13_10304 <- gam(lowlevel ~ s(avg_precip, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg30_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps") + s(YY, bs = "re"), data = hydro_winter_10304_kbe, family = binomial())
+
+model_10304 <- list(model_1 = gam_1_10304, model_2 = gam_2_10304, model_3 = gam_3_10304, model_4 = gam_4_10304, model_5 = gam_5_10304, model_6 = gam_6_10304, model_7 = gam_7_10304, model_8 = gam_8_10304, model_9 = gam_9_10304, model_10 = gam_10_10304, model_11 = gam_11_10304, model_12 = gam_12_10304, model_13 = gam_13_10304)
+
+lapply(model_10304, AIC)
+```
+
+## Summer
+```{r}
+
 ```
 
