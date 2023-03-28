@@ -83,15 +83,6 @@ levels(hydro_winter$lowlevel) <- c(FALSE, TRUE)
 hydro_summer$hydro_year <- as.factor(hydro_summer$hydro_year)
 hydro_winter$hydro_year <- as.factor(hydro_winter$hydro_year)
 
-
-# Create subsets for hydrological half-year for each waterlevel
-hydro_summer_20203 <- hydro_summer %>% filter(name_waterlevel == "20203")
-hydro_summer_11502 <- hydro_summer %>% filter(name_waterlevel == "11502")
-hydro_summer_10304 <- hydro_summer %>% filter(name_waterlevel == "10304")
-hydro_winter_20203 <- hydro_winter %>% filter(name_waterlevel == "20203")
-hydro_winter_11502 <- hydro_winter %>% filter(name_waterlevel == "11502")
-hydro_winter_10304 <- hydro_winter %>% filter(name_waterlevel == "10304")
-
 # Create hydro total
 hydro_total <- rbind(hydro_summer, hydro_winter)
 ```
@@ -100,13 +91,7 @@ hydro_total <- rbind(hydro_summer, hydro_winter)
 ```{r Data manipulation}
 # Add rescaled soilwater
 hydro_summer$soilwater100 <- hydro_summer$soilwater * 100
-hydro_summer_20203$soilwater100 <- hydro_summer_20203$soilwater * 100
-hydro_summer_11502$soilwater100 <- hydro_summer_11502$soilwater * 100
-hydro_summer_10304$soilwater100 <- hydro_summer_10304$soilwater * 100
 hydro_winter$soilwater100 <- hydro_winter$soilwater * 100
-hydro_winter_20203$soilwater100 <- hydro_winter_20203$soilwater * 100
-hydro_winter_11502$soilwater100 <- hydro_winter_11502$soilwater * 100
-hydro_winter_10304$soilwater100 <- hydro_winter_10304$soilwater * 100
 
 ## add column max_precip
 # winter
@@ -141,11 +126,145 @@ for(k in 7:length(max_precip)) {
 }
 hydro_summer <- cbind(hydro_summer, max_precip)
 
-
-##Rescaling avg Variables
+##Rescaling
 hydro_winter$max_precip_scaled <- hydro_winter$max_precip * 1.25
 hydro_summer$max_precip_scaled <- hydro_summer$max_precip * 1.25
 
+
+# add column snowstorage_diff
+# winter
+snowstorage_diff <- as.numeric(rep(NA, length = nrow(hydro_winter)))
+for(k in 2:length(snowstorage_diff)) {
+  if (hydro_winter$member[k - 1] == hydro_winter$member[k] &&
+      hydro_winter$name_waterlevel[k - 1] == hydro_winter$name_waterlevel[k]) {
+    if(!any(is.na(hydro_winter$snowstorage[(k - 1):k]))) {
+      if (hydro_winter$MM[k] == 11) {
+        if (hydro_winter$MM[k - 1] == 11) {
+          snowstorage_diff[k] <- hydro_winter$snowstorage[k] - hydro_winter$snowstorage[k - 1]
+        }
+      } else {
+        snowstorage_diff[k] <- hydro_winter$snowstorage[k] - hydro_winter$snowstorage[k - 1]
+      }
+    }
+  }
+}
+hydro_winter <- cbind(hydro_winter, snowstorage_diff) 
+
+# summer
+snowstorage_diff <- as.numeric(rep(NA, length = nrow(hydro_summer)))
+for(k in 2:length(snowstorage_diff)) {
+  if (hydro_summer$member[k - 1] == hydro_summer$member[k] &&
+      hydro_summer$name_waterlevel[k - 1] == hydro_summer$name_waterlevel[k]) {
+    if(!any(is.na(hydro_summer$snowstorage[(k - 1):k]))) {
+      if (hydro_summer$MM[k] == 5) {
+        if (hydro_summer$MM[k - 1] == 5) {
+          snowstorage_diff[k] <- hydro_summer$snowstorage[k] - hydro_summer$snowstorage[k - 1]
+        }
+      } else {
+        snowstorage_diff[k] <- hydro_summer$snowstorage[k] - hydro_summer$snowstorage[k - 1]
+      }
+    }
+  }
+}
+hydro_summer <- cbind(hydro_summer, snowstorage_diff)
+
+
+# add column snowstorage_drain
+# winter
+hydro_winter$snowstorage_drain <- hydro_winter$snowstorage_diff
+for (k in 1:length(hydro_winter$snowstorage_drain)) {
+  if (!is.na(hydro_winter$snowstorage_diff[k])) {
+    if (hydro_winter$snowstorage_diff[k] >= 0) {
+    hydro_winter$snowstorage_drain[k] <- 0
+    }
+  }
+}
+
+# summer
+hydro_summer$snowstorage_drain <- hydro_summer$snowstorage_diff
+for (k in 1:length(hydro_summer$snowstorage_drain)) {
+  if (!is.na(hydro_summer$snowstorage_diff[k])) {
+    if (hydro_summer$snowstorage_diff[k] >= 0) {
+    hydro_summer$snowstorage_drain[k] <- 0
+    }
+  }
+}
+
+# add column avg_snowstorage_drain
+# winter
+avg_snowstorage_drain <- as.numeric(rep(NA, length = nrow(hydro_winter)))
+for(k in 7:length(avg_snowstorage_drain)) {
+  if (all(hydro_winter$member[(k - 6):(k - 1)] == hydro_winter$member[k]) &&
+      all(hydro_winter$name_waterlevel[(k - 6):(k - 1)] == hydro_winter$name_waterlevel[k])) {
+    if (hydro_winter$MM[k] == 11) {
+      if (all(hydro_winter$MM[(k - 6):(k - 1)] == 11)) {
+        avg_snowstorage_drain[k] <- mean(hydro_winter$snowstorage_drain[(k - 6):k], na.rm = TRUE)
+      }
+    } else {
+      avg_snowstorage_drain[k] <- mean(hydro_winter$snowstorage_drain[(k - 6):k], na.rm = TRUE)
+    }
+  }
+}
+hydro_winter <- cbind(hydro_winter, avg_snowstorage_drain) 
+
+# summer
+avg_snowstorage_drain <- as.numeric(rep(NA, length = nrow(hydro_summer)))
+for(k in 7:length(avg_snowstorage_drain)) {
+  if (all(hydro_summer$member[(k - 6):(k - 1)] == hydro_summer$member[k]) &&
+      all(hydro_summer$name_waterlevel[(k - 6):(k - 1)] == hydro_summer$name_waterlevel[k])) {
+    if (hydro_summer$MM[k] == 5) {
+      if (all(hydro_summer$MM[(k - 6):(k - 1)] == 5)) {
+        avg_snowstorage_drain[k] <- mean(hydro_summer$snowstorage_drain[(k - 6):k], na.rm = TRUE)
+      }
+    } else {
+      avg_snowstorage_drain[k] <- mean(hydro_summer$snowstorage_drain[(k - 6):k], na.rm = TRUE)
+    }
+  }
+}
+hydro_summer <- cbind(hydro_summer, avg_snowstorage_drain) 
+
+
+## add column lowlevel_first
+# winter
+lowlevel_first <- as.numeric(rep(NA, length = nrow(hydro_winter)))
+for(k in 1:length(lowlevel_first)) {
+  if (!is.na(hydro_winter$lowlevel_days[k])) {
+    if (hydro_winter$lowlevel_days[k] == 1) {
+      lowlevel_first[k] <- TRUE
+    } else {
+      lowlevel_first[k] <- FALSE
+    }
+  }
+}
+hydro_winter <- cbind(hydro_winter, lowlevel_first) 
+
+
+# summer
+lowlevel_first <- as.numeric(rep(NA, length = nrow(hydro_summer)))
+for(k in 1:length(lowlevel_first)) {
+  if (!is.na(hydro_summer$lowlevel_days[k])) {
+    if (hydro_summer$lowlevel_days[k] == 1) {
+      lowlevel_first[k] <- TRUE
+    } else {
+      lowlevel_first[k] <- FALSE
+    }
+  }
+}
+hydro_summer <- cbind(hydro_summer, lowlevel_first) 
+
+
+
+
+# Create subsets for hydrological half-year for each waterlevel
+hydro_summer_20203 <- hydro_summer %>% filter(name_waterlevel == "20203")
+hydro_summer_11502 <- hydro_summer %>% filter(name_waterlevel == "11502")
+hydro_summer_10304 <- hydro_summer %>% filter(name_waterlevel == "10304")
+hydro_winter_20203 <- hydro_winter %>% filter(name_waterlevel == "20203")
+hydro_winter_11502 <- hydro_winter %>% filter(name_waterlevel == "11502")
+hydro_winter_10304 <- hydro_winter %>% filter(name_waterlevel == "10304")
+
+
+##Rescaling avg Variables
 hydro_summer_10304$avg_soilwater_scaled <- hydro_summer_10304$avg_soilwater * 6
 hydro_summer_10304$avg_snowstorage_scaled <- hydro_summer_10304$avg_snowstorage * 2
 hydro_summer_10304$avg_airtmp_scaled <- hydro_summer_10304$avg_airtmp * 3
@@ -201,172 +320,34 @@ hydro_winter_20203$avg_infiltration_scaled <- hydro_winter_11502$avg_infiltratio
 
 
 # separate datasets for each waterlevel, season and member
-# winter
-for (i in pegel_ids) {
-  for (j in levels(hydro_total$member)) {
-    assign(paste0("hydro_winter_", i, "_", j), hydro_winter %>% filter(name_waterlevel %in% i) %>% filter(member %in% j))
-  }
+# winter, 10304
+for (j in levels(hydro_total$member)) {
+  assign(paste0("hydro_winter_10304", "_", j), hydro_winter_10304 %>% filter(member %in% j))
 }
 
-# summer
-for (i in pegel_ids) {
-  for (j in levels(hydro_total$member)) {
-    assign(paste0("hydro_summer_", i, "_", j), hydro_summer %>% filter(name_waterlevel %in% i) %>% filter(member %in% j))
-  }
+# summer, 10304
+for (j in levels(hydro_total$member)) {
+  assign(paste0("hydro_summer_10304", "_", j), hydro_summer_10304 %>% filter(member %in% j))
 }
 
-# add column snowstorage_diff
-# winter
-for (i in pegel_ids) {
-  for (j in levels(hydro_total$member)) {
-    snowstorage_diff <- as.numeric(rep(NA, length = nrow(get(paste0("hydro_winter_", i, "_", j)))))
-    for (k in 2:length(snowstorage_diff)) {
-      if (!is.na(get(paste0("hydro_winter_", i, "_", j))$snowstorage[k]) &&
-          !(is.na(get(paste0("hydro_winter_", i, "_", j))$snowstorage[k - 1]))) {
-        if (get(paste0("hydro_winter_", i, "_", j))$MM[k] == 11) {
-          if (get(paste0("hydro_winter_", i, "_", j))$MM[k - 1] == 11) {
-            snowstorage_diff[k] <- get(paste0("hydro_winter_", i, "_", j))$snowstorage[k] -
-            get(paste0("hydro_winter_", i, "_", j))$snowstorage[k - 1]
-          }
-        } else {
-          snowstorage_diff[k] <- get(paste0("hydro_winter_", i, "_", j))$snowstorage[k] -
-            get(paste0("hydro_winter_", i, "_", j))$snowstorage[k - 1]
-      }
-      }
-      
-    }
-    assign(paste0("hydro_winter_", i, "_", j), cbind(get(paste0("hydro_winter_", i, "_", j)), snowstorage_diff))                            
-  }
+# winter, 11502
+for (j in levels(hydro_total$member)) {
+  assign(paste0("hydro_winter_11502", "_", j), hydro_winter_11502 %>% filter(member %in% j))
 }
 
-# summer
-for (i in pegel_ids) {
-  for (j in levels(hydro_total$member)) {
-    snowstorage_diff <- as.numeric(rep(NA, length = nrow(get(paste0("hydro_summer_", i, "_", j)))))
-    for (k in 2:length(snowstorage_diff)) {
-      if (!is.na(get(paste0("hydro_summer_", i, "_", j))$snowstorage[k]) &&
-          !(is.na(get(paste0("hydro_summer_", i, "_", j))$snowstorage[k - 1]))) {
-        if (get(paste0("hydro_summer_", i, "_", j))$MM[k] == 5) {
-          if (get(paste0("hydro_summer_", i, "_", j))$MM[k - 1] == 5) {
-            snowstorage_diff[k] <- get(paste0("hydro_summer_", i, "_", j))$snowstorage[k] -
-            get(paste0("hydro_summer_", i, "_", j))$snowstorage[k - 1]
-          }
-        } else {
-          snowstorage_diff[k] <- get(paste0("hydro_summer_", i, "_", j))$snowstorage[k] -
-            get(paste0("hydro_summer_", i, "_", j))$snowstorage[k - 1]
-      }
-      }
-      
-    }
-    assign(paste0("hydro_summer_", i, "_", j), cbind(get(paste0("hydro_summer_", i, "_", j)), snowstorage_diff))                            
-  }
+# summer, 11502
+for (j in levels(hydro_total$member)) {
+  assign(paste0("hydro_summer_11502", "_", j), hydro_summer_11502 %>% filter(member %in% j))
 }
 
-
-# add column snowstorage_drain
-# winter
-for (i in pegel_ids) {
-  for (j in levels(hydro_total$member)) {
-    snowstorage_drain <- get(paste0("hydro_winter_", i, "_", j))$snowstorage_diff
-    for (k in 1:length(snowstorage_drain)) {
-      if (!is.na(snowstorage_drain[k])) {
-        if (snowstorage_drain[k] >= 0) {
-        snowstorage_drain[k] <- NA
-        }
-      }
-    }
-    assign(paste0("hydro_winter_", i, "_", j), cbind(get(paste0("hydro_winter_", i, "_", j)), snowstorage_drain))  
-  }
+# winter, 20203
+for (j in levels(hydro_total$member)) {
+  assign(paste0("hydro_winter_20203", "_", j), hydro_winter_20203 %>% filter(member %in% j))
 }
 
-# summer
-for (i in pegel_ids) {
-  for (j in levels(hydro_total$member)) {
-    snowstorage_drain <- get(paste0("hydro_summer_", i, "_", j))$snowstorage_diff
-    for (k in 1:length(snowstorage_drain)) {
-      if (!is.na(snowstorage_drain[k])) {
-        if (snowstorage_drain[k] >= 0) {
-        snowstorage_drain[k] <- NA
-        }
-      }
-    }
-    assign(paste0("hydro_summer_", i, "_", j), cbind(get(paste0("hydro_summer_", i, "_", j)), snowstorage_drain)) 
-  }
-}
-
-# add column avg_snowstorage_drain
-# winter
-for (i in pegel_ids) {
-  for (j in levels(hydro_total$member)) {
-    avg_snowstorage_drain <- as.numeric(rep(NA, length = nrow(get(paste0("hydro_winter_", i, "_", j)))))
-    for (k in 7:length(avg_snowstorage_drain)) {
-      if (get(paste0("hydro_winter_", i, "_", j))$MM[k] == 11) {
-        if (all(get(paste0("hydro_winter_", i, "_", j))$MM[(k - 6):k] == 11)) {
-           avg_snowstorage_drain[k] <- mean(get(paste0("hydro_winter_", i, "_", j))$snowstorage_drain[(k - 6):k],
-                                             na.rm = TRUE)
-        }
-      } else {
-        avg_snowstorage_drain[k] <- mean(get(paste0("hydro_winter_", i, "_", j))$snowstorage_drain[(k - 6):k],
-                                             na.rm = TRUE)
-      }
-    }
-    assign(paste0("hydro_winter_", i, "_", j), cbind(get(paste0("hydro_winter_", i, "_", j)), avg_snowstorage_drain))  
-  }
-}
-
-# summer
-for (i in pegel_ids) {
-  for (j in levels(hydro_total$member)) {
-    avg_snowstorage_drain <- as.numeric(rep(NA, length = nrow(get(paste0("hydro_summer_", i, "_", j)))))
-    for (k in 7:length(avg_snowstorage_drain)) {
-      if (get(paste0("hydro_summer_", i, "_", j))$MM[k] == 5) {
-        if (all(get(paste0("hydro_summer_", i, "_", j))$MM[(k - 6):k] == 5)) {
-           avg_snowstorage_drain[k] <- mean(get(paste0("hydro_summer_", i, "_", j))$snowstorage_drain[(k - 6):k],
-                                             na.rm = TRUE)
-        }
-      } else {
-        avg_snowstorage_drain[k] <- mean(get(paste0("hydro_summer_", i, "_", j))$snowstorage_drain[(k - 6):k],
-                                             na.rm = TRUE)
-      }
-    }
-    assign(paste0("hydro_summer_", i, "_", j), cbind(get(paste0("hydro_summer_", i, "_", j)), avg_snowstorage_drain))  
-  }
-}
-
-
-## add coulmn lowlevel_first
-# winter
-for (i in pegel_ids) {
-  for (j in levels(hydro_total$member)) {
-    lowlevel_first <- as.logical(rep(NA, length = nrow(get(paste0("hydro_winter_", i, "_", j)))))
-    for (k in 1:length(lowlevel_first)) {
-      if (!is.na(get(paste0("hydro_winter_", i, "_", j))$lowlevel_days[k])) {
-        if (get(paste0("hydro_winter_", i, "_", j))$lowlevel_days[k] == 1) {
-          lowlevel_first[k] <- TRUE
-        } else {
-          lowlevel_first[k] <- FALSE
-        }
-      }
-    }
-    assign(paste0("hydro_winter_", i, "_", j), cbind(get(paste0("hydro_winter_", i, "_", j)), lowlevel_first))
-  }
-}
-
-# summer
-for (i in pegel_ids) {
-  for (j in levels(hydro_total$member)) {
-    lowlevel_first <- as.logical(rep(NA, length = nrow(get(paste0("hydro_summer_", i, "_", j)))))
-    for (k in 1:length(lowlevel_first)) {
-      if (!is.na(get(paste0("hydro_summer_", i, "_", j))$lowlevel_days[k])) {
-        if (get(paste0("hydro_summer_", i, "_", j))$lowlevel_days[k] == 1) {
-          lowlevel_first[k] <- TRUE
-        } else {
-          lowlevel_first[k] <- FALSE
-        }
-      }
-    }
-    assign(paste0("hydro_summer_", i, "_", j), cbind(get(paste0("hydro_summer_", i, "_", j)), lowlevel_first))
-  }
+# summer, 20203
+for (j in levels(hydro_total$member)) {
+  assign(paste0("hydro_summer_20203", "_", j), hydro_summer_20203 %>% filter(member %in% j))
 }
 ```
 
