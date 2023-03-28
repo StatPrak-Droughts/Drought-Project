@@ -14,14 +14,120 @@ hydro_total <- readRDS(file = "./data/hydro_total.RDS")
 pegel_prop <- readRDS(file = "./data/pegel_prop.RDS")
 ```
 
+
 # Fränksiche Saale Salz
 ## Sommer
+```{r}
+# GLM: all possible drivers
+glm_all_summer_20203 <- glm(formula = lowlevel ~ YY + avg_precip + avg_airtmp + avg_glorad + avg_relhum + avg_soilwater + avg_snowstorage + groundwaterdepth + avg_infiltration + max_precip + avg_snowstorage_drain, family = binomial(), data = hydro_summer_20203_kbe)
+summary(glm_all_summer_20203)
+
+# GLM: AIC variable selection
+library(MASS)
+stepAIC(glm_all_summer_20203, direction = "both")
+# Variablen YY, avg_precip, avg_airtmp, avg_relhum, avg_soilwater, avg_snowstorage, groundwaterdepth, avg_infiltration, max_precip ausgewählt
+
+# GAM: only selected drivers
+library(mgcv)
+gam_selected_summer_20203 <- gam(formula = lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_airtmp, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps") + s(max_precip, bs = "ps"), family = binomial(), data = hydro_winter_20203_kbe, method = "REML")
+summary(gam_selected_summer_20203)
+plot(gam_selected_summer_20203)
+```
+
 ## Winter
+```{r}
+# GLM: all possible drivers
+glm_all_winter_20203 <- glm(formula = lowlevel ~ YY + avg_precip + avg_airtmp + avg_glorad + avg_relhum + avg_soilwater + avg_snowstorage + groundwaterdepth + avg_infiltration + max_precip + avg_snowstorage_drain, family = binomial(), data = hydro_winter_20203_kbe)
+summary(glm_all_winter_20203)
+
+# GLM: AIC variable selection
+library(MASS)
+stepAIC(glm_all_winter_20203, direction = "both")
+# Variablen YY, avg_airtmp, avg_relhum, avg_soilwater, avg_snowstorage, groundwaterdepth, avg_infiltration, avg_snowstorage_drain ausgewählt
+
+# GAM: only selected drivers
+library(mgcv)
+gam_selected_winter_20203 <- gam(formula = lowlevel ~ YY + s(avg_airtmp, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps") + s(avg_snowstorage_drain, bs = "ps"), family = binomial(), data = hydro_winter_20203_kbe, method = "REML")
+summary(gam_selected_winter_20203)
+plot(gam_selected_winter_20203)
+```
 
 # Isar Mittenwald 
 ## Sommer
+```{r}
+# GLM: all possible drivers
+# Entfernen von Zeilen, bei denen max_precip NA
+hydro_summer_10304_kbe <- subset(hydro_summer_10304_kbe, !is.na(max_precip))
+glm_all_summer_10304 <- glm(formula = lowlevel ~ YY + avg_precip + avg_airtmp + avg_glorad + avg_relhum + avg_soilwater + avg_snowstorage + groundwaterdepth + avg_infiltration + max_precip + avg_snowstorage_drain, family = binomial(), data = hydro_summer_10304_kbe)
+summary(glm_all_summer_10304)
+
+# GLM: AIC variable selection
+library(MASS)
+stepAIC(glm_all_summer_10304, direction = "both")
+# Variablen YY, avg_precip, avg_airtmp, avg_glorad, avg_soilwater, avg_snowstorage, groundwaterdepth, avg_infiltration ausgewählt
+
+# GAM: only selected drivers
+library(mgcv)
+gam_selected_summer_10304 <- gam(formula = lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps"), family = binomial(), data = hydro_winter_10304_kbe, method = "REML")
+summary(gam_selected_summer_10304)
+plot(gam_selected_summer_10304)
+
+```
+
 ## Winter
+```{r}
+# GLM: all possible drivers
+glm_all_winter_10304 <- glm(formula = lowlevel ~ YY + avg_precip + avg_airtmp + avg_glorad + avg_relhum + avg_soilwater + avg_snowstorage + groundwaterdepth + avg_infiltration + max_precip + avg_snowstorage_drain, family = binomial(), data = hydro_winter_10304_kbe)
+summary(glm_all_winter_10304)
+
+# GLM: AIC variable selection
+library(MASS)
+stepAIC(glm_all_winter_10304, direction = "both")
+# Variablen YY, avg_soilwater, avg_snowstorage, groundwaterdepth, avg_infiltration, max_precip ausgewählt
+
+# GAM: only selected drivers
+library(mgcv)
+gam_selected_winter_10304 <- gam(formula = lowlevel ~ YY + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps") + s(max_precip, bs = "ps"), family = binomial(), data = hydro_winter_10304_kbe, method = "REML")
+summary(gam_selected_winter_10304)
+plot(gam_selected_winter_10304)
+
+predict_error_winter_10304_kbe_kbj <- sum((predict(gam_selected_winter_10304, newdata = hydro_winter_10304_kbj, type = "response") - (as.numeric(hydro_winter_10304_kbj$lowlevel) - 1))^2, na.rm = TRUE)
+
+```
 
 # Iller Kempten
 ## Sommer
+```{r}
+# GLM: all possible drivers
+glm_all_summer_11502 <- glm(formula = lowlevel ~ YY + avg_precip + avg_airtmp + avg_glorad + avg_relhum + avg_soilwater + avg_snowstorage + groundwaterdepth + avg_infiltration + max_precip + avg_snowstorage_drain, family = binomial(), data = hydro_summer_11502_kbe)
+summary(glm_all_summer_11502)
+
+# GLM: AIC variable selection
+library(MASS)
+stepAIC(glm_all_summer_11502, direction = "both")
+# Variablen YY, avg_precip, avg_airtmp, avg_glorad, avg_relhum, avg_soilwater, avg_snowstorage, groundwaterdepth, max_precip, avg_snowstorage_drain ausgewählt
+
+# GAM: only selected drivers
+library(mgcv)
+gam_selected_summer_11502 <- gam(formula = lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(max_precip, bs = "ps") + s(avg_snowstorage_drain, bs = "ps"), family = binomial(), data = hydro_winter_11502_kbe, method = "REML")
+summary(gam_selected_summer_11502)
+plot(gam_selected_summer_11502)
+```
+
 ## Winter
+```{r}
+# GLM: all possible drivers
+glm_all_winter_11502 <- glm(formula = lowlevel ~ YY + avg_precip + avg_airtmp + avg_glorad + avg_relhum + avg_soilwater + avg_snowstorage + groundwaterdepth + avg_infiltration + max_precip + avg_snowstorage_drain, family = binomial(), data = hydro_winter_11502_kbe)
+summary(glm_all_winter_11502)
+
+# GLM: AIC variable selection
+library(MASS)
+stepAIC(glm_all_winter_11502, direction = "both")
+# Variablen YY, avg_precip, avg_airtmp, avg_glorad, avg_relhum, avg_soilwater, avg_snowstorage, groundwaterdepth, avg_infiltration, avg_snowstorage_drain ausgewählt
+
+# GAM: only selected drivers
+library(mgcv)
+gam_selected_winter_11502 <- gam(formula = lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps") + s(avg_snowstorage_drain, bs = "ps"), family = binomial(), data = hydro_winter_11502_kbe, method = "REML")
+summary(gam_selected_winter_11502)
+plot(gam_selected_winter_11502)
+```
