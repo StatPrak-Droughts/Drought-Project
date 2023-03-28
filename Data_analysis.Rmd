@@ -355,7 +355,7 @@ counter_names <- 1
 # Define the quantiles for which you want to calculate the percentage of the target variable
 quantiles_ranges <- seq(0, 1, by=0.1)
 colum_names <- c("avg_precip", "avg_airtmp", "avg_glorad", "avg_relhum", "avg_soilwater", "avg_snowstorage", 
-                 "groundwaterdepth", "avg_infiltration")#, "max_precip" , "avg_snowstorage_drain")
+                 "groundwaterdepth", "avg_infiltration", "max_precip" , "avg_snowstorage_drain")
 for (pegel in pegel_list) {
   i = 1
   
@@ -382,7 +382,7 @@ for (pegel in pegel_list) {
   quantile_percents_ranges <- round(quantile_percents_ranges, digits = 3)
   
   # Save the table as a PDF file
-  pdf(paste0("tables/extreme_values/quantile_percents_ranges_", pegel_names[counter_names], ".pdf"), height=4, width=13)
+  pdf(paste0("tables/extreme_values/quantile_percents_ranges_", pegel_names[counter_names], ".pdf"), height=4, width=16)
   grid.table(quantile_percents_ranges)
   dev.off()
   counter_names = counter_names + 1
