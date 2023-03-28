@@ -1,0 +1,27 @@
+---
+title: "Data_modelling_final"
+output: html_document
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+hydro_summer_20203 <- readRDS(file = "./data/hydro_summer_20203.RDS")
+hydro_summer_11502 <- readRDS(file = "./data/hydro_summer_11502.RDS")
+hydro_summer_10304 <- readRDS(file = "./data/hydro_summer_10304.RDS")
+hydro_winter_20203 <- readRDS(file = "./data/hydro_winter_20203.RDS")
+hydro_winter_11502 <- readRDS(file = "./data/hydro_winter_11502.RDS")
+hydro_winter_10304 <- readRDS(file = "./data/hydro_winter_10304.RDS")
+hydro_total <- readRDS(file = "./data/hydro_total.RDS")
+pegel_prop <- readRDS(file = "./data/pegel_prop.RDS")
+```
+
+# Fränksiche Saale Salz
+## Sommer
+## Winter
+
+# Isar Mittenwald 
+## Sommer
+## Winter
+
+# Iller Kempten
+## Sommer
+## Winter

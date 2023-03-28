@@ -387,7 +387,6 @@ for (pegel in pegel_list) {
   dev.off()
   counter_names = counter_names + 1
 }
-
 ```
 
 
