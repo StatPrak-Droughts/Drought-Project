@@ -173,7 +173,7 @@ gam3_summer_11502 <- gam(formula = lowlevel ~ YY + s(avg_airtmp, bs = "ps") + s(
 
 gam4_summer_11502 <- gam(formula = lowlevel ~ YY + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps") + s(avg_snowstorage, by = max_precip_scaled, bs = "ps") , data = hydro_summer_11502_kbe, family = binomial(), method = "REML")
 
-gam5_summer_11502 <- gam(formula = lowlevel ~ YY + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps") + s(avg_soilwater, by = max_precip_scaled, bs = "ps") + s(avg_snowstorage, bs = "ps", by = avg_airtmp), data = hydro_summer_11502_kbe, family = binomial(), method = "REML")
+gam5_summer_11502 <- gam(formula = lowlevel ~ YY + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps") + s(max_precip_scaled, by = avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps", by = avg_airtmp), data = hydro_summer_11502_kbe, family = binomial(), method = "REML")
 ```
 
 ```{r}
