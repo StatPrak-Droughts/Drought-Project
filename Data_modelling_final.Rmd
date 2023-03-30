@@ -66,6 +66,7 @@ plot(gam_selected_winter_20203, select = 7, ylim = c(-100, 40))
 # Isar Mittenwald 
 ## Sommer
 ```{r}
+hydro_summer_10304_kbe <- readRDS(file = "./data/hydro_summer_10304_kbe.RDS")
 # GLM: all possible drivers
 # Entfernen von Zeilen, bei denen max_precip NA
 hydro_summer_10304_kbe <- subset(hydro_summer_10304_kbe, !is.na(max_precip))
@@ -91,8 +92,11 @@ plot.gam(gam_selected_summer_10304, select = 7)
 plot.gam(gam_selected_summer_10304, select = 7, se = FALSE)
 ```
 
+
+
 ## Winter
 ```{r}
+hydro_winter_10304_kbe <- readRDS(file = "./data/hydro_winter_10304_kbe.RDS")
 # GLM: all possible drivers
 glm_all_winter_10304 <- glm(formula = lowlevel ~ YY + avg_precip + avg_airtmp + avg_glorad + avg_relhum + avg_soilwater + avg_snowstorage + groundwaterdepth + avg_infiltration + max_precip + avg_snowstorage_drain, family = binomial(), data = hydro_winter_10304_kbe)
 summary(glm_all_winter_10304)
@@ -112,6 +116,72 @@ plot(gam_selected_winter_10304, select = 3, ylim = c(-50, 50))
 plot(gam_selected_winter_10304, select = 4)
 plot(gam_selected_winter_10304, select = 4, se = FALSE)
 plot(gam_selected_winter_10304, select = 5, ylim = c(-50, 50))
+
+# Prädiktionen bei anderen membern
+# alle anderen member
+plot(x = exp(predict(gam_selected_winter_10304, newdata = hydro_winter_10304[hydro_winter_10304$member != "kbe", ]))/(1 + exp(predict(gam_selected_winter_10304, newdata = hydro_winter_10304[hydro_winter_10304$member != "kbe", ]))), y = as.logical(hydro_winter_10304[hydro_winter_10304$member != "kbe", ]$lowlevel), col = alpha("black", 0.005))
+gam_selected_winter_10304_pred_error <- sum((exp(predict(gam_selected_winter_10304, newdata = hydro_winter_10304[hydro_winter_10304$member != "kbe", ]))/(1 + exp(predict(gam_selected_winter_10304, newdata = hydro_winter_10304[hydro_winter_10304$member != "kbe", ]))) - (as.numeric(hydro_winter_10304[hydro_winter_10304$member != "kbe", ]$lowlevel) - 1))^2, na.rm = TRUE)
+
+plot(x = exp(predict(gam_selected_winter_10304, newdata = hydro_winter_10304_kbj))/(1 + exp(predict(gam_selected_winter_10304, newdata = hydro_winter_10304_kbj))), y = as.logical(hydro_winter_10304_kbj$lowlevel), col = alpha("black", 0.05))
+sum((exp(predict(gam_selected_winter_10304, newdata = hydro_winter_10304_kbj))/(1 + exp(predict(gam_selected_winter_10304, newdata = hydro_winter_10304_kbj))) - (as.numeric(hydro_winter_10304_kbj$lowlevel) - 1))^2, na.rm = TRUE)
+
+plot(x = exp(predict(gam_selected_winter_10304, newdata = hydro_winter_10304_kbo))/(1 + exp(predict(gam_selected_winter_10304, newdata = hydro_winter_10304_kbo))), y = as.logical(hydro_winter_10304_kbo$lowlevel), col = alpha("black", 0.05))
+sum((exp(predict(gam_selected_winter_10304, newdata = hydro_winter_10304_kbo))/(1 + exp(predict(gam_selected_winter_10304, newdata = hydro_winter_10304_kbo))) - (as.numeric(hydro_winter_10304_kbo$lowlevel) - 1))^2, na.rm = TRUE)
+
+plot(x = exp(predict(gam_selected_winter_10304, newdata = hydro_winter_10304_kbt))/(1 + exp(predict(gam_selected_winter_10304, newdata = hydro_winter_10304_kbt))), y = as.logical(hydro_winter_10304_kbt$lowlevel), col = alpha("black", 0.05))
+sum((exp(predict(gam_selected_winter_10304, newdata = hydro_winter_10304_kbt))/(1 + exp(predict(gam_selected_winter_10304, newdata = hydro_winter_10304_kbt))) - (as.numeric(hydro_winter_10304_kbt$lowlevel) - 1))^2, na.rm = TRUE)
+
+plot(x = exp(predict(gam_selected_winter_10304, newdata = hydro_winter_10304_kby))/(1 + exp(predict(gam_selected_winter_10304, newdata = hydro_winter_10304_kby))), y = as.logical(hydro_winter_10304_kby$lowlevel), col = alpha("black", 0.05))
+sum((exp(predict(gam_selected_winter_10304, newdata = hydro_winter_10304_kby))/(1 + exp(predict(gam_selected_winter_10304, newdata = hydro_winter_10304_kby))) - (as.numeric(hydro_winter_10304_kby$lowlevel) - 1))^2, na.rm = TRUE)
+
+plot(x = exp(predict(gam_selected_winter_10304, newdata = hydro_winter_10304_kcd))/(1 + exp(predict(gam_selected_winter_10304, newdata = hydro_winter_10304_kcd))), y = as.logical(hydro_winter_10304_kcd$lowlevel), col = alpha("black", 0.05))
+sum((exp(predict(gam_selected_winter_10304, newdata = hydro_winter_10304_kcd))/(1 + exp(predict(gam_selected_winter_10304, newdata = hydro_winter_10304_kcd))) - (as.numeric(hydro_winter_10304_kcd$lowlevel) - 1))^2, na.rm = TRUE)
+```
+
+```{r}
+# GAM: all possible drivers
+library(mgcv)
+gam_all_winter_10304 <- gam(formula = lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps") + s(max_precip, bs = "ps") + s(avg_snowstorage_drain, bs = "ps"), family = binomial(), data = hydro_winter_10304_kbe, method = "REML")
+summary(gam_all_winter_10304)
+plot(gam_all_winter_10304)
+
+# stepwise deviance explained selection
+gam1_some_winter_10304 <- gam(formula = lowlevel ~ YY + s(avg_glorad, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps") + s(avg_snowstorage, bs = "ps", by = groundwaterdepth), family = binomial(), data = hydro_winter_10304_kbe, method = "REML")
+summary(gam1_some_winter_10304)
+AIC(gam1_some_winter_10304)
+plot(gam1_some_winter_10304, select = 1, ylim = c(-100, 100))
+plot(gam1_some_winter_10304, select = 2, ylim = c(-40, 40))
+plot(gam1_some_winter_10304, select = 3)
+plot(gam1_some_winter_10304, select = 4)
+plot(gam1_some_winter_10304, select = 5)
+plot(gam1_some_winter_10304, select = 6, ylim = c(-400, 100))
+
+# Prädiktionen bei anderen membern
+# alle anderen member
+plot(x = exp(predict(gam1_some_winter_10304, newdata = hydro_winter_10304[hydro_winter_10304$member != "kbe", ]))/(1 + exp(predict(gam1_some_winter_10304, newdata = hydro_winter_10304[hydro_winter_10304$member != "kbe", ]))), y = as.logical(hydro_winter_10304[hydro_winter_10304$member != "kbe", ]$lowlevel), col = alpha("black", 0.005))
+gam1_some_winter_10304_pred_error <- sum((exp(predict(gam1_some_winter_10304, newdata = hydro_winter_10304[hydro_winter_10304$member != "kbe", ]))/(1 + exp(predict(gam1_some_winter_10304, newdata = hydro_winter_10304[hydro_winter_10304$member != "kbe", ]))) - (as.numeric(hydro_winter_10304[hydro_winter_10304$member != "kbe", ]$lowlevel) - 1))^2, na.rm = TRUE)
+
+# einzelne andere member
+plot(x = exp(predict(gam1_some_winter_10304, newdata = hydro_winter_10304_kbj))/(1 + exp(predict(gam1_some_winter_10304, newdata = hydro_winter_10304_kbj))), y = as.logical(hydro_winter_10304_kbj$lowlevel), col = alpha("black", 0.05))
+sum((exp(predict(gam1_some_winter_10304, newdata = hydro_winter_10304_kbj))/(1 + exp(predict(gam1_some_winter_10304, newdata = hydro_winter_10304_kbj))) - (as.numeric(hydro_winter_10304_kbj$lowlevel) - 1))^2, na.rm = TRUE)
+
+plot(x = exp(predict(gam1_some_winter_10304, newdata = hydro_winter_10304_kbo))/(1 + exp(predict(gam1_some_winter_10304, newdata = hydro_winter_10304_kbo))), y = as.logical(hydro_winter_10304_kbo$lowlevel), col = alpha("black", 0.05))
+sum((exp(predict(gam1_some_winter_10304, newdata = hydro_winter_10304_kbo))/(1 + exp(predict(gam1_some_winter_10304, newdata = hydro_winter_10304_kbo))) - (as.numeric(hydro_winter_10304_kbo$lowlevel) - 1))^2, na.rm = TRUE)
+
+plot(x = exp(predict(gam1_some_winter_10304, newdata = hydro_winter_10304_kbt))/(1 + exp(predict(gam1_some_winter_10304, newdata = hydro_winter_10304_kbt))), y = as.logical(hydro_winter_10304_kbt$lowlevel), col = alpha("black", 0.05))
+sum((exp(predict(gam1_some_winter_10304, newdata = hydro_winter_10304_kbt))/(1 + exp(predict(gam1_some_winter_10304, newdata = hydro_winter_10304_kbt))) - (as.numeric(hydro_winter_10304_kbt$lowlevel) - 1))^2, na.rm = TRUE)
+
+plot(x = exp(predict(gam1_some_winter_10304, newdata = hydro_winter_10304_kby))/(1 + exp(predict(gam1_some_winter_10304, newdata = hydro_winter_10304_kby))), y = as.logical(hydro_winter_10304_kby$lowlevel), col = alpha("black", 0.05))
+sum((exp(predict(gam1_some_winter_10304, newdata = hydro_winter_10304_kby))/(1 + exp(predict(gam1_some_winter_10304, newdata = hydro_winter_10304_kby))) - (as.numeric(hydro_winter_10304_kby$lowlevel) - 1))^2, na.rm = TRUE)
+
+plot(x = exp(predict(gam1_some_winter_10304, newdata = hydro_winter_10304_kcd))/(1 + exp(predict(gam1_some_winter_10304, newdata = hydro_winter_10304_kcd))), y = as.logical(hydro_winter_10304_kcd$lowlevel), col = alpha("black", 0.05))
+sum((exp(predict(gam1_some_winter_10304, newdata = hydro_winter_10304_kcd))/(1 + exp(predict(gam1_some_winter_10304, newdata = hydro_winter_10304_kcd))) - (as.numeric(hydro_winter_10304_kcd$lowlevel) - 1))^2, na.rm = TRUE)
+
+
+# weiterer Versuch
+gam2_some_winter_10304 <- gam(formula = lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + avg_infiltration, family = binomial(), data = hydro_winter_10304_kbe, method = "REML")
+summary(gam2_some_winter_10304)
+plot(gam2_some_winter_10304)
 ```
 
 # Iller Kempten
