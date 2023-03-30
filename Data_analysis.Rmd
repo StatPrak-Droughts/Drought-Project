@@ -381,6 +381,10 @@ for (pegel in pegel_list) {
     quantiles_ranges[-length(quantiles_ranges)]*100, "% - ", quantiles_ranges[-1]*100, "%")
   quantile_percents_ranges <- round(quantile_percents_ranges, digits = 3)
   
+  # Save as table
+  saveRDS(object = quantile_percents_ranges, 
+          file = paste0("data/tables/extreme_values/quantile_percents_ranges_", pegel_names[counter_names], ".RDS"))
+  
   # Save the table as a PDF file
   pdf(paste0("tables/extreme_values/quantile_percents_ranges_", pegel_names[counter_names], ".pdf"), height=4, width=16)
   grid.table(quantile_percents_ranges)
