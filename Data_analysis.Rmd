@@ -370,6 +370,42 @@ for (pegel in pegel_list) {
       # Calculate the percentage of the target variable for the current range and predictor variable
       quantile_percents_ranges[j, i] <- 
         sum((pegel[pegel[, col_name] >= quantile_values[j] & pegel[, col_name] < quantile_values[j+1],
+                         "lowlevel"]) == "TRUE")/sum((pegel[, "lowlevel"]) == "TRUE")
+    }
+    i = i + 1
+  }
+  
+  # Print the results
+  colnames(quantile_percents_ranges) <- colum_names
+  rownames(quantile_percents_ranges) <- paste0(
+    quantiles_ranges[-length(quantiles_ranges)]*100, "% - ", quantiles_ranges[-1]*100, "%")
+  quantile_percents_ranges <- round(quantile_percents_ranges, digits = 3)
+  
+  # Save the table as a PDF file
+  pdf(paste0("tables/extreme_values/quantile_percents_ranges_", pegel_names[counter_names], ".pdf"), height=4, width=13)
+  grid.table(quantile_percents_ranges)
+  dev.off()
+  counter_names = counter_names + 1
+}
+
+# Define the quantiles for which you want to calculate the percentage of the target variable
+quantiles_ranges <- seq(0, 1, by=0.1)
+colum_names <- c("avg_precip", "avg_airtmp", "avg_glorad", "avg_relhum", "avg_soilwater", "avg_snowstorage", 
+                 "groundwaterdepth", "avg_infiltration")#, "max_precip" , "avg_snowstorage_drain")
+for (pegel in pegel_list) {
+  i = 1
+  
+  # Create an empty matrix to store the percentage values
+  quantile_percents_ranges <- matrix(nrow=length(quantiles_ranges)-1, ncol=length(colum_names))
+
+    # Loop over each predictor variable and calculate the percentage of the target variable for each range
+  for (col_name in colum_names) {
+    # Get the quantile values for the current predictor variable
+    quantile_values <- quantile(pegel[, col_name], probs=quantiles_ranges, na.rm = TRUE)
+    for (j in 1:(length(quantiles_ranges)-1)) {
+      # Calculate the percentage of the target variable for the current range and predictor variable
+      quantile_percents_ranges[j, i] <- 
+        sum((pegel[pegel[, col_name] >= quantile_values[j] & pegel[, col_name] < quantile_values[j+1],
                          "lowlevel"]) == "TRUE", na.rm = TRUE)/sum((pegel[, "lowlevel"]) == "TRUE", na.rm = TRUE)
     }
     i = i + 1
