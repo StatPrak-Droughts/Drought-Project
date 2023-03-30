@@ -370,7 +370,7 @@ for (pegel in pegel_list) {
       # Calculate the percentage of the target variable for the current range and predictor variable
       quantile_percents_ranges[j, i] <- 
         sum((pegel[pegel[, col_name] >= quantile_values[j] & pegel[, col_name] < quantile_values[j+1],
-                         "lowlevel"]) == "TRUE")/sum((pegel[, "lowlevel"]) == "TRUE")
+                         "lowlevel"]) == "TRUE", na.rm = TRUE)/sum((pegel[, "lowlevel"]) == "TRUE", na.rm = TRUE)
     }
     i = i + 1
   }
