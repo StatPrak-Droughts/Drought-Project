@@ -27,7 +27,15 @@ stepAIC(glm_all_summer_20203, direction = "both")
 library(mgcv)
 gam_selected_summer_20203 <- gam(formula = lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_airtmp, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps") + s(max_precip, bs = "ps"), family = binomial(), data = hydro_winter_20203_kbe, method = "REML")
 summary(gam_selected_summer_20203)
-plot(gam_selected_summer_20203)
+plot(gam_selected_summer_20203, select = 1, ylim = c(-100, 40))
+plot(gam_selected_summer_20203, select = 2, ylim = c(-100, 40))
+plot(gam_selected_summer_20203, select = 3, ylim = c(-100, 40))
+plot(gam_selected_summer_20203, select = 4, ylim = c(-100, 40))
+plot(gam_selected_summer_20203, select = 5)
+plot(gam_selected_summer_20203, select = 5, se = FALSE)
+plot(gam_selected_summer_20203, select = 6, ylim = c(-100, 40))
+plot(gam_selected_summer_20203, select = 7, ylim = c(-100, 40))
+plot(gam_selected_summer_20203, select = 8, ylim = c(-100, 40))
 ```
 
 ## Winter
@@ -45,7 +53,14 @@ stepAIC(glm_all_winter_20203, direction = "both")
 library(mgcv)
 gam_selected_winter_20203 <- gam(formula = lowlevel ~ YY + s(avg_airtmp, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps") + s(avg_snowstorage_drain, bs = "ps"), family = binomial(), data = hydro_winter_20203_kbe, method = "REML")
 summary(gam_selected_winter_20203)
-plot(gam_selected_winter_20203)
+plot(gam_selected_winter_20203, select = 1, ylim = c(-100, 40))
+plot(gam_selected_winter_20203, select = 2, ylim = c(-100, 40))
+plot(gam_selected_winter_20203, select = 3, ylim = c(-100, 40))
+plot(gam_selected_winter_20203, select = 4)
+plot(gam_selected_winter_20203, select = 4, se = FALSE)
+plot(gam_selected_winter_20203, select = 5, ylim = c(-100, 40))
+plot(gam_selected_winter_20203, select = 6, ylim = c(-100, 40))
+plot(gam_selected_winter_20203, select = 7, ylim = c(-100, 40))
 ```
 
 # Isar Mittenwald 
@@ -66,8 +81,14 @@ stepAIC(glm_all_summer_10304, direction = "both")
 library(mgcv)
 gam_selected_summer_10304 <- gam(formula = lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps"), family = binomial(), data = hydro_winter_10304_kbe, method = "REML")
 summary(gam_selected_summer_10304)
-plot(gam_selected_summer_10304)
-
+plot.gam(gam_selected_summer_10304, select = 1, ylim = c(-70, 70))
+plot.gam(gam_selected_summer_10304, select = 2, ylim = c(-70, 70))
+plot.gam(gam_selected_summer_10304, select = 3, ylim = c(-70, 70))
+plot.gam(gam_selected_summer_10304, select = 4, ylim = c(-70, 70))
+plot.gam(gam_selected_summer_10304, select = 5, ylim = c(-70, 70))
+plot.gam(gam_selected_summer_10304, select = 6, ylim = c(-70, 70))
+plot.gam(gam_selected_summer_10304, select = 7)
+plot.gam(gam_selected_summer_10304, select = 7, se = FALSE)
 ```
 
 ## Winter
@@ -85,10 +106,12 @@ stepAIC(glm_all_winter_10304, direction = "both")
 library(mgcv)
 gam_selected_winter_10304 <- gam(formula = lowlevel ~ YY + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps") + s(max_precip, bs = "ps"), family = binomial(), data = hydro_winter_10304_kbe, method = "REML")
 summary(gam_selected_winter_10304)
-plot(gam_selected_winter_10304)
-
-predict_error_winter_10304_kbe_kbj <- sum((predict(gam_selected_winter_10304, newdata = hydro_winter_10304_kbj, type = "response") - (as.numeric(hydro_winter_10304_kbj$lowlevel) - 1))^2, na.rm = TRUE)
-
+plot(gam_selected_winter_10304, select = 1, ylim = c(-50, 50))
+plot(gam_selected_winter_10304, select = 2, ylim = c(-50, 50))
+plot(gam_selected_winter_10304, select = 3, ylim = c(-50, 50))
+plot(gam_selected_winter_10304, select = 4)
+plot(gam_selected_winter_10304, select = 4, se = FALSE)
+plot(gam_selected_winter_10304, select = 5, ylim = c(-50, 50))
 ```
 
 # Iller Kempten
@@ -150,7 +173,7 @@ gam3_summer_11502 <- gam(formula = lowlevel ~ YY + s(avg_airtmp, bs = "ps") + s(
 
 gam4_summer_11502 <- gam(formula = lowlevel ~ YY + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps") + s(avg_snowstorage, by = max_precip_scaled, bs = "ps") , data = hydro_summer_11502_kbe, family = binomial(), method = "REML")
 
-gam5_summer_11502 <- gam(formula = lowlevel ~ YY + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps") + s(avg_soilwater, by = max_precip_scaled, bs = "ps") + s(avg_snowstorage, bs = "ps", by = avg_airtmp), data = hydro_summer_11502_kbe, family = binomial(), method = "REML")
+gam5_summer_11502 <- gam(formula = lowlevel ~ YY + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps") + s(max_precip_scaled, by = avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps", by = avg_airtmp), data = hydro_summer_11502_kbe, family = binomial(), method = "REML")
 ```
 
 ```{r}
@@ -191,6 +214,112 @@ summary(gam3_winter_11502)
 summary(gam4_winter_11502)
 summary(gam5_winter_11502)
 ```
+### Winter effect plots
+```{r}
+
+jpeg("./Plots/Max/effects_gam2_winter_11502.jpg", width = 700, height = 600)
+layout(matrix(1:9, ncol = 3, nrow = 3))
+plot(gam2_winter_11502, select = 1, ylim = c(-50, 20))
+plot(gam2_winter_11502, select = 2, ylim = c(-20, 20))
+plot(gam2_winter_11502, select = 3, ylim = c(-30,30))
+plot(gam2_winter_11502, select = 4, ylim = c(-600, 100))
+plot(gam2_winter_11502, select = 5, ylim = c(-50, 20))
+plot(gam2_winter_11502, select = 6, ylim = c(-100, 20))
+plot(gam2_winter_11502, select = 7, ylim = c(-20, 10))
+dev.off()
+
+jpeg("./Plots/Max/effects_gam3_winter_11502.jpg", width = 700, height = 600)
+layout(matrix(1:9, ncol = 3, nrow = 3))
+plot(gam3_winter_11502, select = 1, ylim = c(-50, 20))
+plot(gam3_winter_11502, select = 2, ylim = c(-20, 20))
+plot(gam3_winter_11502, select = 3, ylim = c(-30,30))
+plot(gam3_winter_11502, select = 4, ylim = c(-600, 100))
+plot(gam3_winter_11502, select = 5, ylim = c(-50, 20))
+plot(gam3_winter_11502, select = 6, ylim = c(-100, 20))
+plot(gam3_winter_11502, select = 7, ylim = c(-20, 50))
+dev.off()
+
+jpeg("./Plots/Max/effects_gam4_winter_11502.jpg", width = 700, height = 600)
+layout(matrix(1:9, ncol = 3, nrow = 3))
+plot(gam4_winter_11502, select = 1, ylim = c(-50, 20))
+plot(gam4_winter_11502, select = 2, ylim = c(-20, 20))
+plot(gam4_winter_11502, select = 3, ylim = c(-30,30))
+plot(gam4_winter_11502, select = 4, ylim = c(-600, 100))
+plot(gam4_winter_11502, select = 5, ylim = c(-50, 20))
+plot(gam4_winter_11502, select = 6, ylim = c(-100, 20))
+plot(gam4_winter_11502, select = 7, ylim = c(-20, 50))
+plot(gam4_winter_11502, select = 8, ylim = c(-10, 10))
+dev.off()
+
+jpeg("./Plots/Max/effects_gam5_winter_11502.jpg", width = 700, height = 600)
+layout(matrix(1:9, ncol = 3, nrow = 3))
+plot(gam5_winter_11502, select = 1, ylim = c(-50, 20))
+plot(gam5_winter_11502, select = 2, ylim = c(-20, 20))
+plot(gam5_winter_11502, select = 3, ylim = c(-30,30))
+plot(gam5_winter_11502, select = 4, ylim = c(-600, 100))
+plot(gam5_winter_11502, select = 5, ylim = c(-50, 20))
+plot(gam5_winter_11502, select = 6, ylim = c(-100, 20))
+plot(gam5_winter_11502, select = 7, ylim = c(-20, 50))
+plot(gam5_winter_11502, select = 8, ylim = c(-10, 10))
+plot(gam5_winter_11502, select = 9, ylim = c(-10, 10))
+dev.off()
+```
+
+
+### Summer Effect Plots 
+```{r}
+jpeg("./Plots/Max/effects_gam2_summer_11502.jpg", width = 700, height = 600)
+layout(matrix(1:9, ncol = 3, nrow = 3))
+plot(gam2_summer_11502, select = 1, ylim = c(-10, 20))
+plot(gam2_summer_11502, select = 2, ylim = c(-10, 10))
+plot(gam2_summer_11502, select = 3, ylim = c(-20,20))
+plot(gam2_summer_11502, select = 4, ylim = c(-30, 10))
+plot(gam2_summer_11502, select = 5, ylim = c(- 1000, 100))
+plot(gam2_summer_11502, select = 6, ylim = c(-20, 20))
+plot(gam2_summer_11502, select = 7, ylim = c(-100, 20))
+dev.off()
+
+jpeg("./Plots/Max/effects_gam3_summer_11502.jpg", width = 700, height = 600)
+layout(matrix(1:9, ncol = 3, nrow = 3))
+plot(gam3_summer_11502, select = 1, ylim = c(-10, 20))
+plot(gam3_summer_11502, select = 2, ylim = c(-10, 10))
+plot(gam3_summer_11502, select = 3, ylim = c(-20,20))
+plot(gam3_summer_11502, select = 4, ylim = c(-30, 10))
+plot(gam3_summer_11502, select = 5, ylim = c(- 2000, 2000))
+plot(gam3_summer_11502, select = 6, ylim = c(-20, 20))
+plot(gam3_summer_11502, select = 7, ylim = c(-100, 20))
+plot(gam3_summer_11502, select = 8, ylim = c(-20, 20))
+plot(gam3_summer_11502, select = 9, ylim = c(-200, 100))
+dev.off()
+
+
+jpeg("./Plots/Max/effects_gam4_summer_11502.jpg", width = 700, height = 600)
+layout(matrix(1:9, ncol = 3, nrow = 3))
+plot(gam4_summer_11502, select = 1, ylim = c(-10, 20))
+plot(gam4_summer_11502, select = 2, ylim = c(-10, 10))
+plot(gam4_summer_11502, select = 3, ylim = c(-20,20))
+plot(gam4_summer_11502, select = 4, ylim = c(-30, 10))
+plot(gam4_summer_11502, select = 5, ylim = c(- 2000, 2000))
+plot(gam4_summer_11502, select = 6, ylim = c(-20, 20))
+plot(gam4_summer_11502, select = 7, ylim = c(-100, 20))
+plot(gam4_summer_11502, select = 8, ylim = c(-20, 20))
+plot(gam4_summer_11502, select = 9, ylim = c(-200, 100))
+dev.off()
+
+jpeg("./Plots/Max/effects_gam5_summer_11502.jpg", width = 700, height = 600)
+layout(matrix(1:9, ncol = 3, nrow = 3))
+plot(gam5_summer_11502, select = 1, ylim = c(-10, 20))
+plot(gam5_summer_11502, select = 2, ylim = c(-10, 10))
+plot(gam5_summer_11502, select = 3, ylim = c(-20,20))
+plot(gam5_summer_11502, select = 4, ylim = c(-30, 10))
+plot(gam5_summer_11502, select = 5, ylim = c(- 2000, 2000))
+plot(gam5_summer_11502, select = 6, ylim = c(-20, 20))
+plot(gam5_summer_11502, select = 7, ylim = c(-100, 20))
+plot(gam5_summer_11502, select = 8, ylim = c(-10, 10))
+plot(gam5_summer_11502, select = 9, ylim = c(-200, 100))
+dev.off()
+```
+
 # Random Forest
 ```{r}
 rf_summer_11502 <- randomForest::randomForest(lowlevel ~ YY + avg_precip + avg_airtmp+ avg_glorad + avg_relhum + avg_soilwater + avg_snowstorage + groundwaterdepth + avg_infiltration + max_precip_scaled, data= hydro_summer_11502_kbe, proximity=TRUE, na.action = na.omit, importance = TRUE)
