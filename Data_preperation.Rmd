@@ -276,6 +276,8 @@ hydro_summer_10304$avg_precip_scaled <- hydro_summer_10304$avg_precip * 4.5
 hydro_summer_10304$avg_glorad_scaled <- hydro_summer_10304$avg_glorad * 0.062
 hydro_summer_10304$avg_relhum_scaled<- hydro_summer_10304$avg_relhum * 1.4
 hydro_summer_10304$avg_infiltration_scaled <- hydro_summer_10304$avg_infiltration * 43
+hydro_summer_10304$groundwaterdepth_scaled <- hydro_summer_10304$groundwaterdepth * 3.75
+hydro_summer_10304$avg_snowstorage_drain_scaled <- hydro_summer_10304$avg_snowstorage_drain * 55
 
 
 hydro_summer_11502$avg_soilwater_scaled <- hydro_summer_11502$avg_soilwater * 6
@@ -285,6 +287,8 @@ hydro_summer_11502$avg_precip_scaled <- hydro_summer_11502$avg_precip  * 4.5
 hydro_summer_11502$avg_glorad_scaled <- hydro_summer_11502$avg_glorad * 0.062
 hydro_summer_11502$avg_relhum_scaled <- hydro_summer_11502$avg_relhum * 1.4
 hydro_summer_11502$avg_infiltration_scaled <- hydro_summer_11502$avg_infiltration * 43
+hydro_summer_11502$groundwaterdepth_scaled <- hydro_summer_11502$groundwaterdepth * 3.75
+hydro_summer_11502$avg_snowstorage_drain_scaled <- hydro_summer_11502$avg_snowstorage_drain * 55
 
 
 hydro_summer_20203$avg_soilwater_scaled <- hydro_summer_20203$avg_soilwater * 6
@@ -294,6 +298,9 @@ hydro_summer_20203$avg_precip_scaled <- hydro_summer_20203$avg_precip * 4.5
 hydro_summer_20203$avg_glorad_scaled <- hydro_summer_20203$avg_glorad * 0.062
 hydro_summer_20203$avg_relhum_scaled <- hydro_summer_20203$avg_relhum * 1.4
 hydro_summer_20203$avg_infiltration_scaled <- hydro_summer_20203$avg_infiltration * 43
+hydro_summer_20203$groundwaterdepth_scaled <- hydro_summer_20203$groundwaterdepth * 3.75
+hydro_summer_20203$avg_snowstorage_drain_scaled <- hydro_summer_20203$avg_snowstorage_drain * 55
+
 
 
 hydro_winter_10304$avg_soilwater_scaled <- hydro_winter_10304$avg_soilwater * 6
@@ -303,6 +310,8 @@ hydro_winter_10304$avg_precip_scaled <- hydro_winter_10304$avg_precip * 4.5
 hydro_winter_10304$avg_glorad_scaled <- hydro_winter_10304$avg_glorad * 0.062
 hydro_winter_10304$avg_relhum_scaled <- hydro_winter_10304$avg_relhum * 1.4
 hydro_winter_10304$avg_infiltration_scaled <- hydro_winter_10304$avg_infiltration * 43
+hydro_winter_10304$groundwaterdepth_scaled <- hydro_winter_10304$groundwaterdepth * 3.75
+hydro_winter_10304$avg_snowstorage_drain_scaled <- hydro_winter_10304$avg_snowstorage_drain * 55
 
 
 hydro_winter_11502$avg_soilwater_scaled <- hydro_winter_11502$avg_soilwater * 6
@@ -312,15 +321,19 @@ hydro_winter_11502$avg_precip_scaled <- hydro_winter_11502$avg_precip  * 4.5
 hydro_winter_11502$avg_glorad_scaled <- hydro_winter_11502$avg_glorad * 0.062
 hydro_winter_11502$avg_relhum_scaled <- hydro_winter_11502$avg_relhum * 1.4
 hydro_winter_11502$avg_infiltration_scaled <- hydro_winter_11502$avg_infiltration * 43
+hydro_winter_11502$groundwaterdepth_scaled <- hydro_winter_11502$groundwaterdepth * 3.75
+hydro_winter_11502$avg_snowstorage_drain_scaled <- hydro_winter_11502$avg_snowstorage_drain * 55
 
 
-hydro_winter_20203$avg_soilwater_scaled <- hydro_winter_11502$avg_soilwater * 6
-hydro_winter_20203$avg_snowstorage_scaled <- hydro_winter_11502$avg_snowstorage * 2
-hydro_winter_20203$avg_airtmp_scaled <- hydro_winter_11502$avg_airtmp * 3
-hydro_winter_20203$avg_precip_scaled <- hydro_winter_11502$avg_precip * 4.5
-hydro_winter_20203$avg_glorad_scaled <- hydro_winter_11502$avg_glorad * 0.062
-hydro_winter_20203$avg_relhum_scaled <- hydro_winter_11502$avg_relhum * 1.4
-hydro_winter_20203$avg_infiltration_scaled <- hydro_winter_11502$avg_infiltration * 43
+hydro_winter_20203$avg_soilwater_scaled <- hydro_winter_20203$avg_soilwater * 6
+hydro_winter_20203$avg_snowstorage_scaled <- hydro_winter_20203$avg_snowstorage * 2
+hydro_winter_20203$avg_airtmp_scaled <- hydro_winter_20203$avg_airtmp * 3
+hydro_winter_20203$avg_precip_scaled <- hydro_winter_20203$avg_precip * 4.5
+hydro_winter_20203$avg_glorad_scaled <- hydro_winter_20203$avg_glorad * 0.062
+hydro_winter_20203$avg_relhum_scaled <- hydro_winter_20203$avg_relhum * 1.4
+hydro_winter_20203$avg_infiltration_scaled <- hydro_winter_20203$avg_infiltration * 43
+hydro_winter_20203$groundwaterdepth_scaled <- hydro_winter_20203$groundwaterdepth * 3.75
+hydro_winter_20203$avg_snowstorage_drain_scaled <- hydro_winter_20203$avg_snowstorage_drain * 55
 
 
 # separate datasets for each waterlevel, season and member
