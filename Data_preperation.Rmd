@@ -174,8 +174,10 @@ hydro_summer <- cbind(hydro_summer, snowstorage_diff)
 hydro_winter$snowstorage_drain <- hydro_winter$snowstorage_diff
 for (k in 1:length(hydro_winter$snowstorage_drain)) {
   if (!is.na(hydro_winter$snowstorage_diff[k])) {
-    if (hydro_winter$snowstorage_diff[k] >= 0) {
-    hydro_winter$snowstorage_drain[k] <- 0
+    if (hydro_winter$snowstorage_diff[k] < 0) {
+      hydro_winter$snowstorage_drain[k] <- abs(hydro_winter$snowstorage_drain[k])
+    } else if (hydro_winter$snowstorage_diff[k] >= 0) {
+      hydro_winter$snowstorage_drain[k] <- 0
     }
   }
 }
@@ -184,8 +186,10 @@ for (k in 1:length(hydro_winter$snowstorage_drain)) {
 hydro_summer$snowstorage_drain <- hydro_summer$snowstorage_diff
 for (k in 1:length(hydro_summer$snowstorage_drain)) {
   if (!is.na(hydro_summer$snowstorage_diff[k])) {
-    if (hydro_summer$snowstorage_diff[k] >= 0) {
-    hydro_summer$snowstorage_drain[k] <- 0
+    if (hydro_summer$snowstorage_diff[k] < 0) {
+      hydro_summer$snowstorage_drain[k] <- abs(hydro_summer$snowstorage_drain[k])
+    } else if (hydro_summer$snowstorage_diff[k] >= 0) {
+      hydro_summer$snowstorage_drain[k] <- 0
     }
   }
 }
@@ -358,6 +362,13 @@ for (j in levels(hydro_total$member)) {
 # Save pegel_prop
 saveRDS(object = pegel_prop, file = "data/pegel_prop.RDS")
 
+# Save hydro total
+saveRDS(object = hydro_total, file = "data/hydro_total.RDS")
+
+# Save hydrological half years
+saveRDS(object = hydro_summer, file = "data/hydro_summer.RDS")
+saveRDS(object = hydro_winter, file = "data/hydro_winter.RDS")
+
 # Save subsets for hydrological half-year for each waterlevel
 saveRDS(object = hydro_summer_20203, file = "data/hydro_summer_20203.RDS")
 saveRDS(object = hydro_summer_11502, file = "data/hydro_summer_11502.RDS")
@@ -366,10 +377,72 @@ saveRDS(object = hydro_winter_20203, file = "data/hydro_winter_20203.RDS")
 saveRDS(object = hydro_winter_11502, file = "data/hydro_winter_11502.RDS")
 saveRDS(object = hydro_winter_10304, file = "data/hydro_winter_10304.RDS")
 
-# Save hydrological half years
-saveRDS(object = hydro_summer, file = "data/hydro_summer.RDS")
-saveRDS(object = hydro_winter, file = "data/hydro_winter.RDS")
+# Save subsets for each member, each hydrological half-year and for each waterlevel
+saveRDS(object = hydro_summer_20203_kbe, file = "data/hydro_summer_20203_kbe.RDS")
+saveRDS(object = hydro_summer_20203_kbj, file = "data/hydro_summer_20203_kbj.RDS")
+saveRDS(object = hydro_summer_20203_kbo, file = "data/hydro_summer_20203_kbo.RDS")
+saveRDS(object = hydro_summer_20203_kbt, file = "data/hydro_summer_20203_kbt.RDS")
+saveRDS(object = hydro_summer_20203_kby, file = "data/hydro_summer_20203_kby.RDS")
+saveRDS(object = hydro_summer_20203_kcd, file = "data/hydro_summer_20203_kcd.RDS")
+saveRDS(object = hydro_summer_20203_kci, file = "data/hydro_summer_20203_kci.RDS")
+saveRDS(object = hydro_summer_20203_kcn, file = "data/hydro_summer_20203_kcn.RDS")
+saveRDS(object = hydro_summer_20203_kcs, file = "data/hydro_summer_20203_kcs.RDS")
+saveRDS(object = hydro_summer_20203_kcx, file = "data/hydro_summer_20203_kcx.RDS")
 
-# Save hydro total
-saveRDS(object = hydro_total, file = "data/hydro_total.RDS")
+saveRDS(object = hydro_summer_11502_kbe, file = "data/hydro_summer_11502_kbe.RDS")
+saveRDS(object = hydro_summer_11502_kbj, file = "data/hydro_summer_11502_kbj.RDS")
+saveRDS(object = hydro_summer_11502_kbo, file = "data/hydro_summer_11502_kbo.RDS")
+saveRDS(object = hydro_summer_11502_kbt, file = "data/hydro_summer_11502_kbt.RDS")
+saveRDS(object = hydro_summer_11502_kby, file = "data/hydro_summer_11502_kby.RDS")
+saveRDS(object = hydro_summer_11502_kcd, file = "data/hydro_summer_11502_kcd.RDS")
+saveRDS(object = hydro_summer_11502_kci, file = "data/hydro_summer_11502_kci.RDS")
+saveRDS(object = hydro_summer_11502_kcn, file = "data/hydro_summer_11502_kcn.RDS")
+saveRDS(object = hydro_summer_11502_kcs, file = "data/hydro_summer_11502_kcs.RDS")
+saveRDS(object = hydro_summer_11502_kcx, file = "data/hydro_summer_11502_kcx.RDS")
+
+saveRDS(object = hydro_summer_10304_kbe, file = "data/hydro_summer_10304_kbe.RDS")
+saveRDS(object = hydro_summer_10304_kbj, file = "data/hydro_summer_10304_kbj.RDS")
+saveRDS(object = hydro_summer_10304_kbo, file = "data/hydro_summer_10304_kbo.RDS")
+saveRDS(object = hydro_summer_10304_kbt, file = "data/hydro_summer_10304_kbt.RDS")
+saveRDS(object = hydro_summer_10304_kby, file = "data/hydro_summer_10304_kby.RDS")
+saveRDS(object = hydro_summer_10304_kcd, file = "data/hydro_summer_10304_kcd.RDS")
+saveRDS(object = hydro_summer_10304_kci, file = "data/hydro_summer_10304_kci.RDS")
+saveRDS(object = hydro_summer_10304_kcn, file = "data/hydro_summer_10304_kcn.RDS")
+saveRDS(object = hydro_summer_10304_kcs, file = "data/hydro_summer_10304_kcs.RDS")
+saveRDS(object = hydro_summer_10304_kcx, file = "data/hydro_summer_10304_kcx.RDS")
+
+saveRDS(object = hydro_winter_20203_kbe, file = "data/hydro_winter_20203_kbe.RDS")
+saveRDS(object = hydro_winter_20203_kbj, file = "data/hydro_winter_20203_kbj.RDS")
+saveRDS(object = hydro_winter_20203_kbo, file = "data/hydro_winter_20203_kbo.RDS")
+saveRDS(object = hydro_winter_20203_kbt, file = "data/hydro_winter_20203_kbt.RDS")
+saveRDS(object = hydro_winter_20203_kby, file = "data/hydro_winter_20203_kby.RDS")
+saveRDS(object = hydro_winter_20203_kcd, file = "data/hydro_winter_20203_kcd.RDS")
+saveRDS(object = hydro_winter_20203_kci, file = "data/hydro_winter_20203_kci.RDS")
+saveRDS(object = hydro_winter_20203_kcn, file = "data/hydro_winter_20203_kcn.RDS")
+saveRDS(object = hydro_winter_20203_kcs, file = "data/hydro_winter_20203_kcs.RDS")
+saveRDS(object = hydro_winter_20203_kcx, file = "data/hydro_winter_20203_kcx.RDS")
+
+saveRDS(object = hydro_winter_11502_kbe, file = "data/hydro_winter_11502_kbe.RDS")
+saveRDS(object = hydro_winter_11502_kbj, file = "data/hydro_winter_11502_kbj.RDS")
+saveRDS(object = hydro_winter_11502_kbo, file = "data/hydro_winter_11502_kbo.RDS")
+saveRDS(object = hydro_winter_11502_kbt, file = "data/hydro_winter_11502_kbt.RDS")
+saveRDS(object = hydro_winter_11502_kby, file = "data/hydro_winter_11502_kby.RDS")
+saveRDS(object = hydro_winter_11502_kcd, file = "data/hydro_winter_11502_kcd.RDS")
+saveRDS(object = hydro_winter_11502_kci, file = "data/hydro_winter_11502_kci.RDS")
+saveRDS(object = hydro_winter_11502_kcn, file = "data/hydro_winter_11502_kcn.RDS")
+saveRDS(object = hydro_winter_11502_kcs, file = "data/hydro_winter_11502_kcs.RDS")
+saveRDS(object = hydro_winter_11502_kcx, file = "data/hydro_winter_11502_kcx.RDS")
+
+saveRDS(object = hydro_winter_10304_kbe, file = "data/hydro_winter_10304_kbe.RDS")
+saveRDS(object = hydro_winter_10304_kbj, file = "data/hydro_winter_10304_kbj.RDS")
+saveRDS(object = hydro_winter_10304_kbo, file = "data/hydro_winter_10304_kbo.RDS")
+saveRDS(object = hydro_winter_10304_kbt, file = "data/hydro_winter_10304_kbt.RDS")
+saveRDS(object = hydro_winter_10304_kby, file = "data/hydro_winter_10304_kby.RDS")
+saveRDS(object = hydro_winter_10304_kcd, file = "data/hydro_winter_10304_kcd.RDS")
+saveRDS(object = hydro_winter_10304_kci, file = "data/hydro_winter_10304_kci.RDS")
+saveRDS(object = hydro_winter_10304_kcn, file = "data/hydro_winter_10304_kcn.RDS")
+saveRDS(object = hydro_winter_10304_kcs, file = "data/hydro_winter_10304_kcs.RDS")
+saveRDS(object = hydro_winter_10304_kcx, file = "data/hydro_winter_10304_kcx.RDS")
+
+
 ```
