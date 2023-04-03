@@ -1,13 +1,24 @@
 ---
 title: "Data_modelling_final"
-output: html_document
+output:
+  pdf_document: default
+  html_document: default
 ---
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(mgcv)
+ 
 hydro_summer <- readRDS(file = "./data/hydro_summer.RDS")
 hydro_winter <- readRDS(file = "./data/hydro_winter.RDS")
 hydro_total <- readRDS(file = "./data/hydro_total.RDS")
 pegel_prop <- readRDS(file = "./data/pegel_prop.RDS")
+
+hydro_summer_10304_kbe <- readRDS(file = "data/hydro_summer_10304_kbe.RDS")
+hydro_winter_10304_kbe <- readRDS(file = "data/hydro_winter_10304_kbe.RDS")
+hydro_summer_20203_kbe <- readRDS(file = "data/hydro_summer_20203_kbe.RDS")
+hydro_winter_20203_kbe <- readRDS(file = "data/hydro_winter_20203_kbe.RDS")
 ```
 
 
@@ -217,7 +228,7 @@ summary(gam5_winter_11502)
 ### Winter effect plots
 ```{r}
 
-jpeg("./Plots/Max/effects_gam2_winter_11502.jpg", width = 700, height = 600)
+# jpeg("./Plots/Max/effects_gam2_winter_11502.jpg", width = 700, height = 600)
 layout(matrix(1:9, ncol = 3, nrow = 3))
 plot(gam2_winter_11502, select = 1, ylim = c(-50, 20))
 plot(gam2_winter_11502, select = 2, ylim = c(-20, 20))
@@ -226,9 +237,9 @@ plot(gam2_winter_11502, select = 4, ylim = c(-600, 100))
 plot(gam2_winter_11502, select = 5, ylim = c(-50, 20))
 plot(gam2_winter_11502, select = 6, ylim = c(-100, 20))
 plot(gam2_winter_11502, select = 7, ylim = c(-20, 10))
-dev.off()
+# dev.off()
 
-jpeg("./Plots/Max/effects_gam3_winter_11502.jpg", width = 700, height = 600)
+# jpeg("./Plots/Max/effects_gam3_winter_11502.jpg", width = 700, height = 600)
 layout(matrix(1:9, ncol = 3, nrow = 3))
 plot(gam3_winter_11502, select = 1, ylim = c(-50, 20))
 plot(gam3_winter_11502, select = 2, ylim = c(-20, 20))
@@ -237,9 +248,9 @@ plot(gam3_winter_11502, select = 4, ylim = c(-600, 100))
 plot(gam3_winter_11502, select = 5, ylim = c(-50, 20))
 plot(gam3_winter_11502, select = 6, ylim = c(-100, 20))
 plot(gam3_winter_11502, select = 7, ylim = c(-20, 50))
-dev.off()
+# dev.off()
 
-jpeg("./Plots/Max/effects_gam4_winter_11502.jpg", width = 700, height = 600)
+# jpeg("./Plots/Max/effects_gam4_winter_11502.jpg", width = 700, height = 600)
 layout(matrix(1:9, ncol = 3, nrow = 3))
 plot(gam4_winter_11502, select = 1, ylim = c(-50, 20))
 plot(gam4_winter_11502, select = 2, ylim = c(-20, 20))
@@ -249,9 +260,9 @@ plot(gam4_winter_11502, select = 5, ylim = c(-50, 20))
 plot(gam4_winter_11502, select = 6, ylim = c(-100, 20))
 plot(gam4_winter_11502, select = 7, ylim = c(-20, 50))
 plot(gam4_winter_11502, select = 8, ylim = c(-10, 10))
-dev.off()
+# dev.off()
 
-jpeg("./Plots/Max/effects_gam5_winter_11502.jpg", width = 700, height = 600)
+# jpeg("./Plots/Max/effects_gam5_winter_11502.jpg", width = 700, height = 600)
 layout(matrix(1:9, ncol = 3, nrow = 3))
 plot(gam5_winter_11502, select = 1, ylim = c(-50, 20))
 plot(gam5_winter_11502, select = 2, ylim = c(-20, 20))
@@ -262,13 +273,13 @@ plot(gam5_winter_11502, select = 6, ylim = c(-100, 20))
 plot(gam5_winter_11502, select = 7, ylim = c(-20, 50))
 plot(gam5_winter_11502, select = 8, ylim = c(-10, 10))
 plot(gam5_winter_11502, select = 9, ylim = c(-10, 10))
-dev.off()
+# dev.off()
 ```
 
 
 ### Summer Effect Plots 
 ```{r}
-jpeg("./Plots/Max/effects_gam2_summer_11502.jpg", width = 700, height = 600)
+# jpeg("./Plots/Max/effects_gam2_summer_11502.jpg", width = 700, height = 600)
 layout(matrix(1:9, ncol = 3, nrow = 3))
 plot(gam2_summer_11502, select = 1, ylim = c(-10, 20))
 plot(gam2_summer_11502, select = 2, ylim = c(-10, 10))
@@ -277,9 +288,9 @@ plot(gam2_summer_11502, select = 4, ylim = c(-30, 10))
 plot(gam2_summer_11502, select = 5, ylim = c(- 1000, 100))
 plot(gam2_summer_11502, select = 6, ylim = c(-20, 20))
 plot(gam2_summer_11502, select = 7, ylim = c(-100, 20))
-dev.off()
+# dev.off()
 
-jpeg("./Plots/Max/effects_gam3_summer_11502.jpg", width = 700, height = 600)
+# jpeg("./Plots/Max/effects_gam3_summer_11502.jpg", width = 700, height = 600)
 layout(matrix(1:9, ncol = 3, nrow = 3))
 plot(gam3_summer_11502, select = 1, ylim = c(-10, 20))
 plot(gam3_summer_11502, select = 2, ylim = c(-10, 10))
@@ -290,10 +301,10 @@ plot(gam3_summer_11502, select = 6, ylim = c(-20, 20))
 plot(gam3_summer_11502, select = 7, ylim = c(-100, 20))
 plot(gam3_summer_11502, select = 8, ylim = c(-20, 20))
 plot(gam3_summer_11502, select = 9, ylim = c(-200, 100))
-dev.off()
+# dev.off()
 
 
-jpeg("./Plots/Max/effects_gam4_summer_11502.jpg", width = 700, height = 600)
+# jpeg("./Plots/Max/effects_gam4_summer_11502.jpg", width = 700, height = 600)
 layout(matrix(1:9, ncol = 3, nrow = 3))
 plot(gam4_summer_11502, select = 1, ylim = c(-10, 20))
 plot(gam4_summer_11502, select = 2, ylim = c(-10, 10))
@@ -304,9 +315,9 @@ plot(gam4_summer_11502, select = 6, ylim = c(-20, 20))
 plot(gam4_summer_11502, select = 7, ylim = c(-100, 20))
 plot(gam4_summer_11502, select = 8, ylim = c(-20, 20))
 plot(gam4_summer_11502, select = 9, ylim = c(-200, 100))
-dev.off()
+# dev.off()
 
-jpeg("./Plots/Max/effects_gam5_summer_11502.jpg", width = 700, height = 600)
+# jpeg("./Plots/Max/effects_gam5_summer_11502.jpg", width = 700, height = 600)
 layout(matrix(1:9, ncol = 3, nrow = 3))
 plot(gam5_summer_11502, select = 1, ylim = c(-10, 20))
 plot(gam5_summer_11502, select = 2, ylim = c(-10, 10))
@@ -317,7 +328,7 @@ plot(gam5_summer_11502, select = 6, ylim = c(-20, 20))
 plot(gam5_summer_11502, select = 7, ylim = c(-100, 20))
 plot(gam5_summer_11502, select = 8, ylim = c(-10, 10))
 plot(gam5_summer_11502, select = 9, ylim = c(-200, 100))
-dev.off()
+#dev.off()
 ```
 
 # Random Forest

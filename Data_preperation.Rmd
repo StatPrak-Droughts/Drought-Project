@@ -366,6 +366,10 @@ saveRDS(object = hydro_winter_20203, file = "data/hydro_winter_20203.RDS")
 saveRDS(object = hydro_winter_11502, file = "data/hydro_winter_11502.RDS")
 saveRDS(object = hydro_winter_10304, file = "data/hydro_winter_10304.RDS")
 
+saveRDS(object = hydro_summer_10304_kbe, file = "data/hydro_summer_10304_kbe.RDS")
+saveRDS(object = hydro_winter_10304_kbe, file = "data/hydro_winter_10304_kbe.RDS")
+saveRDS(object = hydro_summer_20203_kbe, file = "data/hydro_summer_20203_kbe.RDS")
+saveRDS(object = hydro_winter_20203_kbe, file = "data/hydro_winter_20203_kbe.RDS")
 # Save hydrological half years
 saveRDS(object = hydro_summer, file = "data/hydro_summer.RDS")
 saveRDS(object = hydro_winter, file = "data/hydro_winter.RDS")
