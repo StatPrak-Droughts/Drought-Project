@@ -896,7 +896,20 @@ gam_interactions_winter_11502$aic
 gam_all_summer_11502$aic
 gam_trimmed_summer_11502$aic
 gam_interactions_summer_11502$aic
+
+plot(gam_interactions_summer_11502, select = 8, ylim = c(-20,20))
 ```
+# Save models for Shiny
+```{r}
+save(gam_all_summer_11502, file = "models/gam_all_summer_11502.Rdata")
+save(gam_trimmed_summer_11502, file = "models/gam_trimmed_summer_11502.Rdata")
+save(gam_interactions_summer_11502, file = "models/gam_interactions_summer_11502.Rdata")
+
+save(gam_all_winter_11502, file = "models/gam_all_winter_11502.Rdata")
+save(gam_trimmed_winter_11502, file = "models/gam_trimmed_winter_11502.Rdata")
+save(gam_interactions_winter_11502, file = "models/gam_interactions_winter_11502.Rdata")
+```
+
 
 # Random Forest
 ```{r}
