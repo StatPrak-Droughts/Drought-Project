@@ -225,7 +225,73 @@ table_yearly_avg_max_soilwater <- hydro_total %>%
   group_by(waterlevel, YY, hydro_year, member) %>%
   summarise(max_soilwater = max(soilwater)) %>% 
   group_by(waterlevel, YY, hydro_year) %>%
-  summarise(avg_max_soilwater = mean(max_soilwater)) 
+  summarise(avg_max_soilwater = mean(max_soilwater))
+
+# Model drivers: avg and groundwaterdepth
+table_yearly_avg_min_groundwaterdepth <- hydro_total %>%
+  group_by(waterlevel, YY, hydro_year, member) %>%
+  summarise(min_groundwaterdepth = min(groundwaterdepth)) %>% 
+  group_by(waterlevel, YY, hydro_year) %>%
+  summarise(avg_min_groundwaterdepth = mean(min_groundwaterdepth))
+
+table_yearly_avg_min_avg_soilwater <- hydro_total %>%
+  group_by(waterlevel, YY, hydro_year, member) %>%
+  summarise(min_avg_soilwater = min(avg_soilwater)) %>%
+  group_by(waterlevel, YY, hydro_year) %>%
+  summarise(avg_min_avg_soilwater = mean(min_avg_soilwater)) 
+
+table_yearly_avg_min_avg_snowstorage <- hydro_total %>%
+  group_by(waterlevel, YY, hydro_year, member) %>%
+  summarise(min_avg_snowstorage = min(avg_snowstorage)) %>%
+  group_by(waterlevel, YY, hydro_year) %>%
+  summarise(avg_min_avg_snowstorage = mean(min_avg_snowstorage)) 
+
+table_yearly_avg_min_avg_airtmp <- hydro_total %>%
+  group_by(waterlevel, YY, hydro_year, member) %>%
+  summarise(min_avg_airtmp = min(avg_airtmp)) %>%
+  group_by(waterlevel, YY, hydro_year) %>%
+  summarise(avg_min_avg_airtmp = mean(min_avg_airtmp)) 
+
+table_yearly_avg_min_avg_precip <- hydro_total %>%
+  group_by(waterlevel, YY, hydro_year, member) %>%
+  summarise(min_avg_precip = min(avg_precip)) %>%
+  group_by(waterlevel, YY, hydro_year) %>%
+  summarise(avg_min_avg_precip = mean(min_avg_precip)) 
+
+table_yearly_avg_max_avg_glorad <- hydro_total %>%
+  group_by(waterlevel, YY, hydro_year, member) %>%
+  summarise(max_avg_glorad = max(avg_glorad)) %>%
+  group_by(waterlevel, YY, hydro_year) %>%
+  summarise(avg_max_avg_glorad = mean(max_avg_glorad)) 
+
+table_yearly_avg_max_avg_relhum <- hydro_total %>%
+  group_by(waterlevel, YY, hydro_year, member) %>%
+  summarise(max_avg_relhum = max(avg_relhum)) %>%
+  group_by(waterlevel, YY, hydro_year) %>%
+  summarise(avg_max_avg_relhum = mean(max_avg_relhum)) 
+
+table_yearly_avg_min_avg_infiltration <- hydro_total %>%
+  group_by(waterlevel, YY, hydro_year, member) %>%
+  summarise(min_avg_infiltration = min(avg_infiltration)) %>%
+  group_by(waterlevel, YY, hydro_year) %>%
+  summarise(avg_min_avg_infiltration = mean(min_avg_infiltration)) 
+
+saveRDS(object = table_yearly_avg_min_groundwaterdepth, 
+        file = "data/tables/driver_analysis/table_yearly_avg_min_groundwaterdepth.RDS")
+saveRDS(object = table_yearly_avg_min_avg_soilwater, 
+        file = "data/tables/driver_analysis/table_yearly_avg_min_avg_soilwater.RDS")
+saveRDS(object = table_yearly_avg_min_avg_snowstorage, 
+        file = "data/tables/driver_analysis/table_yearly_avg_min_avg_snowstorage.RDS")
+saveRDS(object = table_yearly_avg_min_avg_airtmp, 
+        file = "data/tables/driver_analysis/table_yearly_avg_min_avg_airtmp.RDS")
+saveRDS(object = table_yearly_avg_min_avg_precip, 
+        file = "data/tables/driver_analysis/table_yearly_avg_min_avg_precip.RDS")
+saveRDS(object = table_yearly_avg_max_avg_glorad, 
+        file = "data/tables/driver_analysis/table_yearly_avg_max_avg_glorad.RDS")
+saveRDS(object = table_yearly_avg_max_avg_relhum, 
+        file = "data/tables/driver_analysis/table_yearly_avg_max_avg_relhum.RDS")
+saveRDS(object = table_yearly_avg_min_avg_infiltration, 
+        file = "data/tables/driver_analysis/table_yearly_avg_min_avg_infiltration.RDS")
 
 # Plots
 ggplot(data = table_yearly_avg_max_prec, mapping = aes(x = YY, y = avg_max_precip, color = waterlevel)) +
@@ -280,6 +346,118 @@ ggplot(data = table_yearly_avg_max_soilwater, mapping = aes(x = YY, y = avg_max_
   facet_wrap(vars(hydro_year), labeller = as_labeller(c(`summer` = "Sommer", `winter` = "Winter")))
 ggsave("Plots/Chris/analysis/yearly_avg_max_soilwater.png", width = 12, height = 9)
 
+# Plots for model drivers
+
+ggplot(data = table_yearly_avg_min_groundwaterdepth, mapping = aes(x = YY, y = avg_min_groundwaterdepth, color = waterlevel)) +
+  geom_line() +
+  geom_point() +
+  labs(title = "Jährliches durchschnittliches Minimum des Grundwasserstandes \nje Jahreszeit im Zeitverlauf (aller Member)",
+       y = "Jährliches durchschnittliches Minimum des täglichem Grundwasserstandes \n(in m unter Oberfläche)",
+       x = "Datum") +
+  guides(color=guide_legend(title="Pegel")) +
+    theme(text = element_text(size = 20),
+          legend.position="bottom") +
+    scale_color_brewer(palette = "Dark2") +
+  facet_wrap(vars(hydro_year), labeller = as_labeller(c(`summer` = "Sommer", `winter` = "Winter")))
+ggsave("Plots/Chris/analysis/driver_plots/yearly_avg_min_groundwaterdepth.png", width = 12, height = 9)
+
+ggplot(data = table_yearly_avg_min_avg_soilwater, mapping = aes(x = YY, y = avg_min_avg_soilwater, color = waterlevel)) +
+  geom_line() +
+  geom_point() +
+  labs(title = "Jährliches durchschnittliches Minimum der täglichen oberflächennahen \nrelativen Bodenfeuchte je Jahreszeit im Zeitverlauf (aller Member)",
+       y = "Jährliches durchschnittliches Minimum der täglichen oberflächennahen \nrelativen Bodenfeuchte (in Prozentpunkten)",
+       x = "Datum", 
+       caption = "Oberflächennahen relative Bodenfeuchte: 60 Tage rolling mean, 100-fach skaliert, zentriert") +
+  guides(color=guide_legend(title="Pegel")) +
+    theme(text = element_text(size = 20),
+          legend.position="bottom") +
+    scale_color_brewer(palette = "Dark2") +
+  facet_wrap(vars(hydro_year), labeller = as_labeller(c(`summer` = "Sommer", `winter` = "Winter")))
+ggsave("Plots/Chris/analysis/driver_plots/yearly_avg_min_avg_soilwater.png", width = 12, height = 9)
+
+ggplot(data = table_yearly_avg_min_avg_snowstorage, mapping = aes(x = YY, y = avg_min_avg_snowstorage, color = waterlevel)) +
+  geom_line() +
+  geom_point() +
+  labs(title = "Jährliches durchschnittliches Minimum an täglichem Schneespeicher \nje Jahreszeit im Zeitverlauf (aller Member)",
+       y = "Jährliches durchschnittliches Minimum an täglichem Schneespeicher \n(in mm)",
+       x = "Datum", 
+       caption = "Schneespeicher: 30 Tage rolling mean, zentriert") +
+  guides(color=guide_legend(title="Pegel")) +
+    theme(text = element_text(size = 20),
+          legend.position="bottom") +
+    scale_color_brewer(palette = "Dark2") +
+  facet_wrap(vars(hydro_year), labeller = as_labeller(c(`summer` = "Sommer", `winter` = "Winter")))
+ggsave("Plots/Chris/analysis/driver_plots/yearly_avg_min_avg_snowstorage.png", width = 12, height = 9)
+
+ggplot(data = table_yearly_avg_min_avg_airtmp, mapping = aes(x = YY, y = avg_min_avg_airtmp, color = waterlevel)) +
+  geom_line() +
+  geom_point() +
+  labs(title = "Jährliches durchschnittliches Minimum an täglicher Lufttemperatur \nje Jahreszeit im Zeitverlauf (aller Member)",
+       y = "Jährliches durchschnittliches Minimum an täglicher Lufttemperatur \n(in °C)",
+       x = "Datum", 
+       caption = "Lufttemperatur: 7 Tage rolling mean, zentriert") +
+  guides(color=guide_legend(title="Pegel")) +
+    theme(text = element_text(size = 20),
+          legend.position="bottom") +
+    scale_color_brewer(palette = "Dark2") +
+  facet_wrap(vars(hydro_year), labeller = as_labeller(c(`summer` = "Sommer", `winter` = "Winter")))
+ggsave("Plots/Chris/analysis/driver_plots/yearly_avg_min_avg_airtmp.png", width = 12, height = 9)
+
+ggplot(data = table_yearly_avg_min_avg_precip, mapping = aes(x = YY, y = avg_min_avg_precip, color = waterlevel)) +
+  geom_line() +
+  geom_point() +
+  labs(title = "Jährliches durchschnittliches Minimum an täglichem Niederschlag \nje Jahreszeit im Zeitverlauf (aller Member)",
+       y = "Jährliches durchschnittliches Minimum an täglichem Niederschlag \n(in mm/24h)",
+       x = "Datum", 
+       caption = "Niederschlag: 7 Tage rolling mean, zentriert") +
+  guides(color=guide_legend(title="Pegel")) +
+    theme(text = element_text(size = 20),
+          legend.position="bottom") +
+    scale_color_brewer(palette = "Dark2") +
+  facet_wrap(vars(hydro_year), labeller = as_labeller(c(`summer` = "Sommer", `winter` = "Winter")))
+ggsave("Plots/Chris/analysis/driver_plots/yearly_avg_min_avg_precip.png", width = 12, height = 9)
+
+ggplot(data = table_yearly_avg_max_avg_glorad, mapping = aes(x = YY, y = avg_max_avg_glorad, color = waterlevel)) +
+  geom_line() +
+  geom_point() +
+  labs(title = "Jährliches durchschnittliches Maximum an täglich einfallender \nkurzwelligen Strahlung je Jahreszeit im Zeitverlauf (aller Member)",
+       y = "Jährliches durchschnittliches Maximum an täglich einfallender \nkurzwelligen Strahlung (in Wh/m²)",
+       x = "Datum", 
+       caption = "Einfallende kurzwellige Strahlung: 7 Tage rolling mean") +
+  guides(color=guide_legend(title="Pegel")) +
+    theme(text = element_text(size = 20),
+          legend.position="bottom") +
+    scale_color_brewer(palette = "Dark2") +
+  facet_wrap(vars(hydro_year), labeller = as_labeller(c(`summer` = "Sommer", `winter` = "Winter")))
+ggsave("Plots/Chris/analysis/driver_plots/yearly_avg_max_avg_glorad.png", width = 12, height = 9)
+
+ggplot(data = table_yearly_avg_max_avg_relhum, mapping = aes(x = YY, y = avg_max_avg_relhum, color = waterlevel)) +
+  geom_line() +
+  geom_point() +
+  labs(title = "Jährliches durchschnittliches Maximum an täglicher relativer \nLuftfeuchtigkeit je Jahreszeit im Zeitverlauf (aller Member)",
+       y = "Jährliches durchschnittliches Maximum an täglicher relativer \nLuftfeuchtigkeit (in %)",
+       x = "Datum", 
+       caption = "Relative Luftfeuchtigkeit: 7 Tage rolling mean") +
+  guides(color=guide_legend(title="Pegel")) +
+    theme(text = element_text(size = 20),
+          legend.position="bottom") +
+    scale_color_brewer(palette = "Dark2") +
+  facet_wrap(vars(hydro_year), labeller = as_labeller(c(`summer` = "Sommer", `winter` = "Winter")))
+ggsave("Plots/Chris/analysis/driver_plots/yearly_avg_max_avg_relhum.png", width = 12, height = 9)
+
+ggplot(data = table_yearly_avg_min_avg_infiltration, mapping = aes(x = YY, y = avg_min_avg_infiltration, color = waterlevel)) +
+  geom_line() +
+  geom_point() +
+  labs(title = "Jährliches durchschnittliches Minimum an täglicher Wasserleitfähigkeit \nje Jahreszeit im Zeitverlauf (aller Member)",
+       y = "Jährliches durchschnittliches Minimum an täglicher Wasserleitfähigkeit \n(in mm/24h)",
+       x = "Datum", 
+       caption = "Wasserleitfähigkeit: 7 Tage rolling mean") +
+  guides(color=guide_legend(title="Pegel")) +
+    theme(text = element_text(size = 20),
+          legend.position="bottom") +
+    scale_color_brewer(palette = "Dark2") +
+  facet_wrap(vars(hydro_year), labeller = as_labeller(c(`summer` = "Sommer", `winter` = "Winter")))
+ggsave("Plots/Chris/analysis/driver_plots/yearly_avg_min_avg_infiltration.png", width = 12, height = 9)
 ```
 
 ## Chris: Extreme value analysis
