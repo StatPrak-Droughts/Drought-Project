@@ -225,7 +225,73 @@ table_yearly_avg_max_soilwater <- hydro_total %>%
   group_by(waterlevel, YY, hydro_year, member) %>%
   summarise(max_soilwater = max(soilwater)) %>% 
   group_by(waterlevel, YY, hydro_year) %>%
-  summarise(avg_max_soilwater = mean(max_soilwater)) 
+  summarise(avg_max_soilwater = mean(max_soilwater))
+
+# Model drivers: avg and groundwaterdepth
+table_yearly_avg_max_groundwaterdepth <- hydro_total %>%
+  group_by(waterlevel, YY, hydro_year, member) %>%
+  summarise(max_groundwaterdepth = max(groundwaterdepth)) %>% 
+  group_by(waterlevel, YY, hydro_year) %>%
+  summarise(avg_max_groundwaterdepth = mean(max_groundwaterdepth))
+
+table_yearly_avg_max_avg_soilwater <- hydro_total %>%
+  group_by(waterlevel, YY, hydro_year, member) %>%
+  summarise(max_avg_soilwater = max(avg_soilwater)) %>%
+  group_by(waterlevel, YY, hydro_year) %>%
+  summarise(avg_max_avg_soilwater = mean(max_avg_soilwater)) 
+
+table_yearly_avg_max_avg_snowstorage <- hydro_total %>%
+  group_by(waterlevel, YY, hydro_year, member) %>%
+  summarise(max_avg_snowstorage = max(avg_snowstorage)) %>%
+  group_by(waterlevel, YY, hydro_year) %>%
+  summarise(avg_max_avg_snowstorage = mean(max_avg_snowstorage)) 
+
+table_yearly_avg_max_avg_airtmp <- hydro_total %>%
+  group_by(waterlevel, YY, hydro_year, member) %>%
+  summarise(max_avg_airtmp = max(avg_airtmp)) %>%
+  group_by(waterlevel, YY, hydro_year) %>%
+  summarise(avg_max_avg_airtmp = mean(max_avg_airtmp)) 
+
+table_yearly_avg_max_avg_precip <- hydro_total %>%
+  group_by(waterlevel, YY, hydro_year, member) %>%
+  summarise(max_avg_precip = max(avg_precip)) %>%
+  group_by(waterlevel, YY, hydro_year) %>%
+  summarise(avg_max_avg_precip = mean(max_avg_precip)) 
+
+table_yearly_avg_max_avg_glorad <- hydro_total %>%
+  group_by(waterlevel, YY, hydro_year, member) %>%
+  summarise(max_avg_glorad = max(avg_glorad)) %>%
+  group_by(waterlevel, YY, hydro_year) %>%
+  summarise(avg_max_avg_glorad = mean(max_avg_glorad)) 
+
+table_yearly_avg_max_avg_relhum <- hydro_total %>%
+  group_by(waterlevel, YY, hydro_year, member) %>%
+  summarise(max_avg_relhum = max(avg_relhum)) %>%
+  group_by(waterlevel, YY, hydro_year) %>%
+  summarise(avg_max_avg_relhum = mean(max_avg_relhum)) 
+
+table_yearly_avg_max_avg_infiltration <- hydro_total %>%
+  group_by(waterlevel, YY, hydro_year, member) %>%
+  summarise(max_avg_infiltration = max(avg_infiltration)) %>%
+  group_by(waterlevel, YY, hydro_year) %>%
+  summarise(avg_max_avg_infiltration = mean(max_avg_infiltration)) 
+
+saveRDS(object = table_yearly_avg_max_groundwaterdepth, 
+        file = "data/tables/driver_analysis/table_yearly_avg_max_groundwaterdepth.RDS")
+saveRDS(object = table_yearly_avg_max_avg_soilwater, 
+        file = "data/tables/driver_analysis/table_yearly_avg_max_avg_soilwater.RDS")
+saveRDS(object = table_yearly_avg_max_avg_snowstorage, 
+        file = "data/tables/driver_analysis/table_yearly_avg_max_avg_snowstorage.RDS")
+saveRDS(object = table_yearly_avg_max_avg_airtmp, 
+        file = "data/tables/driver_analysis/table_yearly_avg_max_avg_airtmp.RDS")
+saveRDS(object = table_yearly_avg_max_avg_precip, 
+        file = "data/tables/driver_analysis/table_yearly_avg_max_avg_precip.RDS")
+saveRDS(object = table_yearly_avg_max_avg_glorad, 
+        file = "data/tables/driver_analysis/table_yearly_avg_max_avg_glorad.RDS")
+saveRDS(object = table_yearly_avg_max_avg_relhum, 
+        file = "data/tables/driver_analysis/table_yearly_avg_max_avg_relhum.RDS")
+saveRDS(object = table_yearly_avg_max_avg_infiltration, 
+        file = "data/tables/driver_analysis/table_yearly_avg_max_avg_infiltration.RDS")
 
 # Plots
 ggplot(data = table_yearly_avg_max_prec, mapping = aes(x = YY, y = avg_max_precip, color = waterlevel)) +
