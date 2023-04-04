@@ -16,6 +16,7 @@ pegel_eigen <- read_csv2(file = "data/Geo-Daten_Uebersicht/Eigenschaften_Pegel.c
 pegel_eigen <- read.csv2("data/Geo-Daten_Uebersicht/Eigenschaften_Pegel.csv")
 hydro_summer <- read.table("data/Zielvariablen/hydro_summer.txt")
 hydro_winter <- read.table("data/Zielvariablen/hydro_winter.txt")
+#data_Beobachtung <- read.table("data/Zielvariablen/gerinneabfluss_modelliert_mit_beobachtungsdaten.txt", header = TRUE)
 
 pegel_ids <- c("20203", "11502", "10304")
 names(pegel_ids) <- c("PEG-Fraenkische-Saale-Salz", "PEG-Iller-Kempten", "PEG-Isar-Mittenwald")
@@ -390,15 +391,6 @@ saveRDS(object = hydro_winter_20203, file = "data/hydro_winter_20203.RDS")
 saveRDS(object = hydro_winter_11502, file = "data/hydro_winter_11502.RDS")
 saveRDS(object = hydro_winter_10304, file = "data/hydro_winter_10304.RDS")
 
-<<<<<<< HEAD
-saveRDS(object = hydro_summer_10304_kbe, file = "data/hydro_summer_10304_kbe.RDS")
-saveRDS(object = hydro_winter_10304_kbe, file = "data/hydro_winter_10304_kbe.RDS")
-saveRDS(object = hydro_summer_20203_kbe, file = "data/hydro_summer_20203_kbe.RDS")
-saveRDS(object = hydro_winter_20203_kbe, file = "data/hydro_winter_20203_kbe.RDS")
-# Save hydrological half years
-saveRDS(object = hydro_summer, file = "data/hydro_summer.RDS")
-saveRDS(object = hydro_winter, file = "data/hydro_winter.RDS")
-=======
 # Save subsets for each member, each hydrological half-year and for each waterlevel
 saveRDS(object = hydro_summer_20203_kbe, file = "data/hydro_summer_20203_kbe.RDS")
 saveRDS(object = hydro_summer_20203_kbj, file = "data/hydro_summer_20203_kbj.RDS")
@@ -465,7 +457,4 @@ saveRDS(object = hydro_winter_10304_kci, file = "data/hydro_winter_10304_kci.RDS
 saveRDS(object = hydro_winter_10304_kcn, file = "data/hydro_winter_10304_kcn.RDS")
 saveRDS(object = hydro_winter_10304_kcs, file = "data/hydro_winter_10304_kcs.RDS")
 saveRDS(object = hydro_winter_10304_kcx, file = "data/hydro_winter_10304_kcx.RDS")
-
->>>>>>> d62780781714f97d57717855c2fae11ae96aa605
-
 ```
