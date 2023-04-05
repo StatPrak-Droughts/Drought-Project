@@ -557,34 +557,6 @@ plot(gam_selected_winter_20203_scaled, select = 4, se = FALSE)
 
 # Isar Mittenwald 
 ## Sommer
-# GLM-AIC variable selection
-```{r}
-hydro_summer_10304_kbe <- readRDS(file = "./data/hydro_summer_10304_kbe.RDS")
-# GLM: all possible drivers
-# Entfernen von Zeilen, bei denen max_precip NA
-hydro_summer_10304_kbe_wo_na <- subset(hydro_summer_10304_kbe, !is.na(max_precip))
-glm_all_summer_10304 <- glm(formula = lowlevel ~ YY + avg_precip + avg_airtmp + avg_glorad + avg_relhum + avg_soilwater + avg_snowstorage + groundwaterdepth + avg_infiltration + max_precip + avg_snowstorage_drain, family = binomial(), data = hydro_summer_10304_kbe_wo_na)
-summary(glm_all_summer_10304)
-
-# GLM: AIC variable selection
-library(MASS)
-stepAIC(glm_all_summer_10304, direction = "both")
-# Variablen YY, avg_precip, avg_airtmp, avg_glorad, avg_soilwater, avg_snowstorage, groundwaterdepth, avg_infiltration ausgewählt
-
-# GAM: only selected drivers
-library(mgcv)
-gam_selected_summer_10304 <- gam(formula = lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps"), family = binomial(), data = hydro_winter_10304_kbe, method = "REML")
-summary(gam_selected_summer_10304)
-plot.gam(gam_selected_summer_10304, select = 1, ylim = c(-70, 70))
-plot.gam(gam_selected_summer_10304, select = 2, ylim = c(-70, 70))
-plot.gam(gam_selected_summer_10304, select = 3, ylim = c(-70, 70))
-plot.gam(gam_selected_summer_10304, select = 4, ylim = c(-70, 70))
-plot.gam(gam_selected_summer_10304, select = 5, ylim = c(-70, 70))
-plot.gam(gam_selected_summer_10304, select = 6, ylim = c(-70, 70))
-plot.gam(gam_selected_summer_10304, select = 7)
-plot.gam(gam_selected_summer_10304, select = 7, se = FALSE)
-```
-
 # GAM: full modell
 ```{r}
 library(mgcv)
@@ -592,6 +564,16 @@ library(mgcv)
 gam_all_summer_10304 <- gam(formula = lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps") + s(max_precip, bs = "ps") + s(avg_snowstorage_drain, bs = "ps"), family = binomial(), data = hydro_summer_10304_kbe, method = "REML")
 summary(gam_all_summer_10304)
 AIC(gam_all_summer_10304)
+plot(gam_all_summer_10304, select = 1)
+plot(gam_all_summer_10304, select = 2, ylim = c(-10, 10))
+plot(gam_all_summer_10304, select = 3, ylim = c(-10, 10))
+plot(gam_all_summer_10304, select = 4, ylim = c(-10, 10))
+plot(gam_all_summer_10304, select = 5, ylim = c(-40, 40))
+plot(gam_all_summer_10304, select = 6)
+plot(gam_all_summer_10304, select = 7, ylim = c(-40, 40))
+plot(gam_all_summer_10304, select = 8, ylim = c(-40, 40))
+plot(gam_all_summer_10304, select = 9, ylim = c(-40, 40))
+plot(gam_all_summer_10304, select = 10)
 
 # GAM: all possible drivers (avg_snowstorage, avg_infiltration, max_precip, avg_snowstorage_drain linear)
 gam2_all_summer_10304 <- gam(formula = lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + avg_snowstorage + s(groundwaterdepth, bs = "ps") + avg_infiltration + max_precip + avg_snowstorage_drain, family = binomial(), data = hydro_summer_10304_kbe, method = "REML")
@@ -614,6 +596,7 @@ gam2_all_summer_10304_pred_error <- sum((exp(predict(gam2_all_summer_10304, newd
 
 # GAM: selected variables
 ```{r}
+# avg_snowstorage, avg_infiltration, max_precip, avg_snowstorage_drain linear
 # Effekte von avg_snowstorage_drain und avg_relhum nicht signifikant; alleinige Devianzerklärungskraft von max_precip sehr gering 
 gam_selected_summer_10304 <- gam(formula = lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_soilwater, bs = "ps") + avg_snowstorage + s(groundwaterdepth, bs = "ps") + avg_infiltration, family = binomial(), data = hydro_summer_10304_kbe, method = "REML")
 summary(gam_selected_summer_10304)
@@ -671,44 +654,33 @@ plot(x = exp(predict(gam2_selected_interac_summer_10304, newdata = hydro_summer_
 gam2_selected_interac_summer_10304_pred_error <- sum((exp(predict(gam2_selected_interac_summer_10304, newdata = hydro_summer_10304[hydro_summer_10304$member != "kbe", ]))/(1 + exp(predict(gam2_selected_interac_summer_10304, newdata = hydro_summer_10304[hydro_summer_10304$member != "kbe", ]))) - (as.numeric(hydro_summer_10304[hydro_summer_10304$member != "kbe", ]$lowlevel) - 1))^2, na.rm = TRUE)
 ```
 
-## Winter
-# GLM-AIC variable selection
+# Modellvergleiche
 ```{r}
-hydro_winter_10304_kbe <- readRDS(file = "./data/hydro_winter_10304_kbe.RDS")
-# GLM: all possible drivers
-glm_all_winter_10304 <- glm(formula = lowlevel ~ YY + avg_precip + avg_airtmp + avg_glorad + avg_relhum + avg_soilwater + avg_snowstorage + groundwaterdepth + avg_infiltration + max_precip + avg_snowstorage_drain, family = binomial(), data = hydro_winter_10304_kbe)
-summary(glm_all_winter_10304)
+AIC(gam_all_summer_10304, gam_selected_summer_10304, gam_selected_interac_summer_10304, gam2_selected_interac_summer_10304)
+BIC(gam_all_summer_10304, gam_selected_summer_10304, gam_selected_interac_summer_10304, gam2_selected_interac_summer_10304)
 
-# GLM: AIC variable selection
-library(MASS)
-stepAIC(glm_all_winter_10304, direction = "both")
-# Variablen YY, avg_soilwater, avg_snowstorage, groundwaterdepth, avg_infiltration, max_precip ausgewählt
-
-# GAM: only selected drivers
-library(mgcv)
-gam_selected_winter_10304 <- gam(formula = lowlevel ~ YY + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps") + s(max_precip, bs = "ps"), family = binomial(), data = hydro_winter_10304_kbe, method = "REML")
-summary(gam_selected_winter_10304)
-plot(gam_selected_winter_10304, select = 1, ylim = c(-50, 50))
-plot(gam_selected_winter_10304, select = 2, ylim = c(-50, 50))
-plot(gam_selected_winter_10304, select = 3, ylim = c(-50, 50))
-plot(gam_selected_winter_10304, select = 4)
-plot(gam_selected_winter_10304, select = 4, se = FALSE)
-plot(gam_selected_winter_10304, select = 5, ylim = c(-50, 50))
-
-# Prädiktionen bei anderen membern
-# alle anderen member
-plot(x = exp(predict(gam_selected_winter_10304, newdata = hydro_winter_10304[hydro_winter_10304$member != "kbe", ]))/(1 + exp(predict(gam_selected_winter_10304, newdata = hydro_winter_10304[hydro_winter_10304$member != "kbe", ]))), y = as.logical(hydro_winter_10304[hydro_winter_10304$member != "kbe", ]$lowlevel), col = alpha("black", 0.005))
-gam_selected_winter_10304_pred_error <- sum((exp(predict(gam_selected_winter_10304, newdata = hydro_winter_10304[hydro_winter_10304$member != "kbe", ]))/(1 + exp(predict(gam_selected_winter_10304, newdata = hydro_winter_10304[hydro_winter_10304$member != "kbe", ]))) - (as.numeric(hydro_winter_10304[hydro_winter_10304$member != "kbe", ]$lowlevel) - 1))^2, na.rm = TRUE)
 ```
 
+
+## Winter
 # GAM: full modell
 ```{r}
 library(mgcv)
 # GAM: all possible drivers
 gam_all_winter_10304 <- gam(formula = lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps") + s(max_precip, bs = "ps") + s(avg_snowstorage_drain, bs = "ps"), family = binomial(), data = hydro_winter_10304_kbe, method = "REML")
 summary(gam_all_winter_10304)
-plot(gam_all_winter_10304)
+AIC(gam_all_winter_10304)
 concurvity(gam_all_winter_10304)
+plot(gam_all_winter_10304, select = 1, ylim = c(-80, 80))
+plot(gam_all_winter_10304, select = 2, ylim = c(-5, 5))
+plot(gam_all_winter_10304, select = 3, ylim = c(-80, 80))
+plot(gam_all_winter_10304, select = 4, ylim = c(-5, 5))
+plot(gam_all_winter_10304, select = 5, ylim = c(-80, 80))
+plot(gam_all_winter_10304, select = 6, ylim = c(-5, 5))
+plot(gam_all_winter_10304, select = 7, ylim = c(-80, 80))
+plot(gam_all_winter_10304, select = 8)
+plot(gam_all_winter_10304, select = 9, ylim = c(-80, 80))
+plot(gam_all_winter_10304, select = 10)
 
 # GAM: all possible drivers (avg_airtmp, avg_infiltration linear)
 gam2_all_winter_10304 <- gam(formula = lowlevel ~ YY + s(avg_precip, bs = "ps") + avg_airtmp + s(avg_glorad, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + avg_infiltration + s(max_precip, bs = "ps") + s(avg_snowstorage_drain, bs = "ps"), family = binomial(), data = hydro_winter_10304_kbe, method = "REML")
@@ -725,36 +697,58 @@ plot(gam2_all_winter_10304, select = 8)
 # Prädiktionen bei anderen membern
 # alle anderen member
 plot(x = exp(predict(gam2_all_winter_10304, newdata = hydro_winter_10304[hydro_winter_10304$member != "kbe", ]))/(1 + exp(predict(gam2_all_winter_10304, newdata = hydro_winter_10304[hydro_winter_10304$member != "kbe", ]))), y = as.logical(hydro_winter_10304[hydro_winter_10304$member != "kbe", ]$lowlevel), col = alpha("black", 0.005))
-gam2_some_winter_10304_pred_error <- sum((exp(predict(gam2_all_winter_10304, newdata = hydro_winter_10304[hydro_winter_10304$member != "kbe", ]))/(1 + exp(predict(gam2_all_winter_10304, newdata = hydro_winter_10304[hydro_winter_10304$member != "kbe", ]))) - (as.numeric(hydro_winter_10304[hydro_winter_10304$member != "kbe", ]$lowlevel) - 1))^2, na.rm = TRUE)
+gam2_all_winter_10304_pred_error <- sum((exp(predict(gam2_all_winter_10304, newdata = hydro_winter_10304[hydro_winter_10304$member != "kbe", ]))/(1 + exp(predict(gam2_all_winter_10304, newdata = hydro_winter_10304[hydro_winter_10304$member != "kbe", ]))) - (as.numeric(hydro_winter_10304[hydro_winter_10304$member != "kbe", ]$lowlevel) - 1))^2, na.rm = TRUE)
 ```
 
 # GAM: selected variables
 ```{r}
+# avg_infiltration linear;
+# Effekte von avg_airtmp nicht signifikant; alleinige Erklärungskraft von avg_relhum und max_precip sehr gering
+gam_selected_winter_10304 <- gam(formula = lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + avg_infiltration + s(avg_snowstorage_drain, bs = "ps"), family = binomial(), data = hydro_winter_10304_kbe, method = "REML")
+summary(gam_selected_winter_10304)
+concurvity(gam_selected_winter_10304)
+AIC(gam_selected_winter_10304)
+plot(gam_selected_winter_10304, select = 1, ylim = c(-80, 80))
+plot(gam_selected_winter_10304, select = 2, ylim = c(-40, 40))
+plot(gam_selected_winter_10304, select = 3, ylim = c(-40, 40))
+plot(gam_selected_winter_10304, select = 4, ylim = c(-5, 5))
+plot(gam_selected_winter_10304, select = 5, ylim = c(-80, 80))
+plot(gam_selected_winter_10304, select = 6)
+
+# Prädiktionen bei anderen membern
+# alle anderen member
+plot(x = exp(predict(gam_selected_winter_10304, newdata = hydro_winter_10304[hydro_winter_10304$member != "kbe", ]))/(1 + exp(predict(gam_selected_winter_10304, newdata = hydro_winter_10304[hydro_winter_10304$member != "kbe", ]))), y = as.logical(hydro_winter_10304[hydro_winter_10304$member != "kbe", ]$lowlevel), col = alpha("black", 0.005))
+gam_selected_winter_10304_pred_error <- sum((exp(predict(gam_selected_winter_10304, newdata = hydro_winter_10304[hydro_winter_10304$member != "kbe", ]))/(1 + exp(predict(gam_selected_winter_10304, newdata = hydro_winter_10304[hydro_winter_10304$member != "kbe", ]))) - (as.numeric(hydro_winter_10304[hydro_winter_10304$member != "kbe", ]$lowlevel) - 1))^2, na.rm = TRUE)
 ```
 
 # GAM: selected variables with interactions
 ```{r}
-# stepwise deviance explained selection
-gam1_some_winter_10304 <- gam(formula = lowlevel ~ YY + s(avg_glorad, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps") + s(avg_snowstorage, bs = "ps", by = groundwaterdepth), family = binomial(), data = hydro_winter_10304_kbe, method = "REML")
-summary(gam1_some_winter_10304)
-concurvity(gam1_some_winter_10304)
-plot(gam1_some_winter_10304, select = 1, ylim = c(-100, 100))
-plot(gam1_some_winter_10304, select = 2, ylim = c(-40, 40))
-plot(gam1_some_winter_10304, select = 3)
-plot(gam1_some_winter_10304, select = 4)
-plot(gam1_some_winter_10304, select = 5)
-plot(gam1_some_winter_10304, select = 6, ylim = c(-400, 100))
+gam_selected_interac_winter_10304 <- gam(formula = lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + avg_infiltration + s(avg_snowstorage_drain, bs = "ps") + s(avg_snowstorage, bs = "ps", by = groundwaterdepth) + s(avg_glorad, bs = "ps", by = groundwaterdepth), family = binomial(), data = hydro_winter_10304_kbe, method = "REML")
 
+
+gam2_selected_interac_winter_10304 <- gam(formula = lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + avg_infiltration + s(avg_snowstorage_drain, bs = "ps") + s(avg_snowstorage, bs = "ps", by = groundwaterdepth) + s(avg_snowstorage, bs = "ps", by = avg_glorad), family = binomial(), data = hydro_winter_10304_kbe, method = "REML")
+
+summary(gam2_selected_interac_winter_10304)
+AIC(gam2_selected_interac_winter_10304)
+plot(gam2_selected_interac_winter_10304, select = 1, ylim = c(-80, 80))
+plot(gam2_selected_interac_winter_10304, select = 2, ylim = c(-40, 40))
+plot(gam2_selected_interac_winter_10304, select = 3, ylim = c(-80, 80))
+plot(gam2_selected_interac_winter_10304, select = 4)
+plot(gam2_selected_interac_winter_10304, select = 5)
+plot(gam2_selected_interac_winter_10304, select = 6)
+plot(gam2_selected_interac_winter_10304, select = 7, ylim = c(-500, 500))
+plot(gam2_selected_interac_winter_10304, select = 8, ylim = c(-1, 1))
 
 # Prädiktionen bei anderen membern
 # alle anderen member
-plot(x = exp(predict(gam1_some_winter_10304, newdata = hydro_winter_10304[hydro_winter_10304$member != "kbe", ]))/(1 + exp(predict(gam1_some_winter_10304, newdata = hydro_winter_10304[hydro_winter_10304$member != "kbe", ]))), y = as.logical(hydro_winter_10304[hydro_winter_10304$member != "kbe", ]$lowlevel), col = alpha("black", 0.005))
-gam1_some_winter_10304_pred_error <- sum((exp(predict(gam1_some_winter_10304, newdata = hydro_winter_10304[hydro_winter_10304$member != "kbe", ]))/(1 + exp(predict(gam1_some_winter_10304, newdata = hydro_winter_10304[hydro_winter_10304$member != "kbe", ]))) - (as.numeric(hydro_winter_10304[hydro_winter_10304$member != "kbe", ]$lowlevel) - 1))^2, na.rm = TRUE)
+plot(x = exp(predict(gam2_selected_interac_winter_10304, newdata = hydro_winter_10304[hydro_winter_10304$member != "kbe", ]))/(1 + exp(predict(gam2_selected_interac_winter_10304, newdata = hydro_winter_10304[hydro_winter_10304$member != "kbe", ]))), y = as.logical(hydro_winter_10304[hydro_winter_10304$member != "kbe", ]$lowlevel), col = alpha("black", 0.005))
+gam2_selected_interac_winter_10304_pred_error <- sum((exp(predict(gam2_selected_interac_winter_10304, newdata = hydro_winter_10304[hydro_winter_10304$member != "kbe", ]))/(1 + exp(predict(gam2_selected_interac_winter_10304, newdata = hydro_winter_10304[hydro_winter_10304$member != "kbe", ]))) - (as.numeric(hydro_winter_10304[hydro_winter_10304$member != "kbe", ]$lowlevel) - 1))^2, na.rm = TRUE)
+```
+# Modellvergleiche
+```{r}
+AIC(gam_all_winter_10304, gam_selected_winter_10304, gam_selected_interac_winter_10304, gam2_selected_interac_winter_10304)
+BIC(gam_all_winter_10304, gam_selected_winter_10304, gam_selected_interac_winter_10304, gam2_selected_interac_winter_10304)
 
-# weiterer Versuch
-gam2_some_winter_10304 <- gam(formula = lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + avg_infiltration, family = binomial(), data = hydro_winter_10304_kbe, method = "REML")
-summary(gam2_some_winter_10304)
-plot(gam2_some_winter_10304)
 ```
 
 
