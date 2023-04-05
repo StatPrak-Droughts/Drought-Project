@@ -30,33 +30,60 @@ hydro_winter_20203_kbe <- readRDS(file = "data/hydro_winter_20203_kbe.RDS")
 gam_all_summer_20203 <- gam(formula = lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps") + s(max_precip, bs = "ps") + s(avg_snowstorage_drain, bs = "ps"), family = binomial(), data = hydro_summer_20203_kbe, method = "REML")
 summary(gam_all_summer_20203)
 plot(gam_all_summer_20203)
-AIC(gam_all_summer_20203)
+
 # avg_precip, avg_snowstorage, avg_infiltration and avg_snowstorage_drain linear
 gam2_all_summer_20203 <- gam(formula = lowlevel ~ YY + avg_precip + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + avg_snowstorage + s(groundwaterdepth, bs = "ps") + avg_infiltration + s(max_precip, bs = "ps") + avg_snowstorage_drain, family = binomial(), data = hydro_summer_20203_kbe, method = "REML")
 summary(gam2_all_summer_20203)
 plot(gam2_all_summer_20203)
-AIC(gam2_all_summer_20203)
 
 ```
 
 ###getrimmtes Modell
 ```{r}
 # avg_snowstorage_drain raus, da nicht sign. 
-gam_selected_winter_20203 <- gam(formula = lowlevel ~ YY + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + avg_infiltration + avg_snowstorage_drain, family = binomial(), data = hydro_winter_20203_kbe, method = "REML")
-summary(gam_selected_winter_20203)
-plot(gam_selected_winter_20203)
-AIC(gam_selected_winter_20203)
+gam_selected_summer_20203 <- gam(formula = lowlevel ~ YY + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + avg_infiltration + avg_snowstorage_drain, family = binomial(), data = hydro_summer_20203_kbe, method = "REML")
+summary(gam_selected_summer_20203)
+plot(gam_selected_summer_20203)
+
 
 ```
 ### Gam mit Splines
 ```{r}
 # avg_precip und max_precip raus, da nicht sign. 
-gam_selected_interact_winter_20203 <- gam(formula = lowlevel ~ YY + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + avg_infiltration + avg_snowstorage_drain + s(groundwaterdepth, by = avg_infiltration, bs = "ps") + s(avg_precip, by = groundwaterdepth, bs = "ps"), family = binomial(), data = hydro_winter_20203_kbe, method = "REML")
-summary(gam_selected_interact_winter_20203)
-plot(gam_selected_winter_20203)
-AIC(gam_selected_interact_winter_20203)
+gam_selected_interact_summer_20203 <- gam(formula = lowlevel ~ YY + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + avg_infiltration + avg_snowstorage_drain + s(groundwaterdepth, by = avg_infiltration, bs = "ps") + s(avg_precip, by = groundwaterdepth, bs = "ps"), family = binomial(), data = hydro_summer_20203_kbe, method = "REML")
+summary(gam_selected_interact_summer_20203)
+AIC(gam_selected_interact_summer_20203)
+plot(gam_selected_summer_20203)
 
 ```
+### AIC Vergleich
+```{r}
+AIC(gam2_all_summer_20203)
+AIC(gam_selected_summer_20203)
+AIC(gam_selected_interact_summer_20203)
+
+```
+### Sommer Modelle Speichern
+```{r}
+#saveRDS(gam2_all_summer_20203, file = "./Plots/Jonas/gam2_all_summer_20203.gam")
+#saveRDS(gam_selected_summer_20203, file = "./Plots/Jonas/gam_selected_summer_20203.gam")
+#saveRDS(gam_selected_interact_summer_20203, file = "./Plots/Jonas/gam_selected_interact_summer_20203.gam")
+
+```
+
+### Plots speichern
+```{r}
+jpeg("./Plots/Jonas/effects_gam2_all_summer_20203.jpg", width = 700, height = 600)
+layout(matrix(1:6, ncol = 3, nrow = 2))
+plot(gam_selected_summer_20203, select = 1, ylim = c(-10, 20))
+plot(gam_selected_summer_20203, select = 2, ylim = c(-10, 10))
+plot(gam_selected_summer_20203, select = 3, ylim = c(-20,20))
+plot(gam_selected_summer_20203, select = 4, ylim = c(-30, 10))
+plot(gam_selected_summer_20203, select = 5, ylim = c(- 2000, 2000))
+plot(gam_selected_summer_20203, select = 6, ylim = c(-20, 20))
+
+```
+
 ### Nicht Skaliert
 ```{r}
 # GLM: all possible drivers
@@ -323,7 +350,6 @@ AIC(gam_all_winter_20203)
 gam2_all_winter_20203 <- gam(formula = lowlevel ~ YY + avg_precip + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + avg_infiltration + s(max_precip, bs = "ps") + avg_snowstorage_drain, family = binomial(), data = hydro_winter_20203_kbe, method = "REML")
 summary(gam2_all_winter_20203)
 plot(gam2_all_winter_20203)
-AIC(gam2_all_winter_20203)
 
 ```
 
@@ -333,7 +359,7 @@ AIC(gam2_all_winter_20203)
 gam_selected_winter_20203 <- gam(formula = lowlevel ~ YY + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + avg_infiltration + avg_snowstorage_drain, family = binomial(), data = hydro_winter_20203_kbe, method = "REML")
 summary(gam_selected_winter_20203)
 plot(gam_selected_winter_20203)
-AIC(gam_selected_winter_20203)
+
 ```
 ### Gam mit Splines
 ```{r}
@@ -341,8 +367,22 @@ AIC(gam_selected_winter_20203)
 gam_selected_interact_winter_20203 <- gam(formula = lowlevel ~ YY + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + avg_infiltration + avg_snowstorage_drain + s(avg_soilwater, by = avg_snowstorage, bs = "ps") + s(avg_airtmp, by = avg_snowstorage, bs = "ps"), family = binomial(), data = hydro_winter_20203_kbe, method = "REML")
 summary(gam_selected_interact_winter_20203)
 plot(gam_selected_winter_20203)
+```
+### AIC Verlgeich
+```{r}
+AIC(gam2_all_winter_20203)
+AIC(gam_selected_winter_20203)
 AIC(gam_selected_interact_winter_20203)
 ```
+
+
+```{r}
+#saveRDS(gam2_all_winter_20203, file = "./Plots/Jonas/gam2_all_winter_20203.gam")
+#saveRDS(gam_selected_winter_20203, file = "./Plots/Jonas/gam_selected_winter_20203.gam")
+#saveRDS(gam_selected_interact_winter_20203, file = "./Plots/Jonas/gam_selected_interact_winter_20203.gam")
+```
+
+
 ### Nicht skaliert
 ```{r}
 # GLM: all possible drivers
