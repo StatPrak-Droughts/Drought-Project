@@ -1,5 +1,7 @@
 library(tidyverse)
+
 # Treiber Variables -----
+
 filepath_list <- list(airtmp = "observed_data/Treiber/airtmp.txt",
                       glorad = "observed_data/Treiber/glorad.txt",
                       groundwaterdepth = "observed_data/Treiber/groundwaterdepth.txt",
@@ -58,6 +60,7 @@ df <- df %>% left_join(df_relhum, by=c("key", "YY", "MM", "DD", "catchment"))
 df <- df %>% left_join(df_snowstorage, by=c("key", "YY", "MM", "DD", "catchment"))
 df <- df %>% left_join(df_soilwaterrootzone, by=c("key", "YY", "MM", "DD", "catchment"))
 df <- df %>% left_join(df_precip, by=c("key", "YY", "MM", "DD", "catchment"))
+
 df_variables <- df %>% select(- key)
 
 
@@ -75,5 +78,6 @@ df_target  <- tidyr::unite(df_target, col='key', c('YY', 'MM', "DD", "catchment"
 df_target <- df_target %>%
   group_by(YY, MM, DD, catchment, key) %>%
   summarise(precip = mean(drainage)) %>% as.data.frame()
+
 
 
