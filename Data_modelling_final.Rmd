@@ -615,6 +615,17 @@ plot(gam_all_summer_10304, select = 8, ylim = c(-40, 40))
 plot(gam_all_summer_10304, select = 9, ylim = c(-40, 40))
 plot(gam_all_summer_10304, select = 10)
 
+plot(gam_all_summer_10304, select = 1, se = FALSE)
+plot(gam_all_summer_10304, select = 2, se = FALSE, ylim = c(-10, 10))
+plot(gam_all_summer_10304, select = 3, se = FALSE, ylim = c(-10, 10))
+plot(gam_all_summer_10304, select = 4, se = FALSE, ylim = c(-10, 10))
+plot(gam_all_summer_10304, select = 5, se = FALSE, ylim = c(-40, 40))
+plot(gam_all_summer_10304, select = 6, se = FALSE)
+plot(gam_all_summer_10304, select = 7, se = FALSE, ylim = c(-40, 40))
+plot(gam_all_summer_10304, select = 8, se = FALSE, ylim = c(-40, 40))
+plot(gam_all_summer_10304, select = 9, se = FALSE, ylim = c(-40, 40))
+plot(gam_all_summer_10304, select = 10, se = FALSE)
+
 # GAM: all possible drivers (avg_snowstorage, avg_infiltration, max_precip, avg_snowstorage_drain linear)
 gam2_all_summer_10304 <- gam(formula = lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + avg_snowstorage + s(groundwaterdepth, bs = "ps") + avg_infiltration + max_precip + avg_snowstorage_drain, family = binomial(), data = hydro_summer_10304_kbe, method = "REML")
 summary(gam2_all_summer_10304)
@@ -632,6 +643,76 @@ plot(gam2_all_summer_10304, select = 6, ylim = c(-40, 40))
 # alle anderen member
 plot(x = exp(predict(gam2_all_summer_10304, newdata = hydro_summer_10304[hydro_summer_10304$member != "kbe", ]))/(1 + exp(predict(gam2_all_summer_10304, newdata = hydro_summer_10304[hydro_summer_10304$member != "kbe", ]))), y = as.logical(hydro_summer_10304[hydro_summer_10304$member != "kbe", ]$lowlevel), col = alpha("black", 0.005))
 gam2_all_summer_10304_pred_error <- sum((exp(predict(gam2_all_summer_10304, newdata = hydro_summer_10304[hydro_summer_10304$member != "kbe", ]))/(1 + exp(predict(gam2_all_summer_10304, newdata = hydro_summer_10304[hydro_summer_10304$member != "kbe", ]))) - (as.numeric(hydro_summer_10304[hydro_summer_10304$member != "kbe", ]$lowlevel) - 1))^2, na.rm = TRUE)
+```
+
+```{r}
+# GAM: all possible drivers with interactions
+gam_all_interac_summer_10304 <- gam(formula = lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps") + s(max_precip, bs = "ps") + s(avg_snowstorage_drain, bs = "ps") + s(groundwaterdepth, bs = "ps", by = avg_soilwater) + s(avg_glorad, bs = "ps", by = avg_soilwater), family = binomial(), data = hydro_summer_10304_kbe, method = "REML")
+summary(gam_all_interac_summer_10304)
+AIC(gam_all_interac_summer_10304)
+plot(gam_all_interac_summer_10304, select = 1)
+plot(gam_all_interac_summer_10304, select = 2, ylim = c(-20, 20))
+plot(gam_all_interac_summer_10304, select = 3, ylim = c(-20, 20))
+plot(gam_all_interac_summer_10304, select = 4, ylim = c(-20, 20))
+plot(gam_all_interac_summer_10304, select = 5, ylim = c(-20, 20))
+plot(gam_all_interac_summer_10304, select = 6)
+plot(gam_all_interac_summer_10304, select = 7, ylim = c(-20, 20))
+plot(gam_all_interac_summer_10304, select = 8, ylim = c(-80, 80))
+plot(gam_all_interac_summer_10304, select = 9, ylim = c(-20, 20))
+plot(gam_all_interac_summer_10304, select = 10)
+plot(gam_all_interac_summer_10304, select = 11, ylim = c(-20, 20))
+plot(gam_all_interac_summer_10304, select = 12, ylim = c(-20, 20))
+# Prädiktionen bei anderen membern
+# alle anderen member
+plot(x = exp(predict(gam_all_interac_summer_10304, newdata = hydro_summer_10304[hydro_summer_10304$member != "kbe", ]))/(1 + exp(predict(gam_all_interac_summer_10304, newdata = hydro_summer_10304[hydro_summer_10304$member != "kbe", ]))), y = as.logical(hydro_summer_10304[hydro_summer_10304$member != "kbe", ]$lowlevel), col = alpha("black", 0.005))
+gam_all_interac_summer_10304_pred_error <- sum((exp(predict(gam_all_interac_summer_10304, newdata = hydro_summer_10304[hydro_summer_10304$member != "kbe", ]))/(1 + exp(predict(gam_all_interac_summer_10304, newdata = hydro_summer_10304[hydro_summer_10304$member != "kbe", ]))) - (as.numeric(hydro_summer_10304[hydro_summer_10304$member != "kbe", ]$lowlevel) - 1))^2, na.rm = TRUE)
+
+
+
+
+gam2_all_interac_summer_10304 <- gam(formula = lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps") + s(max_precip, bs = "ps") + s(avg_snowstorage_drain, bs = "ps") + s(groundwaterdepth, bs = "ps", by = avg_soilwater) + s(avg_airtmp, bs = "ps", by = avg_snowstorage_drain), family = binomial(), data = hydro_summer_10304_kbe, method = "REML")
+summary(gam2_all_interac_summer_10304)
+AIC(gam2_all_interac_summer_10304)
+plot(gam2_all_interac_summer_10304, select = 1)
+plot(gam2_all_interac_summer_10304, select = 2, ylim = c(-20, 20))
+plot(gam2_all_interac_summer_10304, select = 3, ylim = c(-20, 20))
+plot(gam2_all_interac_summer_10304, select = 4, ylim = c(-20, 20))
+plot(gam2_all_interac_summer_10304, select = 5, ylim = c(-20, 20))
+plot(gam2_all_interac_summer_10304, select = 6)
+plot(gam2_all_interac_summer_10304, select = 7, ylim = c(-20, 20))
+plot(gam2_all_interac_summer_10304, select = 8, ylim = c(-80, 80))
+plot(gam2_all_interac_summer_10304, select = 9, ylim = c(-20, 20))
+plot(gam2_all_interac_summer_10304, select = 10)
+plot(gam2_all_interac_summer_10304, select = 11, ylim = c(-80, 80))
+plot(gam2_all_interac_summer_10304, select = 12)
+# Prädiktionen bei anderen membern
+# alle anderen member
+plot(x = exp(predict(gam2_all_interac_summer_10304, newdata = hydro_summer_10304[hydro_summer_10304$member != "kbe", ]))/(1 + exp(predict(gam2_all_interac_summer_10304, newdata = hydro_summer_10304[hydro_summer_10304$member != "kbe", ]))), y = as.logical(hydro_summer_10304[hydro_summer_10304$member != "kbe", ]$lowlevel), col = alpha("black", 0.005))
+gam2_all_interac_summer_10304_pred_error <- sum((exp(predict(gam2_all_interac_summer_10304, newdata = hydro_summer_10304[hydro_summer_10304$member != "kbe", ]))/(1 + exp(predict(gam2_all_interac_summer_10304, newdata = hydro_summer_10304[hydro_summer_10304$member != "kbe", ]))) - (as.numeric(hydro_summer_10304[hydro_summer_10304$member != "kbe", ]$lowlevel) - 1))^2, na.rm = TRUE)
+
+
+
+
+gam3_all_interac_summer_10304 <- gam(formula = lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps") + s(max_precip, bs = "ps") + s(avg_snowstorage_drain, bs = "ps") + s(groundwaterdepth, bs = "ps", by = avg_soilwater) + s(avg_airtmp, bs = "ps", by = avg_glorad), family = binomial(), data = hydro_summer_10304_kbe, method = "REML")
+summary(gam3_all_interac_summer_10304)
+AIC(gam3_all_interac_summer_10304)
+plot(gam3_all_interac_summer_10304, select = 1)
+plot(gam3_all_interac_summer_10304, select = 2, ylim = c(-80, 80))
+plot(gam3_all_interac_summer_10304, select = 3, ylim = c(-5, 5))
+plot(gam3_all_interac_summer_10304, select = 4, ylim = c(-20, 20))
+plot(gam3_all_interac_summer_10304, select = 5, ylim = c(-20, 20))
+plot(gam3_all_interac_summer_10304, select = 6)
+plot(gam3_all_interac_summer_10304, select = 7, ylim = c(-20, 20))
+plot(gam3_all_interac_summer_10304, select = 8, ylim = c(-80, 80))
+plot(gam3_all_interac_summer_10304, select = 9, ylim = c(-20, 20))
+plot(gam3_all_interac_summer_10304, select = 10)
+plot(gam3_all_interac_summer_10304, select = 11, ylim = c(-80, 80))
+plot(gam3_all_interac_summer_10304, select = 12, ylim = c(-5, 5))
+# Prädiktionen bei anderen membern
+# alle anderen member
+plot(x = exp(predict(gam3_all_interac_summer_10304, newdata = hydro_summer_10304[hydro_summer_10304$member != "kbe", ]))/(1 + exp(predict(gam3_all_interac_summer_10304, newdata = hydro_summer_10304[hydro_summer_10304$member != "kbe", ]))), y = as.logical(hydro_summer_10304[hydro_summer_10304$member != "kbe", ]$lowlevel), col = alpha("black", 0.005))
+gam3_all_interac_summer_10304_pred_error <- sum((exp(predict(gam3_all_interac_summer_10304, newdata = hydro_summer_10304[hydro_summer_10304$member != "kbe", ]))/(1 + exp(predict(gam3_all_interac_summer_10304, newdata = hydro_summer_10304[hydro_summer_10304$member != "kbe", ]))) - (as.numeric(hydro_summer_10304[hydro_summer_10304$member != "kbe", ]$lowlevel) - 1))^2, na.rm = TRUE)
+
 ```
 
 # GAM: selected variables
@@ -696,9 +777,19 @@ gam2_selected_interac_summer_10304_pred_error <- sum((exp(predict(gam2_selected_
 
 # Modellvergleiche
 ```{r}
-AIC(gam_all_summer_10304, gam_selected_summer_10304, gam_selected_interac_summer_10304, gam2_selected_interac_summer_10304)
-BIC(gam_all_summer_10304, gam_selected_summer_10304, gam_selected_interac_summer_10304, gam2_selected_interac_summer_10304)
+AIC(gam_all_summer_10304, gam_all_interac_summer_10304, gam2_all_interac_summer_10304, gam3_all_interac_summer_10304, gam_selected_summer_10304,  gam_selected_interac_summer_10304, gam2_selected_interac_summer_10304)
+BIC(gam_all_summer_10304, gam_all_interac_summer_10304, gam2_all_interac_summer_10304, gam3_all_interac_summer_10304, gam_selected_summer_10304, gam_selected_interac_summer_10304, gam2_selected_interac_summer_10304)
+```
 
+### Sommer Modelle Speichern
+```{r}
+#saveRDS(gam_all_summer_10304, file = "./Plots/Lisa/gam_all_summer_10304.gam")
+#saveRDS(gam_all_interac_summer_10304, file = "./Plots/Lisa/gam_all_interac_summer_10304.gam")
+#saveRDS(gam2_all_interac_summer_10304, file = "./Plots/Lisa/gam2_all_interac_summer_10304.gam")
+#saveRDS(gam3_all_interac_summer_10304, file = "./Plots/Lisa/gam3_all_interac_summer_10304.gam")
+#saveRDS(gam_selected_summer_10304, file = "./Plots/Lisa/gam_selected_summer_10304.gam")
+#saveRDS(gam_selected_interac_summer_10304, file = "./Plots/Lisa/gam_selected_interac_summer_10304.gam")
+#saveRDS(gam2_selected_interac_summer_10304, file = "./Plots/Lisa/gam2_selected_interac_summer_10304.gam")
 ```
 
 
@@ -718,9 +809,21 @@ plot(gam_all_winter_10304, select = 4, ylim = c(-5, 5))
 plot(gam_all_winter_10304, select = 5, ylim = c(-80, 80))
 plot(gam_all_winter_10304, select = 6, ylim = c(-5, 5))
 plot(gam_all_winter_10304, select = 7, ylim = c(-80, 80))
-plot(gam_all_winter_10304, select = 8)
+plot(gam_all_winter_10304, select = 8, ylim = c(-400, 400))
 plot(gam_all_winter_10304, select = 9, ylim = c(-80, 80))
 plot(gam_all_winter_10304, select = 10)
+
+plot(gam_all_winter_10304, select = 1, se = FALSE, ylim = c(-80, 80))
+plot(gam_all_winter_10304, select = 2, se = FALSE, ylim = c(-5, 5))
+plot(gam_all_winter_10304, select = 3, se = FALSE, ylim = c(-80, 80))
+plot(gam_all_winter_10304, select = 4, se = FALSE, ylim = c(-5, 5))
+plot(gam_all_winter_10304, select = 5, se = FALSE, ylim = c(-80, 80))
+plot(gam_all_winter_10304, select = 6, se = FALSE, ylim = c(-5, 5))
+plot(gam_all_winter_10304, select = 7, se = FALSE, ylim = c(-80, 80))
+plot(gam_all_winter_10304, select = 8, se = FALSE, ylim = c(-400, 400))
+plot(gam_all_winter_10304, select = 9, se = FALSE, ylim = c(-80, 80))
+plot(gam_all_winter_10304, select = 10, se = FALSE)
+
 
 # GAM: all possible drivers (avg_airtmp, avg_infiltration linear)
 gam2_all_winter_10304 <- gam(formula = lowlevel ~ YY + s(avg_precip, bs = "ps") + avg_airtmp + s(avg_glorad, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + avg_infiltration + s(max_precip, bs = "ps") + s(avg_snowstorage_drain, bs = "ps"), family = binomial(), data = hydro_winter_10304_kbe, method = "REML")
@@ -738,6 +841,73 @@ plot(gam2_all_winter_10304, select = 8)
 # alle anderen member
 plot(x = exp(predict(gam2_all_winter_10304, newdata = hydro_winter_10304[hydro_winter_10304$member != "kbe", ]))/(1 + exp(predict(gam2_all_winter_10304, newdata = hydro_winter_10304[hydro_winter_10304$member != "kbe", ]))), y = as.logical(hydro_winter_10304[hydro_winter_10304$member != "kbe", ]$lowlevel), col = alpha("black", 0.005))
 gam2_all_winter_10304_pred_error <- sum((exp(predict(gam2_all_winter_10304, newdata = hydro_winter_10304[hydro_winter_10304$member != "kbe", ]))/(1 + exp(predict(gam2_all_winter_10304, newdata = hydro_winter_10304[hydro_winter_10304$member != "kbe", ]))) - (as.numeric(hydro_winter_10304[hydro_winter_10304$member != "kbe", ]$lowlevel) - 1))^2, na.rm = TRUE)
+```
+
+```{r}
+# GAM: all possible drivers with interactions
+gam_all_interac_winter_10304 <- gam(formula = lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps") + s(max_precip, bs = "ps") + s(avg_snowstorage_drain, bs = "ps") + s(avg_snowstorage, bs = "ps", by = groundwaterdepth) + s(avg_glorad, bs = "ps", by = groundwaterdepth), family = binomial(), data = hydro_winter_10304_kbe, method = "REML")
+summary(gam_all_interac_winter_10304)
+AIC(gam_all_interac_winter_10304)
+plot(gam_all_interac_winter_10304, select = 1, ylim = c(-100, 100))
+plot(gam_all_interac_winter_10304, select = 2, ylim = c(-50, 50))
+plot(gam_all_interac_winter_10304, select = 3, ylim = c(-50, 50))
+plot(gam_all_interac_winter_10304, select = 4, ylim = c(-10, 10))
+plot(gam_all_interac_winter_10304, select = 5, ylim = c(-50, 50))
+plot(gam_all_interac_winter_10304, select = 6, ylim = c(-50, 50))
+plot(gam_all_interac_winter_10304, select = 7, ylim = c(-3000, 3000))
+plot(gam_all_interac_winter_10304, select = 8, ylim = c(-2000, 2000))
+plot(gam_all_interac_winter_10304, select = 9, ylim = c(-100, 100))
+plot(gam_all_interac_winter_10304, select = 10)
+plot(gam_all_interac_winter_10304, select = 11, ylim = c(-500, 500))
+plot(gam_all_interac_winter_10304, select = 12, ylim = c(-10, 10))
+# Prädiktionen bei anderen membern
+# alle anderen member
+plot(x = exp(predict(gam_all_interac_winter_10304, newdata = hydro_winter_10304[hydro_winter_10304$member != "kbe", ]))/(1 + exp(predict(gam_all_interac_winter_10304, newdata = hydro_winter_10304[hydro_winter_10304$member != "kbe", ]))), y = as.logical(hydro_winter_10304[hydro_winter_10304$member != "kbe", ]$lowlevel), col = alpha("black", 0.005))
+gam_all_interac_winter_10304_pred_error <- sum((exp(predict(gam_all_interac_winter_10304, newdata = hydro_winter_10304[hydro_winter_10304$member != "kbe", ]))/(1 + exp(predict(gam_all_interac_winter_10304, newdata = hydro_winter_10304[hydro_winter_10304$member != "kbe", ]))) - (as.numeric(hydro_winter_10304[hydro_winter_10304$member != "kbe", ]$lowlevel) - 1))^2, na.rm = TRUE)
+
+
+
+gam2_all_interac_winter_10304 <- gam(formula = lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps") + s(max_precip, bs = "ps") + s(avg_snowstorage_drain, bs = "ps") + s(avg_snowstorage, bs = "ps", by = groundwaterdepth) + s(avg_snowstorage, bs = "ps", by = avg_soilwater), family = binomial(), data = hydro_winter_10304_kbe, method = "REML")
+summary(gam2_all_interac_winter_10304)
+AIC(gam2_all_interac_winter_10304)
+plot(gam2_all_interac_winter_10304, select = 1, ylim = c(-100, 100))
+plot(gam2_all_interac_winter_10304, select = 2, ylim = c(-50, 50))
+plot(gam2_all_interac_winter_10304, select = 3, ylim = c(-50, 50))
+plot(gam2_all_interac_winter_10304, select = 4, ylim = c(-10, 10))
+plot(gam2_all_interac_winter_10304, select = 5, ylim = c(-50, 50))
+plot(gam2_all_interac_winter_10304, select = 6, ylim = c(-1000, 1000))
+plot(gam2_all_interac_winter_10304, select = 7, ylim = c(-200, 200))
+plot(gam2_all_interac_winter_10304, select = 8, ylim = c(-2000, 2000))
+plot(gam2_all_interac_winter_10304, select = 9, ylim = c(-100, 100))
+plot(gam2_all_interac_winter_10304, select = 10)
+plot(gam2_all_interac_winter_10304, select = 11, ylim = c(-100, 100))
+plot(gam2_all_interac_winter_10304, select = 12, ylim = c(-50, 50))
+# Prädiktionen bei anderen membern
+# alle anderen member
+plot(x = exp(predict(gam2_all_interac_winter_10304, newdata = hydro_winter_10304[hydro_winter_10304$member != "kbe", ]))/(1 + exp(predict(gam2_all_interac_winter_10304, newdata = hydro_winter_10304[hydro_winter_10304$member != "kbe", ]))), y = as.logical(hydro_winter_10304[hydro_winter_10304$member != "kbe", ]$lowlevel), col = alpha("black", 0.005))
+gam2_all_interac_winter_10304_pred_error <- sum((exp(predict(gam2_all_interac_winter_10304, newdata = hydro_winter_10304[hydro_winter_10304$member != "kbe", ]))/(1 + exp(predict(gam2_all_interac_winter_10304, newdata = hydro_winter_10304[hydro_winter_10304$member != "kbe", ]))) - (as.numeric(hydro_winter_10304[hydro_winter_10304$member != "kbe", ]$lowlevel) - 1))^2, na.rm = TRUE)
+
+
+
+gam3_all_interac_winter_10304 <- gam(formula = lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps") + s(max_precip, bs = "ps") + s(avg_snowstorage_drain, bs = "ps") + s(avg_glorad, bs = "ps", by = groundwaterdepth) + s(avg_snowstorage, bs = "ps", by = avg_glorad), family = binomial(), data = hydro_winter_10304_kbe, method = "REML")
+summary(gam3_all_interac_winter_10304)
+AIC(gam3_all_interac_winter_10304)
+plot(gam3_all_interac_winter_10304, select = 1, ylim = c(-100, 100))
+plot(gam3_all_interac_winter_10304, select = 2, ylim = c(-50, 50))
+plot(gam3_all_interac_winter_10304, select = 3, ylim = c(-50, 50))
+plot(gam3_all_interac_winter_10304, select = 4, ylim = c(-10, 10))
+plot(gam3_all_interac_winter_10304, select = 5, ylim = c(-50, 50))
+plot(gam3_all_interac_winter_10304, select = 6, ylim = c(-50, 50))
+plot(gam3_all_interac_winter_10304, select = 7, ylim = c(-2000, 2000))
+plot(gam3_all_interac_winter_10304, select = 8, ylim = c(-2000, 2000))
+plot(gam3_all_interac_winter_10304, select = 9, ylim = c(-100, 100))
+plot(gam3_all_interac_winter_10304, select = 10)
+plot(gam3_all_interac_winter_10304, select = 11, ylim = c(-1000, 1000))
+plot(gam3_all_interac_winter_10304, select = 12, ylim = c(-10, 10))
+# Prädiktionen bei anderen membern
+# alle anderen member
+plot(x = exp(predict(gam3_all_interac_winter_10304, newdata = hydro_winter_10304[hydro_winter_10304$member != "kbe", ]))/(1 + exp(predict(gam3_all_interac_winter_10304, newdata = hydro_winter_10304[hydro_winter_10304$member != "kbe", ]))), y = as.logical(hydro_winter_10304[hydro_winter_10304$member != "kbe", ]$lowlevel), col = alpha("black", 0.005))
+gam3_all_interac_winter_10304_pred_error <- sum((exp(predict(gam3_all_interac_winter_10304, newdata = hydro_winter_10304[hydro_winter_10304$member != "kbe", ]))/(1 + exp(predict(gam3_all_interac_winter_10304, newdata = hydro_winter_10304[hydro_winter_10304$member != "kbe", ]))) - (as.numeric(hydro_winter_10304[hydro_winter_10304$member != "kbe", ]$lowlevel) - 1))^2, na.rm = TRUE)
 ```
 
 # GAM: selected variables
@@ -765,8 +935,10 @@ gam_selected_winter_10304_pred_error <- sum((exp(predict(gam_selected_winter_103
 ```{r}
 gam_selected_interac_winter_10304 <- gam(formula = lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + avg_infiltration + s(avg_snowstorage_drain, bs = "ps") + s(avg_snowstorage, bs = "ps", by = groundwaterdepth) + s(avg_glorad, bs = "ps", by = groundwaterdepth), family = binomial(), data = hydro_winter_10304_kbe, method = "REML")
 
+summary(gam_selected_interac_winter_10304)
+AIC(gam_selected_interac_winter_10304)
 
-gam2_selected_interac_winter_10304 <- gam(formula = lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + avg_infiltration + s(avg_snowstorage_drain, bs = "ps") + s(avg_snowstorage, bs = "ps", by = groundwaterdepth) + s(avg_snowstorage, bs = "ps", by = avg_glorad), family = binomial(), data = hydro_winter_10304_kbe, method = "REML")
+gam2_selected_interac_winter_10304 <- gam(formula = lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + avg_infiltration + s(avg_snowstorage_drain, bs = "ps") +  s(avg_snowstorage, bs = "ps", by = groundwaterdepth) + s(avg_snowstorage, bs = "ps", by = avg_glorad), family = binomial(), data = hydro_winter_10304_kbe, method = "REML")
 
 summary(gam2_selected_interac_winter_10304)
 AIC(gam2_selected_interac_winter_10304)
@@ -786,17 +958,26 @@ gam2_selected_interac_winter_10304_pred_error <- sum((exp(predict(gam2_selected_
 ```
 # Modellvergleiche
 ```{r}
-AIC(gam_all_winter_10304, gam_selected_winter_10304, gam_selected_interac_winter_10304, gam2_selected_interac_winter_10304)
-BIC(gam_all_winter_10304, gam_selected_winter_10304, gam_selected_interac_winter_10304, gam2_selected_interac_winter_10304)
+AIC(gam_all_winter_10304, gam_all_interac_winter_10304, gam2_all_interac_winter_10304, gam3_all_interac_winter_10304, gam_selected_winter_10304, gam_selected_interac_winter_10304, gam2_selected_interac_winter_10304)
+BIC(gam_all_winter_10304, gam_all_interac_winter_10304, gam2_all_interac_winter_10304, gam3_all_interac_winter_10304, gam_selected_winter_10304, gam_selected_interac_winter_10304, gam2_selected_interac_winter_10304)
 
+```
+
+### Winter Modelle Speichern
+```{r}
+#saveRDS(gam_all_winter_10304, file = "./Plots/Lisa/gam_all_winter_10304.gam")
+#saveRDS(gam_all_interac_winter_10304, file = "./Plots/Lisa/gam_all_interac_winter_10304.gam")
+#saveRDS(gam2_all_interac_winter_10304, file = "./Plots/Lisa/gam2_all_interac_winter_10304.gam")
+#saveRDS(gam3_all_interac_winter_10304, file = "./Plots/Lisa/gam3_all_interac_winter_10304.gam")
+#saveRDS(gam_selected_winter_10304, file = "./Plots/Lisa/gam_selected_winter_10304.gam")
+#saveRDS(gam_selected_interac_winter_10304, file = "./Plots/Lisa/gam_selected_interac_winter_10304")
+#saveRDS(gam2_selected_interac_winter_10304, file = "./Plots/Lisa/gam2_selected_interac_winter_10304.gam")
 ```
 
 
 
 
-
-
-# Iller Kempten
+#saveRDS(gam_all_winter_10304, file = "./Plots/Lisa/gam_all_winter_10304.gam")# Iller Kempten
 ```{r}
 hydro_summer_11502_kbe <- hydro_summer %>% filter(member %in% "kbe") %>% filter(name_waterlevel %in% "11502")
 
