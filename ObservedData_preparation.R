@@ -36,14 +36,6 @@ df_qinfiltartionfirstlayer <- pivaggregate_treiber("qinfiltartionfirstlayer", fi
 df_relhum <- pivaggregate_treiber("relhum", file_list) %>% rename("relhum" = "variable")
 df_snowstorage <- pivaggregate_treiber("snowstorage", file_list) %>% rename("snowstorage" = "variable")
 df_soilwaterrootzone <- pivaggregate_treiber("soilwaterrootzone", file_list) %>% rename("soilwater" = "variable")
-
-df <- df_airtmp
-df <- df %>% left_join(df_glorad, by=c("key", "YY", "MM", "DD", "catchment"))
-df <- df %>% left_join(df_groundwaterdepth, by=c("key", "YY", "MM", "DD", "catchment"))
-df <- df %>% left_join(df_qinfiltartionfirstlayer, by=c("key", "YY", "MM", "DD", "catchment"))
-df <- df %>% left_join(df_relhum, by=c("key", "YY", "MM", "DD", "catchment"))
-df <- df %>% left_join(df_snowstorage, by=c("key", "YY", "MM", "DD", "catchment"))
-df <- df %>% left_join(df_soilwaterrootzone, by=c("key", "YY", "MM", "DD", "catchment"))
 ## Add Precip which uses different aggregate function
 df_precip <- read.table("observed_data/Treiber/precip.txt", header = TRUE)
 df_precip  <- tidyr::unite(df_precip, col='key', c('YY', 'MM', "DD", "HH"), sep='-')
@@ -56,4 +48,14 @@ df_precip$DD <- as.numeric(df_precip$DD)
 df_precip  <- tidyr::unite(df_precip, col='key', c('YY', 'MM', "DD", "catchment"), sep='-', remove = FALSE)
 df_precip <- df_precip %>%
   group_by(YY, MM, DD, catchment, key) %>%
-  summarise(variable = sum(variable)) %>% as.data.frame()
+  summarise(precip = sum(variable)) %>% as.data.frame()
+
+df <- df_airtmp
+df <- df %>% left_join(df_glorad, by=c("key", "YY", "MM", "DD", "catchment"))
+df <- df %>% left_join(df_groundwaterdepth, by=c("key", "YY", "MM", "DD", "catchment"))
+df <- df %>% left_join(df_qinfiltartionfirstlayer, by=c("key", "YY", "MM", "DD", "catchment"))
+df <- df %>% left_join(df_relhum, by=c("key", "YY", "MM", "DD", "catchment"))
+df <- df %>% left_join(df_snowstorage, by=c("key", "YY", "MM", "DD", "catchment"))
+df <- df %>% left_join(df_soilwaterrootzone, by=c("key", "YY", "MM", "DD", "catchment"))
+df <- df %>% left_join(df_precip, by=c("key", "YY", "MM", "DD", "catchment"))
+df <- df %>% select(- key)
