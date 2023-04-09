@@ -65,9 +65,9 @@ AIC(gam_selected_interact_summer_20203)
 ```
 ### Sommer Modelle Speichern
 ```{r}
-saveRDS(gam2_all_summer_20203, file = "./Plots/Jonas/gam2_all_summer_20203.Rdata")
-saveRDS(gam_selected_summer_20203, file = "./Plots/Jonas/gam_selected_summer_20203.Rdata")
-saveRDS(gam_selected_interact_summer_20203, file = "./Plots/Jonas/gam_selected_interact_summer_20203.Rdata")
+save(gam2_all_summer_20203, file = "./Plots/Jonas/gam2_all_summer_20203.Rdata")
+save(gam_selected_summer_20203, file = "./Plots/Jonas/gam_selected_summer_20203.Rdata")
+save(gam_selected_interact_summer_20203, file = "./Plots/Jonas/gam_selected_interact_summer_20203.Rdata")
 
 ```
 
@@ -377,9 +377,9 @@ AIC(gam_selected_interact_winter_20203)
 
 
 ```{r}
-saveRDS(gam2_all_winter_20203, file = "./Plots/Jonas/gam2_all_winter_20203.Rdata")
-saveRDS(gam_selected_winter_20203, file = "./Plots/Jonas/gam_selected_winter_20203.Rdata")
-saveRDS(gam_selected_interact_winter_20203, file = "./Plots/Jonas/gam_selected_interact_winter_20203.Rdata")
+save(gam2_all_winter_20203, file = "./Plots/Jonas/gam2_all_winter_20203.Rdata")
+save(gam_selected_winter_20203, file = "./Plots/Jonas/gam_selected_winter_20203.Rdata")
+save(gam_selected_interact_winter_20203, file = "./Plots/Jonas/gam_selected_interact_winter_20203.Rdata")
 ```
 
 
@@ -783,13 +783,13 @@ BIC(gam_all_summer_10304, gam_all_interac_summer_10304, gam2_all_interac_summer_
 
 ### Sommer Modelle Speichern
 ```{r}
-saveRDS(gam_all_summer_10304, file = "./Plots/Lisa/gam_all_summer_10304.Rdata")
-saveRDS(gam_all_interac_summer_10304, file = "./Plots/Lisa/gam_all_interac_summer_10304.Rdata")
-saveRDS(gam2_all_interac_summer_10304, file = "./Plots/Lisa/gam2_all_interac_summer_10304.Rdata")
-saveRDS(gam3_all_interac_summer_10304, file = "./Plots/Lisa/gam3_all_interac_summer_10304.Rdata")
-saveRDS(gam_selected_summer_10304, file = "./Plots/Lisa/gam_selected_summer_10304.Rdata")
-saveRDS(gam_selected_interac_summer_10304, file = "./Plots/Lisa/gam_selected_interac_summer_10304.Rdata")
-saveRDS(gam2_selected_interac_summer_10304, file = "./Plots/Lisa/gam2_selected_interac_summer_10304.Rdata")
+save(gam_all_summer_10304, file = "./models/10304/gam_all_summer_10304.Rdata")
+save(gam_all_interac_summer_10304, file = "./models/10304/gam_all_interac_summer_10304.Rdata")
+save(gam2_all_interac_summer_10304, file = "./models/10304/gam2_all_interac_summer_10304.Rdata")
+save(gam3_all_interac_summer_10304, file = "./models/10304/gam3_all_interac_summer_10304.Rdata")
+save(gam_selected_summer_10304, file = "./models/10304/gam_selected_summer_10304.Rdata")
+save(gam_selected_interac_summer_10304, file = "./models/10304/gam_selected_interac_summer_10304.Rdata")
+save(gam2_selected_interac_summer_10304, file = "./models/10304/gam2_selected_interac_summer_10304.Rdata")
 ```
 
 
@@ -965,13 +965,13 @@ BIC(gam_all_winter_10304, gam_all_interac_winter_10304, gam2_all_interac_winter_
 
 ### Winter Modelle Speichern
 ```{r}
-saveRDS(gam_all_winter_10304, file = "./Plots/Lisa/gam_all_winter_10304.Rdata")
-saveRDS(gam_all_interac_winter_10304, file = "./Plots/Lisa/gam_all_interac_winter_10304.Rdata")
-saveRDS(gam2_all_interac_winter_10304, file = "./Plots/Lisa/gam2_all_interac_winter_10304.Rdata")
-saveRDS(gam3_all_interac_winter_10304, file = "./Plots/Lisa/gam3_all_interac_winter_10304.Rdata")
-saveRDS(gam_selected_winter_10304, file = "./Plots/Lisa/gam_selected_winter_10304.Rdata")
-saveRDS(gam_selected_interac_winter_10304, file = "./Plots/Lisa/gam_selected_interac_winter_10304.Rdata")
-saveRDS(gam2_selected_interac_winter_10304, file = "./Plots/Lisa/gam2_selected_interac_winter_10304.Rdata")
+save(gam_all_winter_10304, file = "./models/10304/gam_all_winter_10304.Rdata")
+save(gam_all_interac_winter_10304, file = "./models/10304/gam_all_interac_winter_10304.Rdata")
+save(gam2_all_interac_winter_10304, file = "./models/10304/gam2_all_interac_winter_10304.Rdata")
+save(gam3_all_interac_winter_10304, file = "./models/10304/gam3_all_interac_winter_10304.Rdata")
+save(gam_selected_winter_10304, file = "./models/10304/gam_selected_winter_10304.Rdata")
+save(gam_selected_interac_winter_10304, file = "./models/10304/gam_selected_interac_winter_10304.Rdata")
+save(gam2_selected_interac_winter_10304, file = "./models/10304/gam2_selected_interac_winter_10304.Rdata")
 ```
 
 
