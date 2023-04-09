@@ -783,13 +783,13 @@ BIC(gam_all_summer_10304, gam_all_interac_summer_10304, gam2_all_interac_summer_
 
 ### Sommer Modelle Speichern
 ```{r}
-#saveRDS(gam_all_summer_10304, file = "./Plots/Lisa/gam_all_summer_10304.gam")
-#saveRDS(gam_all_interac_summer_10304, file = "./Plots/Lisa/gam_all_interac_summer_10304.gam")
-#saveRDS(gam2_all_interac_summer_10304, file = "./Plots/Lisa/gam2_all_interac_summer_10304.gam")
-#saveRDS(gam3_all_interac_summer_10304, file = "./Plots/Lisa/gam3_all_interac_summer_10304.gam")
-#saveRDS(gam_selected_summer_10304, file = "./Plots/Lisa/gam_selected_summer_10304.gam")
-#saveRDS(gam_selected_interac_summer_10304, file = "./Plots/Lisa/gam_selected_interac_summer_10304.gam")
-#saveRDS(gam2_selected_interac_summer_10304, file = "./Plots/Lisa/gam2_selected_interac_summer_10304.gam")
+saveRDS(gam_all_summer_10304, file = "./Plots/Lisa/gam_all_summer_10304.gam")
+saveRDS(gam_all_interac_summer_10304, file = "./Plots/Lisa/gam_all_interac_summer_10304.gam")
+saveRDS(gam2_all_interac_summer_10304, file = "./Plots/Lisa/gam2_all_interac_summer_10304.gam")
+saveRDS(gam3_all_interac_summer_10304, file = "./Plots/Lisa/gam3_all_interac_summer_10304.gam")
+saveRDS(gam_selected_summer_10304, file = "./Plots/Lisa/gam_selected_summer_10304.gam")
+saveRDS(gam_selected_interac_summer_10304, file = "./Plots/Lisa/gam_selected_interac_summer_10304.gam")
+saveRDS(gam2_selected_interac_summer_10304, file = "./Plots/Lisa/gam2_selected_interac_summer_10304.gam")
 ```
 
 
