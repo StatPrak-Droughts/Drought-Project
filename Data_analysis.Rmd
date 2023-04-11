@@ -81,7 +81,7 @@ plot_drainage <- function(dataset, year = c(2000), member_input = "kbe") {
     geom_point(data = dataset %>% filter(YY %in% year, member == member_input, lowlevel == TRUE), 
                aes(x = date, y = drainage), color = "purple") +
     labs(title = "Abflussmenge für unterschiedliche Pegel über die Zeit",
-       y = "Abflussmenge",
+       y = "Abflussmenge (in m³/s)",
        x = "Datum") +
   guides(color=guide_legend(title="Pegel")) +
     theme(text = element_text(size = 20),
@@ -95,7 +95,7 @@ plot_drainage_unmarked <- function(dataset, year = c(2000), member_input = "kbe"
     geom_line() +
     scale_y_continuous(trans='log10') +
     labs(title = "Abflussmenge für unterschiedliche Pegel über die Zeit",
-       y = "Abflussmenge",
+       y = "Abflussmenge (in m³/s)",
        x = "Datum") +
   guides(color=guide_legend(title="Pegel")) +
     theme(text = element_text(size = 20),
@@ -112,7 +112,7 @@ plot_single_drainage <- function(dataset, year = c(2000), member_input = "kbe") 
     geom_point(data = dataset %>% filter(YY %in% year, member == member_input, lowlevel == TRUE), 
                aes(x = date, y = drainage), color = "purple") +
     labs(title = "Abflussmenge für einen Pegel über die Zeit",
-       y = "Abflussmenge",
+       y = "Abflussmenge (in m³/s)",
        x = "Datum") +
     theme(text = element_text(size = 20)) +
     scale_color_brewer(palette = "Dark2")
@@ -133,7 +133,7 @@ hydro_total_10304 <- hydro_total %>% filter(name_waterlevel == "10304")
 ggplot(data = subset(hydro_total_10304, YY %in% 2000), mapping = aes(x = date, y = drainage, color = member, alpha = 0.01)) +
   geom_line() +
   labs(title = "Abfluss des Pegels Isar Mittenwald im Jahr 2000 getrennt \nnach Simulationsreihen",
-       y = "Abflussmenge",
+       y = "Abflussmenge (in m³/s)",
        x = "Datum") +
     theme(text = element_text(size = 20)) +
     scale_color_brewer(palette = "Paired")
@@ -442,8 +442,8 @@ ggsave("Plots/Chris/analysis/driver_plots/yearly_avg_max_relhum.png", width = 12
 ggplot(data = table_yearly_avg_max_infiltration, mapping = aes(x = YY, y = avg_max_infiltration, color = waterlevel)) +
   geom_line() +
   geom_point() +
-  labs(title = "Jährliches durchschnittliches Minimum an täglicher Wasserleitfähigkeit \nje Jahreszeit im Zeitverlauf (aller Member)",
-       y = "Jährliches durchschnittliches Minimum an täglicher Wasserleitfähigkeit \n(in mm/24h)",
+  labs(title = "Jährliches durchschnittliches Maximum an täglicher Wasserleitfähigkeit \nje Jahreszeit im Zeitverlauf (aller Member)",
+       y = "Jährliches durchschnittliches Maximum an täglicher Wasserleitfähigkeit \n(in mm/24h)",
        x = "Datum") +
   guides(color=guide_legend(title="Pegel")) +
     theme(text = element_text(size = 20),
@@ -452,6 +452,75 @@ ggplot(data = table_yearly_avg_max_infiltration, mapping = aes(x = YY, y = avg_m
   facet_wrap(vars(hydro_year), labeller = as_labeller(c(`summer` = "Sommer", `winter` = "Winter")))
 ggsave("Plots/Chris/analysis/driver_plots/yearly_avg_max_infiltration.png", width = 12, height = 9)
 ```
+
+## Table prep for shiny app
+```{r Table prep for shiny app}
+table_yearly_avg_max_groundwaterdepth <- hydro_total %>%
+  group_by(waterlevel, YY, hydro_year, member) %>%
+  summarise(max_groundwaterdepth = max(groundwaterdepth)) %>% 
+  group_by(waterlevel, YY, hydro_year) %>%
+  summarise(avg_max_groundwaterdepth = mean(max_groundwaterdepth))
+
+table_yearly_avg_max_soilwater <- hydro_total %>%
+  group_by(waterlevel, YY, hydro_year, member) %>%
+  summarise(max_soilwater = max(soilwater)) %>%
+  group_by(waterlevel, YY, hydro_year) %>%
+  summarise(avg_max_soilwater = mean(max_soilwater)) 
+
+table_yearly_avg_max_snowstorage <- hydro_total %>%
+  group_by(waterlevel, YY, hydro_year, member) %>%
+  summarise(max_snowstorage = max(snowstorage)) %>%
+  group_by(waterlevel, YY, hydro_year) %>%
+  summarise(avg_max_snowstorage = mean(max_snowstorage)) 
+
+table_yearly_avg_max_airtmp <- hydro_total %>%
+  group_by(waterlevel, YY, hydro_year, member) %>%
+  summarise(max_airtmp = max(airtmp)) %>%
+  group_by(waterlevel, YY, hydro_year) %>%
+  summarise(avg_max_airtmp = mean(max_airtmp)) 
+
+table_yearly_avg_min_precip <- hydro_total %>%
+  group_by(waterlevel, YY, hydro_year, member) %>%
+  summarise(min_precip = min(precip)) %>%
+  group_by(waterlevel, YY, hydro_year) %>%
+  summarise(avg_min_precip = mean(min_precip)) 
+
+table_yearly_avg_min_glorad <- hydro_total %>%
+  group_by(waterlevel, YY, hydro_year, member) %>%
+  summarise(min_glorad = min(glorad)) %>%
+  group_by(waterlevel, YY, hydro_year) %>%
+  summarise(avg_min_glorad = mean(min_glorad)) 
+
+table_yearly_avg_min_relhum <- hydro_total %>%
+  group_by(waterlevel, YY, hydro_year, member) %>%
+  summarise(min_relhum = min(relhum)) %>%
+  group_by(waterlevel, YY, hydro_year) %>%
+  summarise(avg_min_relhum = mean(min_relhum)) 
+
+table_yearly_avg_min_infiltration <- hydro_total %>%
+  group_by(waterlevel, YY, hydro_year, member) %>%
+  summarise(min_infiltration = min(infiltration)) %>%
+  group_by(waterlevel, YY, hydro_year) %>%
+  summarise(avg_min_infiltration = mean(min_infiltration)) 
+
+saveRDS(object = table_yearly_avg_max_groundwaterdepth, 
+        file = "data/tables/driver_analysis/table_yearly_avg_max_groundwaterdepth.RDS")
+saveRDS(object = table_yearly_avg_max_soilwater, 
+        file = "data/tables/driver_analysis/table_yearly_avg_max_soilwater.RDS")
+saveRDS(object = table_yearly_avg_max_snowstorage, 
+        file = "data/tables/driver_analysis/table_yearly_avg_max_snowstorage.RDS")
+saveRDS(object = table_yearly_avg_max_airtmp, 
+        file = "data/tables/driver_analysis/table_yearly_avg_max_airtmp.RDS")
+saveRDS(object = table_yearly_avg_min_precip, 
+        file = "data/tables/driver_analysis/table_yearly_avg_min_precip.RDS")
+saveRDS(object = table_yearly_avg_min_glorad, 
+        file = "data/tables/driver_analysis/table_yearly_avg_min_glorad.RDS")
+saveRDS(object = table_yearly_avg_min_relhum, 
+        file = "data/tables/driver_analysis/table_yearly_avg_min_relhum.RDS")
+saveRDS(object = table_yearly_avg_min_infiltration, 
+        file = "data/tables/driver_analysis/table_yearly_avg_min_infiltration.RDS")
+```
+
 
 ## Chris: Extreme value analysis
 ```{r Chris: Global extreme value analysis}
@@ -1456,13 +1525,13 @@ colnames(subset_hydro_winter_11502) <- c("Mittlerer Niederschlag", "Mittlere Luf
 subset_hydro_winter_20203 <- subset(hydro_winter_20203, select = c(avg_precip, avg_airtmp, avg_glorad, avg_relhum, avg_soilwater, avg_snowstorage, groundwaterdepth, avg_infiltration, max_precip, avg_snowstorage_drain))
 colnames(subset_hydro_winter_20203) <- c("Mittlerer Niederschlag", "Mittlere Lufttemperatur", "Mittlere Strahlung", "Mittlere relative Luftfeuchte", "Mittlere Bodenfeuchte", "Mittlerer Schneespeicher", "Grundwasserstand", "Mittlere Versickerung", "Maximaler Niederschlag", "Mittlere Schneeschmelze")
 
-subset_hydro_summer_10304 <- subset(hydro_winter_10304, select = c(avg_precip, avg_airtmp, avg_glorad, avg_relhum, avg_soilwater, avg_snowstorage, groundwaterdepth, avg_infiltration, max_precip, avg_snowstorage_drain))
+subset_hydro_summer_10304 <- subset(hydro_summer_10304, select = c(avg_precip, avg_airtmp, avg_glorad, avg_relhum, avg_soilwater, avg_snowstorage, groundwaterdepth, avg_infiltration, max_precip, avg_snowstorage_drain))
 colnames(subset_hydro_summer_10304) <- c("Mittlerer Niederschlag", "Mittlere Lufttemperatur", "Mittlere Strahlung", "Mittlere relative Luftfeuchte", "Mittlere Bodenfeuchte", "Mittlerer Schneespeicher", "Grundwasserstand", "Mittlere Versickerung", "Maximaler Niederschlag", "Mittlere Schneeschmelze")
 
-subset_hydro_summer_11502 <- subset(hydro_winter_11502, select = c(avg_precip, avg_airtmp, avg_glorad, avg_relhum, avg_soilwater, avg_snowstorage, groundwaterdepth, avg_infiltration, max_precip, avg_snowstorage_drain))
+subset_hydro_summer_11502 <- subset(hydro_summer_11502, select = c(avg_precip, avg_airtmp, avg_glorad, avg_relhum, avg_soilwater, avg_snowstorage, groundwaterdepth, avg_infiltration, max_precip, avg_snowstorage_drain))
 colnames(subset_hydro_summer_11502) <- c("Mittlerer Niederschlag", "Mittlere Lufttemperatur", "Mittlere Strahlung", "Mittlere relative Luftfeuchte", "Mittlere Bodenfeuchte", "Mittlerer Schneespeicher", "Grundwasserstand", "Mittlere Versickerung", "Maximaler Niederschlag", "Mittlere Schneeschmelze")
 
-subset_hydro_summer_20203 <- subset(hydro_winter_20203, select = c(avg_precip, avg_airtmp, avg_glorad, avg_relhum, avg_soilwater, avg_snowstorage, groundwaterdepth, avg_infiltration, max_precip, avg_snowstorage_drain))
+subset_hydro_summer_20203 <- subset(hydro_summer_20203, select = c(avg_precip, avg_airtmp, avg_glorad, avg_relhum, avg_soilwater, avg_snowstorage, groundwaterdepth, avg_infiltration, max_precip, avg_snowstorage_drain))
 colnames(subset_hydro_summer_20203) <- c("Mittlerer Niederschlag", "Mittlere Lufttemperatur", "Mittlere Strahlung", "Mittlere relative Luftfeuchte", "Mittlere Bodenfeuchte", "Mittlerer Schneespeicher", "Grundwasserstand", "Mittlere Versickerung", "Maximaler Niederschlag", "Mittlere Schneeschmelze")
 
 library(corrplot)
