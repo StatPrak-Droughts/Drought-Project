@@ -1186,7 +1186,7 @@ plot(gam5_summer_11502, select = 9, ylim = c(-200, 100))
 ## Winter
 ### All
 ```{r}
-gam_all_winter_11502 <- gam(formula = lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps") + s(max_precip, bs = "ps") + s(avg_snowstorage_drain, bs = "ps"), family = binomial(), data = hydro_winter_11502_kbe, method = "REML")
+gam_all_winter_11502 <- gam(formula = lowlevel ~ YY + avg_precip + s(avg_airtmp, bs = "ps") + avg_glorad + avg_relhum + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps") + max_precip + s(avg_snowstorage_drain, bs = "ps"), family = binomial(), data = hydro_winter_11502_kbe, method = "REML")
 summary(gam_all_winter_11502)
 ```
 #### Viz
@@ -1204,7 +1204,7 @@ plot(gam_all_winter_11502, select = 9, ylim = c(-20,20))
 
 ### Trimed
 ```{r}
-gam_trimmed_winter_11502 <- gam(formula = lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps")  + s(avg_snowstorage_drain, bs = "ps"), family = binomial(), data = hydro_winter_11502_kbe, method = "REML")
+gam_trimmed_winter_11502 <- gam(formula = lowlevel ~ YY + avg_precip + s(avg_airtmp, bs = "ps") + avg_glorad + avg_relhum + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps")  + s(avg_snowstorage_drain, bs = "ps"), family = binomial(), data = hydro_winter_11502_kbe, method = "REML")
 summary(gam_trimmed_winter_11502)
 ```
 #### Viz
@@ -1221,7 +1221,7 @@ plot(gam_trimmed_winter_11502, select = 9, ylim = c(-20,20))
 ```
 ### Interactions
 ```{r}
-gam_interactions_winter_11502 <- gam(formula = lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps")  + s(avg_snowstorage_drain, bs = "ps") + s(avg_precip, bs = "ps", by = avg_soilwater) + s(avg_snowstorage, bs = "ps", by = avg_airtmp), family = binomial(), data = hydro_winter_11502_kbe, method = "REML")
+gam_interactions_winter_11502 <- gam(formula = lowlevel ~ YY + avg_precip + + s(avg_glorad, bs = "ps") + avg_relhum + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps")  + s(avg_snowstorage_drain, bs = "ps") + s(avg_precip, bs = "ps", by = avg_soilwater) + s(avg_snowstorage, bs = "ps", by = avg_airtmp), family = binomial(), data = hydro_winter_11502_kbe, method = "REML")
 summary(gam_interactions_winter_11502)
 ```
 
@@ -1229,12 +1229,12 @@ summary(gam_interactions_winter_11502)
 # Summer
 ## All
 ```{r}
-gam_all_summer_11502 <- gam(formula = lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps") + s(max_precip, bs = "ps") + s(avg_snowstorage_drain, bs = "ps"), family = binomial(), data = hydro_summer_10304_kbe, method = "REML")
+gam_all_summer_11502 <- gam(formula = lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + avg_snowstorage + s(groundwaterdepth, bs = "ps") + avg_infiltration + max_precip + avg_snowstorage_drain, family = binomial(), data = hydro_summer_10304_kbe, method = "REML")
 summary(gam_all_summer_11502)
 ```
 ##Trimmed
 ```{r}
-gam_trimmed_summer_11502 <- gam(formula = lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps")  + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps") + s(max_precip, bs = "ps"), family = binomial(), data = hydro_summer_10304_kbe, method = "REML")
+gam_trimmed_summer_11502 <- gam(formula = lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps")  + s(avg_soilwater, bs = "ps") + avg_snowstorage + s(groundwaterdepth, bs = "ps") + avg_infiltration + max_precip, family = binomial(), data = hydro_summer_10304_kbe, method = "REML")
 summary(gam_trimmed_summer_11502)
 ```
 ### Viz
@@ -1250,7 +1250,7 @@ plot(gam_trimmed_summer_11502, select = 8, ylim = c(-20, 20))
 ```
 ### Interactions
 ```{r}
-gam_interactions_summer_11502 <- gam(formula = lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps")  + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps")  + s(max_precip, by = avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps", by = avg_airtmp), family = binomial(), data = hydro_summer_10304_kbe, method = "REML")
+gam_interactions_summer_11502 <- gam(formula = lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps")  + s(avg_soilwater, bs = "ps") + avg_snowstorage + s(groundwaterdepth, bs = "ps") + avg_infiltration  + s(max_precip, by = avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps", by = avg_airtmp), family = binomial(), data = hydro_summer_10304_kbe, method = "REML")
 summary(gam_interactions_summer_11502)
 ```
 
