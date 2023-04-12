@@ -59,3 +59,8 @@ df <- df %>% left_join(df_snowstorage, by=c("key", "YY", "MM", "DD", "catchment"
 df <- df %>% left_join(df_soilwaterrootzone, by=c("key", "YY", "MM", "DD", "catchment"))
 df <- df %>% left_join(df_precip, by=c("key", "YY", "MM", "DD", "catchment"))
 df <- df %>% select(- key)
+
+
+
+
+
