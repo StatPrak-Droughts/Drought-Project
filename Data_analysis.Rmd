@@ -365,7 +365,7 @@ ggplot(data = table_yearly_avg_min_soilwater, mapping = aes(x = YY, y = avg_min_
   geom_line() +
   geom_point() +
   labs(title = "Jährliches durchschnittliches Minimum der täglichen oberflächennahen \nrelativen Bodenfeuchte je Jahreszeit im Zeitverlauf (aller Member)",
-       y = "Jährliches durchschnittliches Minimum der täglichen oberflächennahen \nrelativen Bodenfeuchte (in Prozentpunkten)",
+       y = "Jährliches durchschnittliches Minimum der täglichen oberflächennahen \nrelativen Bodenfeuchte (in %)",
        x = "Datum") +
   guides(color=guide_legend(title="Pegel")) +
     theme(text = element_text(size = 20),
@@ -442,8 +442,8 @@ ggsave("Plots/Chris/analysis/driver_plots/yearly_avg_max_relhum.png", width = 12
 ggplot(data = table_yearly_avg_max_infiltration, mapping = aes(x = YY, y = avg_max_infiltration, color = waterlevel)) +
   geom_line() +
   geom_point() +
-  labs(title = "Jährliches durchschnittliches Maximum an täglicher Wasserleitfähigkeit \nje Jahreszeit im Zeitverlauf (aller Member)",
-       y = "Jährliches durchschnittliches Maximum an täglicher Wasserleitfähigkeit \n(in mm/24h)",
+  labs(title = "Jährliches durchschnittliches Maximum an täglicher Sickerung \nje Jahreszeit im Zeitverlauf (aller Member)",
+       y = "Jährliches durchschnittliches Maximum an täglicher Sickerung \n(in mm/24h)",
        x = "Datum") +
   guides(color=guide_legend(title="Pegel")) +
     theme(text = element_text(size = 20),
@@ -1629,35 +1629,55 @@ IQA bestimmen
 ```{r}
 avg_soilwater <- c(hydro_winter_20203$avg_soilwater, hydro_winter_10304$avg_soilwater, hydro_winter_11502$avg_soilwater, hydro_summer_10304$avg_soilwater, hydro_summer_11502$avg_soilwater, hydro_summer_20203$avg_soilwater)
 quantile(na.omit(avg_soilwater),  c(0.25, 0.75))
-#Faktor 15/2,44=6
+# IQA ca. 1.8%, Faktor 10 führt zu 18 0.1% Schritten
+
 
 avg_snowstorage <- c(hydro_winter_20203$avg_snowstorage, hydro_winter_10304$avg_snowstorage, hydro_winter_11502$avg_snowstorage, hydro_summer_10304$avg_snowstorage, hydro_summer_11502$avg_snowstorage, hydro_summer_20203$avg_snowstorage)
 quantile(na.omit(avg_snowstorage),c(0.25, 0.75))
-#Faktor 20/15=2
+# IQA ca. 36, also führt Faktor 0.5 zu 18 2mm Schritten
+
 
 avg_airtmp <- c(hydro_winter_20203$avg_airtmp, hydro_winter_10304$avg_airtmp, hydro_winter_11502$avg_airtmp, hydro_summer_10304$avg_airtmp, hydro_summer_11502$avg_airtmp, hydro_summer_20203$avg_airtmp)
 quantile(na.omit(avg_airtmp),  c(0.25, 0.75))
-#Faktor 15/5,4=3
+# IQA ca. 5.3, also führt Faktor 3.3 zu 16 0.3 grad Schritten
+
 
 avg_precip <- c(hydro_winter_20203$avg_precip, hydro_winter_10304$avg_precip, hydro_winter_11502$avg_precip, hydro_summer_10304$avg_precip, hydro_summer_11502$avg_precip, hydro_summer_20203$avg_precip)
 quantile(na.omit(avg_precip),  c(0.25, 0.75))
-#Faktor 15/3,4=4,5
+# IQA ca. 3.3, also führt Faktor 5 zu 16 0.2 mm/m^2  Schritten
+
+
 
 avg_glorad <- c(hydro_winter_20203$avg_glorad, hydro_winter_10304$avg_glorad, hydro_winter_11502$avg_glorad, hydro_summer_10304$avg_glorad, hydro_summer_11502$avg_glorad, hydro_summer_20203$avg_glorad)
 quantile(na.omit(avg_glorad),  c(0.25, 0.75))
-#Faktor 15/241=0,062
+# IQA ca. 240, also führt Faktor 0.1 zu 24 10 Wh/m^2 Schritten
+
 
 avg_relhum <- c(hydro_winter_20203$avg_relhum, hydro_winter_10304$avg_relhum, hydro_winter_11502$avg_relhum, hydro_summer_10304$avg_relhum, hydro_summer_11502$avg_relhum, hydro_summer_20203$avg_relhum)
 quantile(na.omit(avg_relhum),  c(0.25, 0.75))
-#Faktor 15/11 = 1,4
+# IQA ca. 11, weshalb wir Faktor 1 nutzen
+
 
 avg_infiltration <- c(hydro_winter_20203$avg_infiltration, hydro_winter_10304$avg_infiltration, hydro_winter_11502$avg_infiltration, hydro_summer_10304$avg_infiltration, hydro_summer_11502$avg_infiltration, hydro_summer_20203$avg_infiltration)
 quantile(na.omit(avg_infiltration),  c(0.25, 0.75))
-#Faktor 15/0,345=43
+# IQA ca. 0.35, also führt Faktor 50 zu 17 0.02 (Infiltration Einheit)Schritten
 
-max_precip <- c(hydro_summer$max_precip_summer, hydro_winter$max_precip_winter)
+
+groundwaterdepth <- c(hydro_summer_10304$groundwaterdepth, hydro_winter_10304$groundwaterdepth)
+quantile(na.omit(groundwaterdepth),  c(0.25, 0.75))
+# IQA ca. 0.45, also führt Faktor 33 zu 17 1/30 m schritten
+
+
+avg_snowstorage_drain_scaled <- c(hydro_summer_10304$avg_snowstorage_drain_scaled, hydro_winter_10304$avg_snowstorage_drain_scaled)
+quantile(na.omit(avg_snowstorage_drain_scaled),  c(0.25, 0.75))
+# IQA ca. 55, also führt Faktor 0.33333 zu 17 3er Schritten
+
+
+
+max_precip <- c(hydro_summer$max_precip, hydro_winter$max_precip_winter)
 quantile(na.omit(max_precip),  c(0.25, 0.75))
-#Faktor 15/12=1,25
+# IQA ca. 15, also führt Faktor 1 zu 15 1ner Schritten
+
 
 
 
