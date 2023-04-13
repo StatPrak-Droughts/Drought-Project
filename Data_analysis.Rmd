@@ -1600,7 +1600,6 @@ corrplot(correlationm_spearman_summer_11502_kbe, method = "number", type = "lowe
 correlationm_spearman_summer_20203_kbe <- cor(subset_hydro_summer_20203_kbe, method = "spearman", use = "complete.obs")
 corrplot(correlationm_spearman_summer_20203_kbe, method = "number", type = "lower", tl.col = "black")
 
-
 # allgemein:
 hydro_summer_kbe <- subset(hydro_summer, member = "kbe")
 hydro_winter_kbe <- subset(hydro_winter, member = "kbe")

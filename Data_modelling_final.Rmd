@@ -1292,15 +1292,49 @@ rfPermute::plotImportance(rf_summer_11502)
 rfPermute::plotImportance(rf_winter_11502)
 ```
 
+# Volle Modelle für alle Pegel und Halbjahre
+```{r}
+gam2_all_winter_10304 <- gam(formula = lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps") + s(max_precip, bs = "ps") + s(avg_snowstorage_drain, bs = "ps"), family = binomial(), data = hydro_winter_10304_kbe, method = "REML")
+summary(gam2_all_winter_10304)
+AIC(gam2_all_winter_10304)
+
+gam2_all_summer_10304 <- gam(formula = lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps") + s(max_precip, bs = "ps") + s(avg_snowstorage_drain, bs = "ps"), family = binomial(), data = hydro_summer_10304_kbe, method = "REML")
+summary(gam2_all_summer_10304)
+AIC(gam2_all_summer_10304)
+
+gam_all_winter_11502 <- gam(formula = lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps") + s(max_precip, bs = "ps") + s(avg_snowstorage_drain, bs = "ps"), family = binomial(), data = hydro_winter_11502_kbe, method = "REML")
+summary(gam_all_winter_11502)
+AIC(gam_all_winter_11502)
+
+gam_all_summer_11502 <- gam(formula = lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps") + s(max_precip, bs = "ps") + s(avg_snowstorage_drain, bs = "ps"), family = binomial(), data = hydro_summer_11502_kbe, method = "REML")
+summary(gam_all_summer_11502)
+AIC(gam_all_summer_11502)
+
+
+gam_all_winter_20203 <- gam(formula = lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps") + s(max_precip, bs = "ps") + s(avg_snowstorage_drain, bs = "ps"), family = binomial(), data = hydro_winter_20203_kbe, method = "REML")
+summary(gam_all_winter_20203)
+AIC(gam_all_winter_20203)
+
+
+gam_all_summer_20203 <- gam(formula = lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps") + s(max_precip, bs = "ps") + s(avg_snowstorage_drain, bs = "ps"), family = binomial(), data = hydro_summer_20203_kbe, method = "REML")
+summary(gam_all_summer_20203)
+AIC(gam_all_summer_20203)
+
+
+
+
+```
 
 # Selektierte Modelle für alle Pregel und Halbjahre
+## 1
 ```{r}
-# nur Treiber: avg_precip, avg_airtmp, avg_glorad, avg_soilwater, avg_snowstorage, grounwaterdepth um Multikollinearität zu vermeiden (in keinem der 6 Datensätze eine Korrelation von > 0.8 bzw. <-0.8)
+# nur Treiber: avg_precip, avg_airtmp, avg_glorad, avg_soilwater, avg_snowstorage, groundwaterdepth um Multikollinearität zu vermeiden (in keinem der 6 Datensätze eine Korrelation von > 0.8 bzw. <-0.8)
 gam_uni_selected_winter_10304 <- gam(formula = lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps"), family = binomial(), data = hydro_winter_10304_kbe, method = "REML")
 summary(gam_uni_selected_winter_10304)
 AIC(gam_uni_selected_winter_10304)
 BIC(gam_uni_selected_winter_10304)
 concurvity(gam_uni_selected_winter_10304)
+#plot(gam_uni_selected_winter_10304, ylim = c(-7, 7))
 
 
 gam_uni_selected_summer_10304 <- gam(formula = lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps"), family = binomial(), data = hydro_summer_10304_kbe, method = "REML")
@@ -1308,6 +1342,7 @@ summary(gam_uni_selected_summer_10304)
 AIC(gam_uni_selected_summer_10304)
 BIC(gam_uni_selected_summer_10304)
 concurvity(gam_uni_selected_summer_10304)
+#plot(gam_uni_selected_summer_10304, ylim = c(-7, 7))
 
 
 gam_uni_selected_winter_11502 <- gam(formula = lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps"), family = binomial(), data = hydro_winter_11502_kbe, method = "REML")
@@ -1315,6 +1350,7 @@ summary(gam_uni_selected_winter_11502)
 AIC(gam_uni_selected_winter_11502)
 BIC(gam_uni_selected_winter_11502)
 concurvity(gam_uni_selected_winter_11502)
+#plot(gam_uni_selected_winter_11502, ylim = c(-7, 7))
 
 
 gam_uni_selected_summer_11502 <- gam(formula = lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps"), family = binomial(), data = hydro_summer_11502_kbe, method = "REML")
@@ -1322,13 +1358,15 @@ summary(gam_uni_selected_summer_11502)
 AIC(gam_uni_selected_summer_11502)
 BIC(gam_uni_selected_summer_11502)
 concurvity(gam_uni_selected_summer_11502)
+#plot(gam_uni_selected_summer_11502, ylim = c(-7, 7))
 
 
-gam_uni_selected_winter_20203 <- gam(formula = lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps"), family = binomial(), data = hydro_winter_20203_kbe, method = "REML")
+gam_uni_selected_winter_20203 <- gam(formula = lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps"), family = binomial(), data = hydro_winter_20203_kbe, method = "REML")
 summary(gam_uni_selected_winter_20203)
 AIC(gam_uni_selected_winter_20203)
 BIC(gam_uni_selected_winter_20203)
 concurvity(gam_uni_selected_winter_20203)
+#plot(gam_uni_selected_winter_20203, ylim = c(-7, 7))
 
 
 gam_uni_selected_summer_20203 <- gam(formula = lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps"), family = binomial(), data = hydro_summer_20203_kbe, method = "REML")
@@ -1336,4 +1374,105 @@ summary(gam_uni_selected_summer_20203)
 AIC(gam_uni_selected_summer_20203)
 BIC(gam_uni_selected_summer_20203)
 concurvity(gam_uni_selected_summer_20203)
+plot(gam_uni_selected_summer_20203, ylim = c(-7, 7))
+```
+
+# Selektierte Modelle für alle Pregel und Halbjahre
+## 2
+```{r}
+# nur Treiber: avg_airtmp, avg_relhum, avg_soilwater, avg_snowstorage, groundwaterdepth, avg_infiltration um Multikollinearität zu vermeiden (in keinem der 6 Datensätze eine Korrelation von > 0.8 bzw. <-0.8)
+gam2_uni_selected_winter_10304 <- gam(formula = lowlevel ~ YY + s(avg_airtmp, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps"), family = binomial(), data = hydro_winter_10304_kbe, method = "REML")
+summary(gam2_uni_selected_winter_10304)
+AIC(gam2_uni_selected_winter_10304)
+BIC(gam2_uni_selected_winter_10304)
+concurvity(gam2_uni_selected_winter_10304)
+#plot(gam2_uni_selected_winter_10304, ylim = c(-7, 7))
+
+
+gam2_uni_selected_summer_10304 <- gam(formula = lowlevel ~ YY + s(avg_airtmp, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps"), family = binomial(), data = hydro_summer_10304_kbe, method = "REML")
+summary(gam2_uni_selected_summer_10304)
+AIC(gam2_uni_selected_summer_10304)
+BIC(gam2_uni_selected_summer_10304)
+concurvity(gam2_uni_selected_summer_10304)
+#plot(gam2_uni_selected_summer_10304, ylim = c(-7, 7))
+
+
+gam2_uni_selected_winter_11502 <- gam(formula = lowlevel ~ YY + s(avg_airtmp, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps"), family = binomial(), data = hydro_winter_11502_kbe, method = "REML")
+summary(gam2_uni_selected_winter_11502)
+AIC(gam2_uni_selected_winter_11502)
+BIC(gam2_uni_selected_winter_11502)
+concurvity(gam2_uni_selected_winter_11502)
+#plot(gam2_uni_selected_winter_11502, ylim = c(-7, 7))
+
+
+gam2_uni_selected_summer_11502 <- gam(formula = lowlevel ~ YY + s(avg_airtmp, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps"), family = binomial(), data = hydro_summer_11502_kbe, method = "REML")
+summary(gam2_uni_selected_summer_11502)
+AIC(gam2_uni_selected_summer_11502)
+BIC(gam2_uni_selected_summer_11502)
+concurvity(gam2_uni_selected_summer_11502)
+#plot(gam2_uni_selected_summer_11502, ylim = c(-7, 7))
+
+
+gam2_uni_selected_winter_20203 <- gam(formula = lowlevel ~ YY + s(avg_airtmp, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps"), family = binomial(), data = hydro_winter_20203_kbe, method = "REML")
+summary(gam2_uni_selected_winter_20203)
+AIC(gam2_uni_selected_winter_20203)
+BIC(gam2_uni_selected_winter_20203)
+concurvity(gam2_uni_selected_winter_20203)
+#plot(gam2_uni_selected_winter_20203, ylim = c(-7, 7))
+
+
+gam2_uni_selected_summer_20203 <- gam(formula = lowlevel ~ YY + s(avg_airtmp, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps"), family = binomial(), data = hydro_summer_20203_kbe, method = "REML")
+summary(gam2_uni_selected_summer_20203)
+AIC(gam2_uni_selected_summer_20203)
+BIC(gam2_uni_selected_summer_20203)
+concurvity(gam2_uni_selected_summer_20203)
+#plot(gam2_uni_selected_summer_20203, ylim = c(-7, 7))
+```
+
+
+# Selektierte Modelle für alle Pregel und Halbjahre mit individuellen Interaktionen
+```{r}
+# nur Treiber: avg_precip, avg_airtmp, avg_glorad, avg_soilwater, avg_snowstorage, grounwaterdepth um Multikollinearität zu vermeiden (in keinem der 6 Datensätze eine Korrelation von > 0.8 bzw. <-0.8)
+gam_uni_selected_interac_winter_10304 <- gam(formula = lowlevel ~ YY  + s(avg_precip, bs = "ps") + s(avg_airtmp, bs = "ps") + s(avg_soilwater, bs = "ps")+ s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps", by = avg_glorad), family = binomial(), data = hydro_winter_10304_kbe, method = "REML")
+AIC(gam_uni_selected_interac_winter_10304)
+summary(gam_uni_selected_interac_winter_10304)
+plot(gam_uni_selected_interac_winter_10304, ylim = c(-7, 7))
+
+
+gam_uni_selected_interac_summer_10304 <- gam(formula = lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_soilwater, bs = "ps")+ s(groundwaterdepth, bs = "ps") + s(avg_airtmp, bs = "ps", by = avg_snowstorage), family = binomial(), data = hydro_summer_10304_kbe, method = "REML")
+AIC(gam_uni_selected_interac_summer_10304)
+summary(gam_uni_selected_interac_summer_10304)
+plot(gam_uni_selected_interac_summer_10304, ylim = c(-7, 7))
+
+# ab hier noch keine Interaktionen gesucht
+gam_uni_selected_interac_winter_11502 <- gam(formula = lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps"), family = binomial(), data = hydro_winter_11502_kbe, method = "REML")
+summary(gam_uni_selected_interac_winter_11502)
+AIC(gam_uni_selected_interac_winter_11502)
+BIC(gam_uni_selected_interac_winter_11502)
+concurvity(gam_uni_selected_interac_winter_11502)
+plot(gam_uni_selected_interac_winter_11502, ylim = c(-7, 7))
+
+
+gam_uni_selected_interac_summer_11502 <- gam(formula = lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps"), family = binomial(), data = hydro_summer_11502_kbe, method = "REML")
+summary(gam_uni_selected_interac_summer_11502)
+AIC(gam_uni_selected_interac_summer_11502)
+BIC(gam_uni_selected_interac_summer_11502)
+concurvity(gam_uni_selected_interac_summer_11502)
+plot(gam_uni_selected_interac_summer_11502, ylim = c(-7, 7))
+
+
+gam_uni_selected_interac_winter_20203 <- gam(formula = lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps"), family = binomial(), data = hydro_winter_20203_kbe, method = "REML")
+summary(gam_uni_selected_interac_winter_20203)
+AIC(gam_uni_selected_interac_winter_20203)
+BIC(gam_uni_selected_interac_winter_20203)
+concurvity(gam_uni_selected_interac_winter_20203)
+plot(gam_uni_selected_interac_winter_20203, ylim = c(-7, 7))
+
+
+gam_uni_selected_interac_summer_20203 <- gam(formula = lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps"), family = binomial(), data = hydro_summer_20203_kbe, method = "REML")
+summary(gam_uni_selected_interac_summer_20203)
+AIC(gam_uni_selected_interac_summer_20203)
+BIC(gam_uni_selected_interac_summer_20203)
+concurvity(gam_uni_selected_interac_summer_20203)
+plot(gam_uni_selected_interac_summer_20203, ylim = c(-7, 7))
 ```
