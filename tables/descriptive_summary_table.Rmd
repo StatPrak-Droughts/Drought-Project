@@ -9,12 +9,19 @@ output:
 
 ```{r setup, include=FALSE}
 # library(memisc)
-# hydro_total <- readRDS(file = "./data/hydro_total.RDS")
+# library(tidyverse)
+# hydro_summer_20203 <- readRDS(file = "./data/hydro_summer_20203.RDS")
+# hydro_summer_11502 <- readRDS(file = "./data/hydro_summer_11502.RDS")
+# hydro_summer_10304 <- readRDS(file = "./data/hydro_summer_10304.RDS")
+# hydro_winter_20203 <- readRDS(file = "./data/hydro_winter_20203.RDS")
+# hydro_winter_11502 <- readRDS(file = "./data/hydro_winter_11502.RDS")
+# hydro_winter_10304 <- readRDS(file = "./data/hydro_winter_10304.RDS")
+# hydro_total <- rbind(hydro_summer_20203, hydro_summer_11502, hydro_summer_10304, 
+#                      hydro_winter_20203, hydro_winter_11502, hydro_winter_10304)
 # 
-# 
-# hydro_total[, c("lowlevel", "drainage", "airtmp", "glorad", "precip", "groundwaterdepth", "relhum", "snowstorage", "soilwater", "infiltration")] %>%
-#     `colnames<-` (c("Niedrigwasserevent", "Abfluss (in m³/s)", "Lufttemperatur (in °C)", "Einfallende kurzwellige Strahlung (in Wh/m²)",
-#                     "Niederschlag (in mm/24h)", "Grundwasserstand (M unter Oberfläche)", "Relative Luftfeuchte (in %)", "Schneespeicher (in mm)", "Oberflächennahe relative Bodenfeuchte (in %)", "Wasserleitfähigkeit")) |> desctable::desc_table(
+# hydro_total[, c("lowlevel", "avg_precip", "avg_airtmp", "avg_glorad", "avg_relhum", "avg_soilwater", "avg_snowstorage", "groundwaterdepth", "avg_infiltration", "max_precip_scaled", "avg_snowstorage_drain")] %>%
+#     `colnames<-` (c("Niedrigwasserevent", "Niederschlag (in mm/24h; 7 Tage rolling mean, zentriert)", "Lufttemperatur (in °C; 7 Tage rolling mean, zentriert)", "Einfallende kurzwellige Strahlung (in Wh/m²; 7 Tage rolling mean, zentriert)",
+#                     "Relative Luftfeuchte (in %; 7 Tage rolling mean, zentriert)", "Oberflächennahe relative Bodenfeuchte (in %; 60 Tage rolling mean, 100-fach skaliert, zentriert)", "Schneespeicher (in mm; 30 Tage rolling mean, zentriert)", "Grundwasserstand (M unter Oberfläche)", "Versickerung (in mm/24h; 7 Tage rolling mean, zentriert)", "Niederschlag (in mm/24h; 7 Tage Maximum)", "Schneeschmelze (in mm; 7 Tage rolling mean)")) |> desctable::desc_table(
 #              "N"      = length,
 #              "%" = percent,
 #              "Med"    = median,
@@ -22,33 +29,95 @@ output:
 #                     ) |> pander::pander()
 ```
 
+<!-- ---------------------------------------------------------------------- -->
+<!--            Variables                N        %        Med       IQR    -->
+<!-- -------------------------------- -------- -------- --------- --------- -->
+<!--      **Niedrigwasserevent**        339450   NA      NA         0     -->
+
+<!--  **Niedriwasserevent**: *FALSE*   306577   90.32      NA         0     -->
+
+<!--  **Niedriwasserevent**: *TRUE*    32873    9.684     NA         0     -->
+
+<!--        Abfluss (in m³/s)          339450     NA      13.18     20.01   -->
+
+<!--      Lufttemperatur (in °C)       339450     NA      6.536     11.66   -->
+
+<!--     Einfallende kurzwellige       339450     NA      335.2     414.1   -->
+<!--       Strahlung (in Wh/m²)                                             -->
+
+<!--     Niederschlag (in mm/24h)      339450     NA      0.566     4.222   -->
+
+<!--    Grundwasserstand (M unter      339450     NA     -7.736     3.955   -->
+<!--           Oberfläche)                                                  -->
+
+<!--   Relative Luftfeuchte (in %)     339450     NA     0.8084    0.1774   -->
+
+<!--      Schneespeicher (in mm)       339450     NA     0.4012     51.84   -->
+
+<!--     Oberflächennahe relative      339450     NA     0.3888    0.04095  -->
+<!--       Bodenfeuchte (in %)                                              -->
+
+<!--       Wasserleitfähigkeit         339450     NA     0.07337   0.4288   -->
+<!-- ---------------------------------------------------------------------- -->
+
 ----------------------------------------------------------------------
            Variables                N        %        Med       IQR   
--------------------------------- -------- -------- --------- ---------
-     **Niedrigwasserevent**        339450   NA      NA         0    
+-------------------------------- -------- -------- ---------- --------
+     **Niedrigwasserevent**       339450   90.32       NA        0    
 
- **Niedriwasserevent**: *FALSE*   306577   90.32      NA         0    
+    **Niedrigwasserevent**:       306577   9.684       NA        0    
+            *FALSE*                                                   
 
- **Niedriwasserevent**: *TRUE*    32873    9.684     NA         0    
+ **Niedrigwasserevent**: *TRUE*   32873    339450      NA        0    
 
-       Abfluss (in m³/s)          339450     NA      13.18     20.01  
+   **Niederschlag**               339270     NA     -0.6711    3.383    
+ 
+ (in mm/24h; 7 Tage rolling mean, 
+ zentriert)                                        
 
-     Lufttemperatur (in °C)       339450     NA      6.536     11.66  
+ **Lufttemperatur**               339270     NA     0.04392     5.44  
+ 
+ (in °C; 7 Tage
+    rolling mean, zentriert)                                          
 
-    Einfallende kurzwellige       339450     NA      335.2     414.1  
-      Strahlung (in Wh/m²)                                            
+  **Einfallende kurzwellige**     339270     NA      -22.77    241.1  
+  **Strahlung** 
+  
+  (in Wh/m²; 7 Tage                                         
+    rolling mean, zentriert)                                          
 
-    Niederschlag (in mm/24h)      339450     NA      0.566     4.222  
+ **Relative Luftfeuchte**         339270     NA      1.201     11.46  
+ 
+ (in %; 7 Tage rolling mean, 
+ zentriert)                                        
 
-   Grundwasserstand (M unter      339450     NA     -7.736     3.955  
-          Oberfläche)                                                 
+  **Oberflächennahe relative**    337680     NA      0.2291    1.966  
+  **Bodenfeuchte** 
+  
+  (in %; 60 Tage                                         
+     rolling mean, 100-fach                                           
+      skaliert, zentriert)                                            
 
-  Relative Luftfeuchte (in %)     339450     NA     0.8084    0.1774  
+ **Schneespeicher**               338580     NA      -1.497    36.41  
+    
+    
+  (in mm; 30 Tage
+  rolling mean, zentriert)                                               
 
-     Schneespeicher (in mm)       339450     NA     0.4012     51.84  
+   **Grundwasserstand**           339450     NA      -7.736    3.955  
+  
+  (M unter Oberfläche)                                                 
 
-    Oberflächennahe relative      339450     NA     0.3888    0.04095 
-      Bodenfeuchte (in %)                                             
+   **Versickerung**               339270     NA     -0.06797   0.3449 
+ (in mm/24h; 7 Tage rolling mean, 
+ zentriert)                                        
 
-      Wasserleitfähigkeit         339450     NA     0.07337   0.4288  
+   **Niederschlag (max.)**        328110     NA      11.45     15.67  
+   
+   
+   (in mm/24h; 7 Tage Maximum)                                         
+
+ **Schneeschmelze**               328110     NA     0.04482    0.4777 
+  
+  (in mm; 7 Tage rolling mean)
 ----------------------------------------------------------------------
