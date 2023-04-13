@@ -101,7 +101,7 @@ output:
  **Schneespeicher**               338580     NA      -1.497    36.41  
     
     
-  (in mm; 30 Tage1
+  (in mm; 30 Tage
   rolling mean, zentriert)                                               
 
    **Grundwasserstand**           339450     NA      -7.736    3.955  
