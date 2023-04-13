@@ -1509,30 +1509,30 @@ var(cor_precip)
 
 # correlation matrices between drivers
 ```{r}
-hydro_winter_10304 <- readRDS(file = "./data/hydro_winter_10304.RDS")
-hydro_winter_11502 <- readRDS(file = "./data/hydro_winter_11502.RDS")
-hydro_winter_20203 <- readRDS(file = "./data/hydro_winter_20203.RDS")
-hydro_summer_10304 <- readRDS(file = "./data/hydro_summer_10304.RDS")
-hydro_summer_11502 <- readRDS(file = "./data/hydro_summer_11502.RDS")
-hydro_summer_20203 <- readRDS(file = "./data/hydro_summer_20203.RDS")
+hydro_winter_10304_kbe <- readRDS(file = "./data/hydro_winter_10304_kbe.RDS")
+hydro_winter_11502_kbe <- readRDS(file = "./data/hydro_winter_11502_kbe.RDS")
+hydro_winter_20203_kbe <- readRDS(file = "./data/hydro_winter_20203_kbe.RDS")
+hydro_summer_10304_kbe <- readRDS(file = "./data/hydro_summer_10304_kbe.RDS")
+hydro_summer_11502_kbe <- readRDS(file = "./data/hydro_summer_11502_kbe.RDS")
+hydro_summer_20203_kbe <- readRDS(file = "./data/hydro_summer_20203_kbe.RDS")
 
-subset_hydro_winter_10304 <- subset(hydro_winter_10304, select = c(avg_precip, avg_airtmp, avg_glorad, avg_relhum, avg_soilwater, avg_snowstorage, groundwaterdepth, avg_infiltration, max_precip, avg_snowstorage_drain))
-colnames(subset_hydro_winter_10304) <- c("Mittlerer Niederschlag", "Mittlere Lufttemperatur", "Mittlere Strahlung", "Mittlere relative Luftfeuchte", "Mittlere Bodenfeuchte", "Mittlerer Schneespeicher", "Grundwasserstand", "Mittlere Versickerung", "Maximaler Niederschlag", "Mittlere Schneeschmelze")
+subset_hydro_winter_10304_kbe <- subset(hydro_winter_10304_kbe, select = c(avg_precip, avg_airtmp, avg_glorad, avg_relhum, avg_soilwater, avg_snowstorage, groundwaterdepth, avg_infiltration, max_precip, avg_snowstorage_drain))
+colnames(subset_hydro_winter_10304_kbe) <- c("Mittlerer Niederschlag", "Mittlere Lufttemperatur", "Mittlere Strahlung", "Mittlere relative Luftfeuchte", "Mittlere Bodenfeuchte", "Mittlerer Schneespeicher", "Grundwasserstand", "Mittlere Versickerung", "Maximaler Niederschlag", "Mittlere Schneeschmelze")
 
-subset_hydro_winter_11502 <- subset(hydro_winter_11502, select = c(avg_precip, avg_airtmp, avg_glorad, avg_relhum, avg_soilwater, avg_snowstorage, groundwaterdepth, avg_infiltration, max_precip, avg_snowstorage_drain))
-colnames(subset_hydro_winter_11502) <- c("Mittlerer Niederschlag", "Mittlere Lufttemperatur", "Mittlere Strahlung", "Mittlere relative Luftfeuchte", "Mittlere Bodenfeuchte", "Mittlerer Schneespeicher", "Grundwasserstand", "Mittlere Versickerung", "Maximaler Niederschlag", "Mittlere Schneeschmelze")
+subset_hydro_winter_11502_kbe <- subset(hydro_winter_11502_kbe, select = c(avg_precip, avg_airtmp, avg_glorad, avg_relhum, avg_soilwater, avg_snowstorage, groundwaterdepth, avg_infiltration, max_precip, avg_snowstorage_drain))
+colnames(subset_hydro_winter_11502_kbe) <- c("Mittlerer Niederschlag", "Mittlere Lufttemperatur", "Mittlere Strahlung", "Mittlere relative Luftfeuchte", "Mittlere Bodenfeuchte", "Mittlerer Schneespeicher", "Grundwasserstand", "Mittlere Versickerung", "Maximaler Niederschlag", "Mittlere Schneeschmelze")
 
-subset_hydro_winter_20203 <- subset(hydro_winter_20203, select = c(avg_precip, avg_airtmp, avg_glorad, avg_relhum, avg_soilwater, avg_snowstorage, groundwaterdepth, avg_infiltration, max_precip, avg_snowstorage_drain))
-colnames(subset_hydro_winter_20203) <- c("Mittlerer Niederschlag", "Mittlere Lufttemperatur", "Mittlere Strahlung", "Mittlere relative Luftfeuchte", "Mittlere Bodenfeuchte", "Mittlerer Schneespeicher", "Grundwasserstand", "Mittlere Versickerung", "Maximaler Niederschlag", "Mittlere Schneeschmelze")
+subset_hydro_winter_20203_kbe <- subset(hydro_winter_20203_kbe, select = c(avg_precip, avg_airtmp, avg_glorad, avg_relhum, avg_soilwater, avg_snowstorage, groundwaterdepth, avg_infiltration, max_precip, avg_snowstorage_drain))
+colnames(subset_hydro_winter_20203_kbe) <- c("Mittlerer Niederschlag", "Mittlere Lufttemperatur", "Mittlere Strahlung", "Mittlere relative Luftfeuchte", "Mittlere Bodenfeuchte", "Mittlerer Schneespeicher", "Grundwasserstand", "Mittlere Versickerung", "Maximaler Niederschlag", "Mittlere Schneeschmelze")
 
-subset_hydro_summer_10304 <- subset(hydro_summer_10304, select = c(avg_precip, avg_airtmp, avg_glorad, avg_relhum, avg_soilwater, avg_snowstorage, groundwaterdepth, avg_infiltration, max_precip, avg_snowstorage_drain))
-colnames(subset_hydro_summer_10304) <- c("Mittlerer Niederschlag", "Mittlere Lufttemperatur", "Mittlere Strahlung", "Mittlere relative Luftfeuchte", "Mittlere Bodenfeuchte", "Mittlerer Schneespeicher", "Grundwasserstand", "Mittlere Versickerung", "Maximaler Niederschlag", "Mittlere Schneeschmelze")
+subset_hydro_summer_10304_kbe <- subset(hydro_summer_10304_kbe, select = c(avg_precip, avg_airtmp, avg_glorad, avg_relhum, avg_soilwater, avg_snowstorage, groundwaterdepth, avg_infiltration, max_precip, avg_snowstorage_drain))
+colnames(subset_hydro_summer_10304_kbe) <- c("Mittlerer Niederschlag", "Mittlere Lufttemperatur", "Mittlere Strahlung", "Mittlere relative Luftfeuchte", "Mittlere Bodenfeuchte", "Mittlerer Schneespeicher", "Grundwasserstand", "Mittlere Versickerung", "Maximaler Niederschlag", "Mittlere Schneeschmelze")
 
-subset_hydro_summer_11502 <- subset(hydro_summer_11502, select = c(avg_precip, avg_airtmp, avg_glorad, avg_relhum, avg_soilwater, avg_snowstorage, groundwaterdepth, avg_infiltration, max_precip, avg_snowstorage_drain))
-colnames(subset_hydro_summer_11502) <- c("Mittlerer Niederschlag", "Mittlere Lufttemperatur", "Mittlere Strahlung", "Mittlere relative Luftfeuchte", "Mittlere Bodenfeuchte", "Mittlerer Schneespeicher", "Grundwasserstand", "Mittlere Versickerung", "Maximaler Niederschlag", "Mittlere Schneeschmelze")
+subset_hydro_summer_11502_kbe <- subset(hydro_summer_11502_kbe, select = c(avg_precip, avg_airtmp, avg_glorad, avg_relhum, avg_soilwater, avg_snowstorage, groundwaterdepth, avg_infiltration, max_precip, avg_snowstorage_drain))
+colnames(subset_hydro_summer_11502_kbe) <- c("Mittlerer Niederschlag", "Mittlere Lufttemperatur", "Mittlere Strahlung", "Mittlere relative Luftfeuchte", "Mittlere Bodenfeuchte", "Mittlerer Schneespeicher", "Grundwasserstand", "Mittlere Versickerung", "Maximaler Niederschlag", "Mittlere Schneeschmelze")
 
-subset_hydro_summer_20203 <- subset(hydro_summer_20203, select = c(avg_precip, avg_airtmp, avg_glorad, avg_relhum, avg_soilwater, avg_snowstorage, groundwaterdepth, avg_infiltration, max_precip, avg_snowstorage_drain))
-colnames(subset_hydro_summer_20203) <- c("Mittlerer Niederschlag", "Mittlere Lufttemperatur", "Mittlere Strahlung", "Mittlere relative Luftfeuchte", "Mittlere Bodenfeuchte", "Mittlerer Schneespeicher", "Grundwasserstand", "Mittlere Versickerung", "Maximaler Niederschlag", "Mittlere Schneeschmelze")
+subset_hydro_summer_20203_kbe <- subset(hydro_summer_20203_kbe, select = c(avg_precip, avg_airtmp, avg_glorad, avg_relhum, avg_soilwater, avg_snowstorage, groundwaterdepth, avg_infiltration, max_precip, avg_snowstorage_drain))
+colnames(subset_hydro_summer_20203_kbe) <- c("Mittlerer Niederschlag", "Mittlere Lufttemperatur", "Mittlere Strahlung", "Mittlere relative Luftfeuchte", "Mittlere Bodenfeuchte", "Mittlerer Schneespeicher", "Grundwasserstand", "Mittlere Versickerung", "Maximaler Niederschlag", "Mittlere Schneeschmelze")
 
 saveRDS(subset_hydro_winter_10304, "./data/corrplots/subset_hydro_winter_10304.RDS")
 saveRDS(subset_hydro_winter_11502, "./data/corrplots/subset_hydro_winter_11502.RDS")
@@ -1550,38 +1550,32 @@ library(corrplot)
 ## winter
 
 # 10304
-correlationm_pearson_winter_10304 <- cor(subset_hydro_winter_10304, method = "pearson", use = "complete.obs")
-correlationp_pearson_winter_10304 <- cor.mtest(correlationm_pearson_winter_10304)
-corrplot(correlationm_pearson_winter_10304, method = "number", type = "lower", tl.col = "black", p.mat = correlationp_pearson_winter_10304$p)
+correlationm_pearson_winter_10304_kbe <- cor(subset_hydro_winter_10304_kbe, method = "pearson", use = "complete.obs")
+corrplot(correlationm_pearson_winter_10304_kbe, method = "number", type = "lower", tl.col = "black")
 
 
 # 11502
-correlationm_pearson_winter_11502 <- cor(subset_hydro_winter_11502, method = "pearson", use = "complete.obs")
-correlationp_pearson_winter_11502 <- cor.mtest(correlationm_pearson_winter_11502)
-corrplot(correlationm_pearson_winter_11502, method = "number", type = "lower", tl.col = "black", p.mat = correlationp_pearson_winter_11502$p)
+correlationm_pearson_winter_11502_kbe <- cor(subset_hydro_winter_11502_kbe, method = "pearson", use = "complete.obs")
+corrplot(correlationm_pearson_winter_11502_kbe, method = "number", type = "lower", tl.col = "black")
 
 # 20203
-correlationm_pearson_winter_20203 <- cor(subset_hydro_winter_20203, method = "pearson", use = "complete.obs")
-correlationp_pearson_winter_20203 <- cor.mtest(correlationm_pearson_winter_20203)
-corrplot(correlationm_pearson_winter_20203, method = "number", type = "lower", tl.col = "black", p.mat = correlationp_pearson_winter_20203$p)
+correlationm_pearson_winter_20203_kbe <- cor(subset_hydro_winter_20203_kbe, method = "pearson", use = "complete.obs")
+corrplot(correlationm_pearson_winter_20203_kbe, method = "number", type = "lower", tl.col = "black")
 
 
 ## summer
 
 # 10304
-correlationm_pearson_summer_10304 <- cor(subset_hydro_summer_10304, method = "pearson", use = "complete.obs")
-correlationp_pearson_summer_10304 <- cor.mtest(correlationm_pearson_summer_10304)
-corrplot(correlationm_pearson_summer_10304, method = "number", type = "lower", tl.col = "black", p.mat = correlationp_pearson_summer_10304$p)
+correlationm_pearson_summer_10304_kbe <- cor(subset_hydro_summer_10304_kbe, method = "pearson", use = "complete.obs")
+corrplot(correlationm_pearson_summer_10304_kbe, method = "number", type = "lower", tl.col = "black")
 
 # 11502
-correlationm_pearson_summer_11502 <- cor(subset_hydro_summer_11502, method = "pearson", use = "complete.obs")
-correlationp_pearson_summer_11502 <- cor.mtest(correlationm_pearson_summer_11502)
-corrplot(correlationm_pearson_summer_11502, method = "number", type = "lower", tl.col = "black", p.mat = correlationp_pearson_summer_11502$p)
+correlationm_pearson_summer_11502_kbe <- cor(subset_hydro_summer_11502_kbe, method = "pearson", use = "complete.obs")
+corrplot(correlationm_pearson_summer_11502_kbe, method = "number", type = "lower", tl.col = "black")
 
 # 20203
-correlationm_pearson_summer_20203 <- cor(subset_hydro_summer_20203, method = "pearson", use = "complete.obs")
-correlationp_pearson_summer_20203 <- cor.mtest(correlationm_pearson_summer_20203)
-corrplot(correlationm_pearson_summer_20203, method = "number", type = "lower", tl.col = "black", p.mat = correlationp_pearson_summer_20203$p)
+correlationm_pearson_summer_20203_kbe <- cor(subset_hydro_summer_20203_kbe, method = "pearson", use = "complete.obs")
+corrplot(correlationm_pearson_summer_20203_kbe, method = "number", type = "lower", tl.col = "black")
 
 
 
@@ -1590,37 +1584,41 @@ corrplot(correlationm_pearson_summer_20203, method = "number", type = "lower", t
 ## winter
 
 # 10304
-correlationm_spearman_winter_10304 <- cor(subset_hydro_winter_10304, method = "spearman", use = "complete.obs")
-correlationp_spearman_winter_10304 <- cor.mtest(correlationm_spearman_winter_10304)
-corrplot(correlationm_spearman_winter_10304, method = "number", type = "lower", tl.col = "black", p.mat = correlationp_spearman_winter_10304$p)
+correlationm_spearman_winter_10304_kbe <- cor(subset_hydro_winter_10304_kbe, method = "spearman", use = "complete.obs")
+corrplot(correlationm_spearman_winter_10304_kbe, method = "number", type = "lower", tl.col = "black")
 
 # 11502
-correlationm_spearman_winter_11502 <- cor(subset_hydro_winter_11502, method = "spearman", use = "complete.obs")
-correlationp_spearman_winter_11502 <- cor.mtest(correlationm_spearman_winter_11502)
-corrplot(correlationm_spearman_winter_11502, method = "number", type = "lower", tl.col = "black", p.mat = correlationp_spearman_winter_11502$p)
+correlationm_spearman_winter_11502_kbe <- cor(subset_hydro_winter_11502_kbe, method = "spearman", use = "complete.obs")
+corrplot(correlationm_spearman_winter_11502_kbe, method = "number", type = "lower", tl.col = "black")
 
 # 20203
-correlationm_spearman_winter_20203 <- cor(subset_hydro_winter_20203, method = "spearman", use = "complete.obs")
-correlationp_spearman_winter_20203 <- cor.mtest(correlationm_spearman_winter_20203)
-corrplot(correlationm_spearman_winter_20203, method = "number", type = "lower", tl.col = "black", p.mat = correlationp_spearman_winter_20203$p)
+correlationm_spearman_winter_20203_kbe <- cor(subset_hydro_winter_20203_kbe, method = "spearman", use = "complete.obs")
+corrplot(correlationm_spearman_winter_20203_kbe, method = "number", type = "lower", tl.col = "black")
 
 
 ## summer
 
 # 10304
-correlationm_spearman_summer_10304 <- cor(subset_hydro_summer_10304, method = "spearman", use = "complete.obs")
-correlationp_spearman_summer_10304 <- cor.mtest(correlationm_spearman_summer_10304)
-corrplot(correlationm_spearman_summer_10304, method = "number", type = "lower", tl.col = "black", p.mat = correlationp_spearman_summer_10304$p)
+correlationm_spearman_summer_10304_kbe <- cor(subset_hydro_summer_10304_kbe, method = "spearman", use = "complete.obs")
+corrplot(correlationm_spearman_summer_10304_kbe, method = "number", type = "lower", tl.col = "black")
 
 # 11502
-correlationm_spearman_summer_11502 <- cor(subset_hydro_summer_11502, method = "spearman", use = "complete.obs")
-correlationp_spearman_summer_11502 <- cor.mtest(correlationm_spearman_summer_11502)
-corrplot(correlationm_spearman_summer_11502, method = "number", type = "lower", tl.col = "black", p.mat = correlationp_spearman_summer_11502$p)
+correlationm_spearman_summer_11502_kbe <- cor(subset_hydro_summer_11502_kbe, method = "spearman", use = "complete.obs")
+corrplot(correlationm_spearman_summer_11502_kbe, method = "number", type = "lower", tl.col = "black")
 
 # 20203
-correlationm_spearman_summer_20203 <- cor(subset_hydro_summer_20203, method = "spearman", use = "complete.obs")
-correlationp_spearman_summer_20203 <- cor.mtest(correlationm_spearman_summer_20203)
-corrplot(correlationm_spearman_summer_20203, method = "number", type = "lower", tl.col = "black", p.mat = correlationp_spearman_summer_20203$p)
+correlationm_spearman_summer_20203_kbe <- cor(subset_hydro_summer_20203_kbe, method = "spearman", use = "complete.obs")
+corrplot(correlationm_spearman_summer_20203_kbe, method = "number", type = "lower", tl.col = "black")
+
+# allgemein:
+hydro_summer_kbe <- subset(hydro_summer, member = "kbe")
+hydro_winter_kbe <- subset(hydro_winter, member = "kbe")
+hydro_total_kbe <- rbind(hydro_summer_kbe, hydro_winter_kbe)
+subset_hydro_total_kbe <- subset(hydro_total_kbe, select = c(avg_precip, avg_airtmp, avg_glorad, avg_relhum, avg_soilwater, avg_snowstorage, groundwaterdepth, avg_infiltration, max_precip, avg_snowstorage_drain))
+colnames(subset_hydro_total_kbe) <- c("Mittlerer Niederschlag", "Mittlere Lufttemperatur", "Mittlere Strahlung", "Mittlere relative Luftfeuchte", "Mittlere Bodenfeuchte", "Mittlerer Schneespeicher", "Grundwasserstand", "Mittlere Versickerung", "Maximaler Niederschlag", "Mittlere Schneeschmelze")
+
+correlationm_spearman_total_kbe <- cor(subset_hydro_total_kbe, method = "spearman", use = "complete.obs")
+corrplot(correlationm_spearman_total_kbe, method = "number", type = "lower", tl.col = "black")
 ```
 
 
