@@ -1534,6 +1534,16 @@ colnames(subset_hydro_summer_11502) <- c("Mittlerer Niederschlag", "Mittlere Luf
 subset_hydro_summer_20203 <- subset(hydro_summer_20203, select = c(avg_precip, avg_airtmp, avg_glorad, avg_relhum, avg_soilwater, avg_snowstorage, groundwaterdepth, avg_infiltration, max_precip, avg_snowstorage_drain))
 colnames(subset_hydro_summer_20203) <- c("Mittlerer Niederschlag", "Mittlere Lufttemperatur", "Mittlere Strahlung", "Mittlere relative Luftfeuchte", "Mittlere Bodenfeuchte", "Mittlerer Schneespeicher", "Grundwasserstand", "Mittlere Versickerung", "Maximaler Niederschlag", "Mittlere Schneeschmelze")
 
+saveRDS(subset_hydro_winter_10304, "./data/corrplots/subset_hydro_winter_10304.RDS")
+saveRDS(subset_hydro_winter_11502, "./data/corrplots/subset_hydro_winter_11502.RDS")
+saveRDS(subset_hydro_winter_20203, "./data/corrplots/subset_hydro_winter_20203.RDS")
+
+saveRDS(subset_hydro_summer_10304, "./data/corrplots/subset_hydro_summer_10304.RDS")
+saveRDS(subset_hydro_summer_11502, "./data/corrplots/subset_hydro_summer_11502.RDS")
+saveRDS(subset_hydro_summer_20203, "./data/corrplots/subset_hydro_summer_20203.RDS")
+
+
+
 library(corrplot)
 
 ### pearson
