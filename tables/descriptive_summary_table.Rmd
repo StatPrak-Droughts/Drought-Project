@@ -21,7 +21,7 @@ output:
 # 
 # hydro_total[, c("lowlevel", "avg_precip", "avg_airtmp", "avg_glorad", "avg_relhum", "avg_soilwater", "avg_snowstorage", "groundwaterdepth", "avg_infiltration", "max_precip_scaled", "avg_snowstorage_drain")] %>%
 #     `colnames<-` (c("Niedrigwasserevent", "Niederschlag (in mm/24h; 7 Tage rolling mean, zentriert)", "Lufttemperatur (in °C; 7 Tage rolling mean, zentriert)", "Einfallende kurzwellige Strahlung (in Wh/m²; 7 Tage rolling mean, zentriert)",
-#                     "Relative Luftfeuchte (in %; 7 Tage rolling mean, zentriert)", "Oberflächennahe relative Bodenfeuchte (in %; 60 Tage rolling mean, 100-fach skaliert, zentriert)", "Schneespeicher (in mm; 30 Tage rolling mean, zentriert)", "Grundwasserstand (M unter Oberfläche)", "Versickerung (in mm/24h; 7 Tage rolling mean, zentriert)", "Niederschlag (in mm/24h; 7 Tage Maximum, skaliert!!!)", "Schneeschmelze (in mm; 7 Tage rolling mean)")) |> desctable::desc_table(
+#                     "Relative Luftfeuchte (in %; 7 Tage rolling mean, zentriert)", "Oberflächennahe relative Bodenfeuchte (in %; 60 Tage rolling mean, 100-fach skaliert, zentriert)", "Schneespeicher (in mm; 30 Tage rolling mean, zentriert)", "Grundwasserstand (M unter Oberfläche)", "Versickerung (in mm/24h; 7 Tage rolling mean, zentriert)", "Niederschlag (in mm/24h; 7 Tage Maximum)", "Schneeschmelze (in mm; 7 Tage rolling mean)")) |> desctable::desc_table(
 #              "N"      = length,
 #              "%" = percent,
 #              "Med"    = median,
@@ -115,8 +115,7 @@ output:
    **Niederschlag (max.)**        328110     NA      11.45     15.67  
    
    
-   (in mm/24h; 7 Tage Maximum, 
-   skaliert!!!)                                         
+   (in mm/24h; 7 Tage Maximum)                                         
 
  **Schneeschmelze**               328110     NA     0.04482    0.4777 
   
