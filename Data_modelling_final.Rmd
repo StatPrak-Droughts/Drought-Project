@@ -1375,7 +1375,70 @@ summary(gam_uni_selected_summer_20203)
 AIC(gam_uni_selected_summer_20203)
 BIC(gam_uni_selected_summer_20203)
 concurvity(gam_uni_selected_summer_20203)
-plot(gam_uni_selected_summer_20203, ylim = c(-7, 7))
+#plot(gam_uni_selected_summer_20203, ylim = c(-7, 7))
+```
+# Effect Plots
+
+```{r}
+# Isar Winter
+# Soilwater
+jpeg("./Plots/Max/soilwater_winter_isar.jpeg", width = 750, height = 620)
+plot(gam_uni_selected_winter_10304, ylim = c(-7, 7), xlim = c(-6,6), xlab = "Rolling mean oberflächennahe rel. Bodenfeuchte \n (letzte 60 Tage; zentriert, skaliert)", select = 4, main = "Isar Mittenwald \n Effekt der mittleren oberfl. rel. Bodenfeuchte", ylab = "log. Odds")
+dev.off()
+# Glorad
+jpeg("./Plots/Max/glorad_winter_isar.jpeg", width = 750, height = 620)
+plot(gam_uni_selected_winter_10304, ylim = c(-7, 7), xlim = c(-250, 600), xlab = "Rolling mean einfallende kurzwellige Strahlung \n (letzte 7 Tage; zentriert)", select = 3, main = "Isar Mittenwald \n Effekt der mittleren einfallenden kurzwelligen Strahlung", ylab = "log. Odds")
+dev.off()
+# Lufttemperatur
+jpeg("./Plots/Max/airtmp_winter_isar.jpeg", width = 750, height = 620)
+plot(gam_uni_selected_winter_10304, ylim = c(-7, 7), xlim = c(-15, 15), xlab = "Rolling mean Lufttemperatur \n (letzte 7 Tage; zentriert)", select = 2, main = "Isar Mittenwald \n Effekt der mittleren Lufttemperatur", ylab = "log. Odds")
+dev.off()
+
+# Saale Winter
+
+# Soilwater
+jpeg("./Plots/Max/soilwater_winter_saale.jpeg", width = 750, height = 620)
+plot(gam_uni_selected_winter_20203, ylim = c(-7, 7), xlim = c(-6, 6), xlab = "Rolling mean oberflächennahe rel. Bodenfeuchte \n (letzte 60 Tage; zentriert, skaliert)", select = 4, main = "Fränkische Saale Salz \n Effekt der mittleren oberfl. rel. Bodenfeuchte", ylab = "log. Odds")
+dev.off()
+
+# Glorad
+jpeg("./Plots/Max/glorad_winter_saale.jpeg", width = 750, height = 620)
+plot(gam_uni_selected_winter_20203, ylim = c(-7, 7), xlab = "Rolling mean einfallende kurzwellige Strahlung \n (letzte 7 Tage; zentriert)", xlim = c(-250, 600), select = 3, main = "Fränkische Saale Salz \n Effekt der mittleren einfallenden kurzwelligen Strahlung", ylab = "log. Odds")
+dev.off()
+
+# Lufttemperatur
+jpeg("./Plots/Max/airtmp_winter_saale.jpeg", width = 750, height = 620)
+plot(gam_uni_selected_winter_20203, ylim = c(-7, 7), xlim = c(-15, 15), xlab = "Rolling mean Lufttemperatur \n (letzte 7 Tage; zentriert)", select = 2, main = "Fränkische Saale Salz \n Effekt der mittleren Lufttemperatur", ylab = "log. Odds")
+dev.off()
+
+# Summer
+# Isar Summer
+# Soilwater
+jpeg("./Plots/Max/soilwater_summer_isar.jpeg", width = 750, height = 620)
+plot(gam_uni_selected_summer_10304, ylim = c(-7, 7), xlim = c(-5, 2), xlab = "Rolling mean oberflächennahe rel. Bodenfeuchte \n (letzte 60 Tage; zentriert, skaliert)", select = 4, main = "Isar Mittenwald \n Effekt der mittleren oberfl. rel. Bodenfeuchte", ylab = "log. Odds")
+dev.off()
+# Snowstorage
+jpeg("./Plots/Max/snow_summer_isar.jpeg", width = 750, height = 620)
+plot(gam_uni_selected_summer_10304, ylim = c(-7, 7), xlim =  c(-50, 50), xlab = "Rolling mean Schneespeicher \n (letzte 30 Tage; zentriert)", select = 5, main = "Isar Mittenwald \n Effekt des mittleren Schneespeichers", ylab = "log. Odds")
+dev.off()
+# Niederschlag
+jpeg("./Plots/Max/precip_summer_isar.jpeg", width = 750, height = 620)
+plot(gam_uni_selected_summer_10304, ylim = c(-7, 7), xlim = c(-5, 5), xlab = "Rolling mean Niederschlag \n (letzte 7 Tage; zentriert)", select = 1, main = "Isar Mittenwald \n Effekt des mittleren Niederschlags", ylab = "log. Odds")
+dev.off()
+
+# Iller Summer
+# Soilwater
+jpeg("./Plots/Max/soilwater_summer_iller.jpeg", width = 750, height = 620)
+plot(gam_uni_selected_summer_11502, ylim = c(-7, 7), xlim = c(-5, 2), xlab = "Rolling mean oberflächennahe rel. Bodenfeuchte \n (letzte 60 Tage; zentriert, skaliert)", select = 4, main = "Iller Kempten \n Effekt der mittleren oberfl. rel. Bodenfeuchte", ylab = "log. Odds")
+dev.off()
+# Snowstorage
+jpeg("./Plots/Max/snow_summer_iller.jpeg", width = 750, height = 620)
+plot(gam_uni_selected_summer_11502, ylim = c(-7, 7), xlim =  c(-50, 50), xlab = "Rolling mean Schneespeicher \n (letzte 30 Tage; zentriert)", select = 5, main = "Iller Kempten \n Effekt des mittleren Schneespeichers", ylab = "log. Odds")
+dev.off()
+# Niederschlag
+jpeg("./Plots/Max/precip_summer_iller.jpeg", width = 750, height = 620)
+plot(gam_uni_selected_summer_11502, ylim = c(-7, 7), xlim = c(-5, 5), xlab = "Rolling mean Niederschlag \n (letzte 7 Tage; zentriert)", select = 1, main = "Iller Kempten \n Effekt des mittleren Niederschlags", ylab = "log. Odds")
+dev.off()
 ```
 
 # Selektierte Modelle für alle Pregel und Halbjahre
