@@ -15,6 +15,14 @@ hydro_winter <- readRDS(file = "./data/hydro_winter.RDS")
 hydro_total <- readRDS(file = "./data/hydro_total.RDS")
 pegel_prop <- readRDS(file = "./data/pegel_prop.RDS")
 
+hydro_summer_10304 <- readRDS("data/hydro_summer_10304.RDS")
+hydro_summer_11502 <- readRDS("data/hydro_summer_11502.RDS")
+hydro_summer_20203 <- readRDS("data/hydro_summer_20203.RDS")
+
+hydro_winter_10304 <- readRDS("data/hydro_winter_10304.RDS")
+hydro_winter_11502 <- readRDS("data/hydro_winter_11502.RDS")
+hydro_winter_20203 <- readRDS("data/hydro_winter_20203.RDS")
+
 hydro_summer_10304_kbe <- readRDS(file = "data/hydro_summer_10304_kbe.RDS")
 hydro_winter_10304_kbe <- readRDS(file = "data/hydro_winter_10304_kbe.RDS")
 hydro_summer_11502_kbe <- readRDS(file = "data/hydro_summer_11502_kbe.RDS")
@@ -24,16 +32,15 @@ hydro_winter_20203_kbe <- readRDS(file = "data/hydro_winter_20203_kbe.RDS")
 ```
 
 
-
 # Volle Modelle für alle Pegel und Halbjahre
 ```{r}
 gam_all_winter_10304 <- gam(formula = lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps") + s(max_precip, bs = "ps") + s(avg_snowstorage_drain, bs = "ps"), family = binomial(), data = hydro_winter_10304_kbe, method = "REML")
-summary(gam_all_winter_10304)
-AIC(gam_all_winter_10304)
+summary(gam2_all_winter_10304)
+AIC(gam2_all_winter_10304)
 
 gam_all_summer_10304 <- gam(formula = lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps") + s(max_precip, bs = "ps") + s(avg_snowstorage_drain, bs = "ps"), family = binomial(), data = hydro_summer_10304_kbe, method = "REML")
-summary(gam_all_summer_10304)
-AIC(gam_all_summer_10304)
+summary(gam2_all_summer_10304)
+AIC(gam2_all_summer_10304)
 
 gam_all_winter_11502 <- gam(formula = lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps") + s(max_precip, bs = "ps") + s(avg_snowstorage_drain, bs = "ps"), family = binomial(), data = hydro_winter_11502_kbe, method = "REML")
 summary(gam_all_winter_11502)
@@ -52,10 +59,6 @@ AIC(gam_all_winter_20203)
 gam_all_summer_20203 <- gam(formula = lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps") + s(max_precip, bs = "ps") + s(avg_snowstorage_drain, bs = "ps"), family = binomial(), data = hydro_summer_20203_kbe, method = "REML")
 summary(gam_all_summer_20203)
 AIC(gam_all_summer_20203)
-
-
-
-
 ```
 
 # Selektierte Modelle für alle Pregel und Halbjahre
@@ -228,6 +231,17 @@ concurvity(gam2_uni_selected_summer_20203)
 
 # Selektierte Modelle für alle Pregel und Halbjahre mit individuellen Interaktionen
 ```{r}
+# 10304, Winter
+gam_uni_selected_interac_winter_10304 <- gam(formula = lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_relhum, bs = "ps")+ s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(avg_infiltration, bs = "ps") + s(avg_snowstorage_drain, bs = "ps") + s(groundwaterdepth, bs = "ps", by = avg_glorad), family = binomial(), data = hydro_winter_10304_kbe, method = "REML")
+AIC(gam_uni_selected_interac_winter_10304)
+summary(gam_uni_selected_interac_winter_10304)
+
+# 10304, Summer
+gam_uni_selected_interac_summer_10304 <- gam(formula = lowlevel ~ YY + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps"), family = binomial(), data = hydro_summer_10304_kbe, method = "REML")
+
+
+
+
 # mit ti
 # 10304, Winter
 gam_uni_selected_interac_winter_10304 <- gam(formula = lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps") + s(avg_snowstorage_drain, bs = "ps") + ti(avg_glorad, avg_snowstorage, bs = "ps") + ti(avg_soilwater, groundwaterdepth, bs = "ps"), family = binomial(), data = hydro_winter_10304_kbe, method = "REML")
@@ -250,12 +264,13 @@ AIC(gam_uni_selected_interac_summer_11502)
 summary(gam_uni_selected_interac_summer_11502)
 
 # 20203, Winter
-gam_uni_selected_interac_winter_20203 <- gam(formula = lowlevel ~ YY  + s(avg_airtmp, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps") + ti(avg_airtmp, groundwaterdepth, bs = "ps") + ti(avg_soilwater, avg_snowstorage, bs = "ps"), family = binomial(), data = hydro_winter_20203_kbe, method = "REML")
+gam_uni_selected_interac_winter_20203 <- gam(formula = lowlevel ~ YY  + s(avg_airtmp, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps") + s(avg_snowstorage_drain, bs = "ps") + ti(avg_airtmp, groundwaterdepth, bs = "ps") + ti(avg_soilwater, avg_snowstorage, bs = "ps"), family = binomial(), data = hydro_winter_20203_kbe, method = "REML")
 AIC(gam_uni_selected_interac_winter_20203)
-summary(gam_uni_selected_interac_winter_20203) 
+summary(gam_uni_selected_interac_winter_20203)
 
 # 20203, Summer
-gam_uni_selected_interac_summer_20203 <- gam(formula = lowlevel ~ YY  + s(avg_airtmp, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps") + ti(avg_soilwater, groundwaterdepth, bs = "ps") + ti(avg_airtmp, avg_infiltration, bs = "ps"), family = binomial(), data = hydro_summer_20203_kbe, method = "REML")
+# avg_snowstorage und avg_snowstorage_drain aufgrund von mangender Varianz in den Daten herausgenommen  
+gam_uni_selected_interac_summer_20203 <- gam(formula = lowlevel ~ YY  + s(avg_airtmp, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps")  + ti(avg_soilwater, groundwaterdepth, bs = "ps") + ti(avg_airtmp, avg_infiltration, bs = "ps"), family = binomial(), data = hydro_summer_20203_kbe, method = "REML")
 AIC(gam_uni_selected_interac_summer_20203)
 summary(gam_uni_selected_interac_summer_20203)
 ```
@@ -263,42 +278,43 @@ summary(gam_uni_selected_interac_summer_20203)
 # ROC Analysis for final models
 ```{r}
 # Setup test set
+hydro_winter_11502_test <- hydro_winter_11502 %>% filter(member != "kbe")
+hydro_winter_11502_test$lowlevel <- as.logical(hydro_winter_11502_test$lowlevel)
+
 hydro_summer_11502_test <- hydro_summer_11502 %>% filter(member != "kbe")
 hydro_summer_11502_test$lowlevel <- as.logical(hydro_summer_11502_test$lowlevel)
-hydro_winter_11502_test <- hydro_summer_11502 %>% filter(member != "kbe")
-hydro_winter_11502_test$lowlevel <- as.logical(hydro_winter_11502_test$lowlevel)
+
+hydro_winter_10304_test <- hydro_winter_10304 %>% filter(member != "kbe")
+hydro_winter_10304_test$lowlevel <- as.logical(hydro_winter_10304_test$lowlevel)
+
 hydro_summer_10304_test <- hydro_summer_10304 %>% filter(member != "kbe")
 hydro_summer_10304_test$lowlevel <- as.logical(hydro_summer_10304_test$lowlevel)
-hydro_winter_10304_test <- hydro_summer_10304 %>% filter(member != "kbe")
-hydro_winter_10304_test$lowlevel <- as.logical(hydro_winter_10304_test$lowlevel)
-hydro_summer_20203_test <- hydro_summer_20203 %>% filter(member != "kbe")
-hydro_summer_20203_test$lowlevel <- as.logical(hydro_summer_20203_test$lowlevel)
-hydro_winter_20203_test <- hydro_summer_20203 %>% filter(member != "kbe")
+
+hydro_winter_20203_test <- hydro_winter_20203 %>% filter(member != "kbe")
 hydro_winter_20203_test$lowlevel <- as.logical(hydro_winter_20203_test$lowlevel)
 
-# Winter ----
-# 10304 ---- Needs work
+hydro_summer_20203_test <- hydro_summer_20203 %>% filter(member != "kbe")
+hydro_summer_20203_test$lowlevel <- as.logical(hydro_summer_20203_test$lowlevel)
+
+
+# gam_uni_selected_interac_winter_10304
 hydro_winter_10304_pred <- predict(gam_uni_selected_interac_winter_10304, hydro_winter_10304_test, type = "response")
-roc.plot(hydro_winter_10304_test$lowlevel, hydro_winter_10304_pred)
+roc.plot(hydro_winter_10304_test$lowlevel, hydro_winter_10304_pred, xlab = "1 - Spezifität", ylab = "Sensitivität")
 
-# 11502 ---- Looks good
-hydro_winter_11502_pred <- predict(gam_uni_selected_interac_winter_11502, hydro_winter_11502_test, type = "response")
-roc.plot(hydro_winter_11502_test$lowlevel, hydro_winter_11502_pred)
-
-# 20203 ---- Needs work definetly
-hydro_winter_20203_pred <- predict(gam_uni_selected_interac_winter_20203, hydro_winter_20203_test, type = "response")
-roc.plot(hydro_winter_20203_test$lowlevel, hydro_winter_20203_pred)
-
-# Sommer ----
-# 10304---- Looks good
 hydro_summer_10304_pred <- predict(gam_uni_selected_interac_summer_10304, hydro_summer_10304_test, type = "response")
-roc.plot(hydro_summer_10304_test$lowlevel, hydro_summer_10304_pred)
-# 11502 ---- Looks good
+roc.plot(hydro_summer_10304_test$lowlevel, hydro_summer_10304_pred, xlab = "1 - Spezifität", ylab = "Sensitivität")
+
+hydro_winter_11502_pred <- predict(gam_uni_selected_interac_winter_11502, hydro_winter_11502_test, type = "response")
+roc.plot(hydro_winter_11502_test$lowlevel, hydro_winter_11502_pred, xlab = "1 - Spezifität", ylab = "Sensitivität")
+
 hydro_summer_11502_pred <- predict(gam_uni_selected_interac_summer_11502, hydro_summer_11502_test, type = "response")
-roc.plot(hydro_summer_11502_test$lowlevel, hydro_summer_11502_pred)
-# 20203 ---- Looks good
+roc.plot(hydro_summer_11502_test$lowlevel, hydro_summer_11502_pred, xlab = "1 - Spezifität", ylab = "Sensitivität")
+
+hydro_winter_20203_pred <- predict(gam_uni_selected_interac_winter_20203, hydro_winter_20203_test, type = "response")
+roc.plot(hydro_winter_20203_test$lowlevel, hydro_winter_20203_pred, xlab = "1 - Spezifität", ylab = "Sensitivität")
+
 hydro_summer_20203_pred <- predict(gam_uni_selected_interac_summer_20203, hydro_summer_20203_test, type = "response")
-roc.plot(hydro_summer_20203_test$lowlevel, hydro_summer_20203_pred)
+roc.plot(hydro_summer_20203_test$lowlevel, hydro_summer_20203_pred, xlab = "1 - Spezifität", ylab = "Sensitivität")
 ```
 
 # Save Models ----
