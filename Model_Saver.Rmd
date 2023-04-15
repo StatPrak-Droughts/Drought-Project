@@ -304,42 +304,42 @@ roc.plot(hydro_summer_20203_test$lowlevel, hydro_summer_20203_pred)
 # Save Models ----
 ## Volle Modelle ----
 ```{r}
-save(gam_all_summer_10304, file = "./models/gam_all_summer_10304.RDS")
-save(gam_all_summer_11502, file = "./models/gam_all_summer_11502.RDS")
-save(gam_all_summer_20203, file = "./models/gam_all_summer_20203.RDS")
+save(gam_all_summer_10304, file = "./models/gam_all_summer_10304.Rdata")
+save(gam_all_summer_11502, file = "./models/gam_all_summer_11502.Rdata")
+save(gam_all_summer_20203, file = "./models/gam_all_summer_20203.Rdata")
 
-save(gam_all_winter_10304, file = "./models/gam_all_winter_10304.RDS")
-save(gam_all_winter_11502, file = "./models/gam_all_winter_11502.RDS")
-save(gam_all_winter_20203, file = "./models/gam_all_winter_20203.RDS")
+save(gam_all_winter_10304, file = "./models/gam_all_winter_10304.Rdata")
+save(gam_all_winter_11502, file = "./models/gam_all_winter_11502.Rdata")
+save(gam_all_winter_20203, file = "./models/gam_all_winter_20203.Rdata")
 ```
 ## Selected Modelle 1 ----
 ```{r}
-save(gam_uni_selected_summer_10304, file = "./models/gam_uni_selected_summer_10304.RDS")
-save(gam_uni_selected_summer_11502, file = "./models/gam_uni_selected_summer_11502.RDS")
-save(gam_uni_selected_summer_20203, file = "./models/gam_uni_selected_summer_20203.RDS")
+save(gam_uni_selected_summer_10304, file = "./models/gam_uni_selected_summer_10304.Rdata")
+save(gam_uni_selected_summer_11502, file = "./models/gam_uni_selected_summer_11502.Rdata")
+save(gam_uni_selected_summer_20203, file = "./models/gam_uni_selected_summer_20203.Rdata")
 
-save(gam_uni_selected_winter_10304, file = "./models/gam_uni_selected_winter_10304.RDS")
-save(gam_uni_selected_winter_11502, file = "./models/gam_uni_selected_winter_11502.RDS")
-save(gam_uni_selected_winter_20203, file = "./models/gam_uni_selected_winter_20203.RDS")
+save(gam_uni_selected_winter_10304, file = "./models/gam_uni_selected_winter_10304.Rdata")
+save(gam_uni_selected_winter_11502, file = "./models/gam_uni_selected_winter_11502.Rdata")
+save(gam_uni_selected_winter_20203, file = "./models/gam_uni_selected_winter_20203.Rdata")
 ```
 ## Selected Modelle 2 ----
 ```{r}
-save(gam2_uni_selected_summer_10304, file = "./models/gam2_uni_selected_summer_10304.RDS")
-save(gam2_uni_selected_summer_11502, file = "./models/gam2_uni_selected_summer_11502.RDS")
-save(gam2_uni_selected_summer_20203, file = "./models/gam2_uni_selected_summer_20203.RDS")
+save(gam2_uni_selected_summer_10304, file = "./models/gam2_uni_selected_summer_10304.Rdata")
+save(gam2_uni_selected_summer_11502, file = "./models/gam2_uni_selected_summer_11502.Rdata")
+save(gam2_uni_selected_summer_20203, file = "./models/gam2_uni_selected_summer_20203.Rdata")
 
-save(gam2_uni_selected_winter_10304, file = "./models/gam2_uni_selected_winter_10304.RDS")
-save(gam2_uni_selected_winter_11502, file = "./models/gam2_uni_selected_winter_11502.RDS")
-save(gam2_uni_selected_winter_20203, file = "./models/gam2_uni_selected_winter_20203.RDS")
+save(gam2_uni_selected_winter_10304, file = "./models/gam2_uni_selected_winter_10304.Rdata")
+save(gam2_uni_selected_winter_11502, file = "./models/gam2_uni_selected_winter_11502.Rdata")
+save(gam2_uni_selected_winter_20203, file = "./models/gam2_uni_selected_winter_20203.Rdata")
 ```
 # GAM Interactions ----
 ```{r}
-save(gam_uni_selected_interac_summer_10304, file = "./models/gam_uni_selected_interac_summer_10304.RDS")
-save(gam_uni_selected_interac_summer_11502, file = "./models/gam_uni_selected_interac_summer_11502.RDS")
-save(gam_uni_selected_interac_summer_20203, file = "./models/gam_uni_selected_interac_summer_20203.RDS")
+save(gam_uni_selected_interac_summer_10304, file = "./models/gam_uni_selected_interac_summer_10304.Rdata")
+save(gam_uni_selected_interac_summer_11502, file = "./models/gam_uni_selected_interac_summer_11502.Rdata")
+save(gam_uni_selected_interac_summer_20203, file = "./models/gam_uni_selected_interac_summer_20203.Rdata")
 
-save(gam_uni_selected_interac_winter_10304, file = "./models/gam_uni_selected_interac_winter_10304.RDS")
-save(gam_uni_selected_interac_winter_11502, file = "./models/gam_uni_selected_interac_winter_11502.RDS")
-save(gam_uni_selected_interac_winter_20203, file = "./models/gam_uni_selected_interac_winter_20203.RDS")
+save(gam_uni_selected_interac_winter_10304, file = "./models/gam_uni_selected_interac_winter_10304.Rdata")
+save(gam_uni_selected_interac_winter_11502, file = "./models/gam_uni_selected_interac_winter_11502.Rdata")
+save(gam_uni_selected_interac_winter_20203, file = "./models/gam_uni_selected_interac_winter_20203.Rdata")
 ```
 
