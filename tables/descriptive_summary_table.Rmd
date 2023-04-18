@@ -109,6 +109,7 @@ output:
   (M unter Oberfläche)                                                 
 
    **Versickerung**               339270     NA     -0.06797   0.3449 
+ 
  (in mm/24h; 7 Tage rolling mean, 
  zentriert)                                        
 
