@@ -138,6 +138,7 @@ ggplot(data = subset(hydro_total_10304, YY %in% 2000), mapping = aes(x = date, y
   labs(title = "Abfluss des Pegels Isar Mittenwald im Jahr 2000 getrennt \nnach Simulationsreihen",
        y = "Abflussmenge (in m³/s)",
        x = "Datum") +
+    scale_y_continuous(trans='log10') +
     theme(text = element_text(size = 20)) +
     scale_color_brewer(palette = "Paired")
 ggsave("Plots/Chris/analysis/all_member_drainage_Isar-Mittenwald_2000.png", width = 12, height = 9)
