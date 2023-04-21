@@ -10,6 +10,8 @@ knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(mgcv)
 library(verification)
+library(ROCR)
+
  
 hydro_summer <- readRDS(file = "./data/hydro_summer.RDS")
 hydro_winter <- readRDS(file = "./data/hydro_winter.RDS")
@@ -1573,6 +1575,7 @@ hydro_summer_20203_test$lowlevel <- as.logical(hydro_summer_20203_test$lowlevel)
 
 
 # gam_uni_selected_interac_winter_10304
+
 hydro_winter_10304_pred <- predict(gam_uni_selected_interac_winter_10304, hydro_winter_10304_test, type = "response")
 roc.plot(hydro_winter_10304_test$lowlevel, hydro_winter_10304_pred, xlab = "1 - Spezifität", ylab = "Sensitivität", plot.thres = c(0.01, 0.1, 0.5, 0.9), cex.lab = 1.5)
 hydro_winter_10304_pred_lowlevel <- hydro_winter_10304_pred[which(hydro_winter_10304_test$lowlevel == 1)]
