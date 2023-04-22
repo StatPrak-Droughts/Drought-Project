@@ -1339,6 +1339,132 @@ AIC(gam_all_summer_20203)
 
 ```
 
+# AIC Vergleich der vollen Modelle
+``` {r}
+# 10304 Winter
+## Niederschlag Gruppe entfernt
+AIC(gam(formula = lowlevel ~ YY + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_snowstorage_drain, bs = "ps"), family = binomial(), data = hydro_winter_10304_kbe, method = "REML"))
+
+## Lufttemp. entfernt
+AIC(gam(formula = lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps") + s(max_precip, bs = "ps") + s(avg_snowstorage_drain, bs = "ps"), family = binomial(), data = hydro_winter_10304_kbe, method = "REML"))
+
+## Strahlung und rel. Luftfeuchte entfernt
+AIC(gam(formula = lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_airtmp, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps") + s(max_precip, bs = "ps") + s(avg_snowstorage_drain, bs = "ps"), family = binomial(), data = hydro_winter_10304_kbe, method = "REML"))
+
+## Bodenfeuchte entfernt
+AIC(gam(formula = lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps") + s(max_precip, bs = "ps") + s(avg_snowstorage_drain, bs = "ps"), family = binomial(), data = hydro_winter_10304_kbe, method = "REML"))
+
+## Schneegruppe entfernt
+AIC(gam(formula = lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps") + s(max_precip, bs = "ps"), family = binomial(), data = hydro_winter_10304_kbe, method = "REML"))
+
+## Grundwasserstand entfernt
+AIC(gam(formula = lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(avg_infiltration, bs = "ps") + s(max_precip, bs = "ps") + s(avg_snowstorage_drain, bs = "ps"), family = binomial(), data = hydro_winter_10304_kbe, method = "REML"))
+
+# 10304 Sommer
+## Niederschlag Gruppe entfernt
+AIC(gam(formula = lowlevel ~ YY + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_snowstorage_drain, bs = "ps"), family = binomial(), data = hydro_summer_10304_kbe, method = "REML"))
+
+## Lufttemp. entfernt
+AIC(gam(formula = lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps") + s(max_precip, bs = "ps") + s(avg_snowstorage_drain, bs = "ps"), family = binomial(), data = hydro_summer_10304_kbe, method = "REML"))
+
+## Strahlung und rel. Luftfeuchte entfernt
+AIC(gam(formula = lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_airtmp, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps") + s(max_precip, bs = "ps") + s(avg_snowstorage_drain, bs = "ps"), family = binomial(), data = hydro_summer_10304_kbe, method = "REML"))
+
+## Bodenfeuchte entfernt
+AIC(gam(formula = lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps") + s(max_precip, bs = "ps") + s(avg_snowstorage_drain, bs = "ps"), family = binomial(), data = hydro_summer_10304_kbe, method = "REML"))
+
+## Schneegruppe entfernt
+AIC(gam(formula = lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps") + s(max_precip, bs = "ps"), family = binomial(), data = hydro_summer_10304_kbe, method = "REML"))
+
+## Grundwasserstand entfernt
+AIC(gam(formula = lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(avg_infiltration, bs = "ps") + s(max_precip, bs = "ps") + s(avg_snowstorage_drain, bs = "ps"), family = binomial(), data = hydro_summer_10304_kbe, method = "REML"))
+
+
+# 20203 Winter
+## Niederschlag Gruppe entfernt
+AIC(gam(formula = lowlevel ~ YY + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_snowstorage_drain, bs = "ps"), family = binomial(), data = hydro_winter_20203_kbe, method = "REML"))
+
+## Lufttemp. entfernt
+AIC(gam(formula = lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps") + s(max_precip, bs = "ps") + s(avg_snowstorage_drain, bs = "ps"), family = binomial(), data = hydro_winter_20203_kbe, method = "REML"))
+
+## Strahlung und rel. Luftfeuchte entfernt
+AIC(gam(formula = lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_airtmp, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps") + s(max_precip, bs = "ps") + s(avg_snowstorage_drain, bs = "ps"), family = binomial(), data = hydro_winter_20203_kbe, method = "REML"))
+
+## Bodenfeuchte entfernt
+AIC(gam(formula = lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps") + s(max_precip, bs = "ps") + s(avg_snowstorage_drain, bs = "ps"), family = binomial(), data = hydro_winter_20203_kbe, method = "REML"))
+
+## Schneegruppe entfernt
+AIC(gam(formula = lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps") + s(max_precip, bs = "ps"), family = binomial(), data = hydro_winter_20203_kbe, method = "REML"))
+
+## Grundwasserstand entfernt
+AIC(gam(formula = lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(avg_infiltration, bs = "ps") + s(max_precip, bs = "ps") + s(avg_snowstorage_drain, bs = "ps"), family = binomial(), data = hydro_winter_20203_kbe, method = "REML"))
+
+# 20203 Sommer
+## Niederschlag Gruppe entfernt
+AIC(gam(formula = lowlevel ~ YY + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_snowstorage_drain, bs = "ps"), family = binomial(), data = hydro_summer_20203_kbe, method = "REML"))
+
+## Lufttemp. entfernt
+AIC(gam(formula = lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps") + s(max_precip, bs = "ps") + s(avg_snowstorage_drain, bs = "ps"), family = binomial(), data = hydro_summer_20203_kbe, method = "REML"))
+
+## Strahlung und rel. Luftfeuchte entfernt
+AIC(gam(formula = lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_airtmp, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps") + s(max_precip, bs = "ps") + s(avg_snowstorage_drain, bs = "ps"), family = binomial(), data = hydro_summer_20203_kbe, method = "REML"))
+
+## Bodenfeuchte entfernt
+AIC(gam(formula = lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps") + s(max_precip, bs = "ps") + s(avg_snowstorage_drain, bs = "ps"), family = binomial(), data = hydro_summer_20203_kbe, method = "REML"))
+
+## Schneegruppe entfernt
+AIC(gam(formula = lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps") + s(max_precip, bs = "ps"), family = binomial(), data = hydro_summer_20203_kbe, method = "REML"))
+
+## Grundwasserstand entfernt
+AIC(gam(formula = lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(avg_infiltration, bs = "ps") + s(max_precip, bs = "ps") + s(avg_snowstorage_drain, bs = "ps"), family = binomial(), data = hydro_summer_20203_kbe, method = "REML"))
+
+
+# 11502 Winter
+## Niederschlag Gruppe entfernt
+AIC(gam(formula = lowlevel ~ YY + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_snowstorage_drain, bs = "ps"), family = binomial(), data = hydro_winter_11502_kbe, method = "REML"))
+
+## Lufttemp. entfernt
+AIC(gam(formula = lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps") + s(max_precip, bs = "ps") + s(avg_snowstorage_drain, bs = "ps"), family = binomial(), data = hydro_winter_11502_kbe, method = "REML"))
+
+## Strahlung und rel. Luftfeuchte entfernt
+AIC(gam(formula = lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_airtmp, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps") + s(max_precip, bs = "ps") + s(avg_snowstorage_drain, bs = "ps"), family = binomial(), data = hydro_winter_11502_kbe, method = "REML"))
+
+## Bodenfeuchte entfernt
+AIC(gam(formula = lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps") + s(max_precip, bs = "ps") + s(avg_snowstorage_drain, bs = "ps"), family = binomial(), data = hydro_winter_11502_kbe, method = "REML"))
+
+## Schneegruppe entfernt
+AIC(gam(formula = lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps") + s(max_precip, bs = "ps"), family = binomial(), data = hydro_winter_11502_kbe, method = "REML"))
+
+## Grundwasserstand entfernt
+AIC(gam(formula = lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(avg_infiltration, bs = "ps") + s(max_precip, bs = "ps") + s(avg_snowstorage_drain, bs = "ps"), family = binomial(), data = hydro_winter_11502_kbe, method = "REML"))
+
+# 11502 Sommer
+## Niederschlag Gruppe entfernt
+AIC(gam(formula = lowlevel ~ YY + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_snowstorage_drain, bs = "ps"), family = binomial(), data = hydro_summer_11502_kbe, method = "REML"))
+
+## Lufttemp. entfernt
+AIC(gam(formula = lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps") + s(max_precip, bs = "ps") + s(avg_snowstorage_drain, bs = "ps"), family = binomial(), data = hydro_summer_11502_kbe, method = "REML"))
+
+## Strahlung und rel. Luftfeuchte entfernt
+AIC(gam(formula = lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_airtmp, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps") + s(max_precip, bs = "ps") + s(avg_snowstorage_drain, bs = "ps"), family = binomial(), data = hydro_summer_11502_kbe, method = "REML"))
+
+## Bodenfeuchte entfernt
+AIC(gam(formula = lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps") + s(max_precip, bs = "ps") + s(avg_snowstorage_drain, bs = "ps"), family = binomial(), data = hydro_summer_11502_kbe, method = "REML"))
+
+## Schneegruppe entfernt
+AIC(gam(formula = lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps") + s(max_precip, bs = "ps"), family = binomial(), data = hydro_summer_11502_kbe, method = "REML"))
+
+## Grundwasserstand entfernt
+AIC(gam(formula = lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(avg_infiltration, bs = "ps") + s(max_precip, bs = "ps") + s(avg_snowstorage_drain, bs = "ps"), family = binomial(), data = hydro_summer_11502_kbe, method = "REML"))
+
+```
+
+
+
+
+
+
+
 # Selektierte Modelle für alle Pregel und Halbjahre
 ## 1
 ```{r}
@@ -1390,6 +1516,126 @@ BIC(gam_uni_selected_summer_20203)
 concurvity(gam_uni_selected_summer_20203)
 #plot(gam_uni_selected_summer_20203, ylim = c(-7, 7))
 ```
+
+# AIC Vergleich 1. selektiertes Model
+``` {r}
+#Winter 10304
+## Niedschlag
+AIC(gam(formula = lowlevel ~ YY + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps"), family = binomial(), data = hydro_winter_10304_kbe, method = "REML"))
+
+# Lufttemp
+AIC(gam(formula = lowlevel ~ YY + s(avg_precip, bs = "ps")  + s(avg_glorad, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps"), family = binomial(), data = hydro_winter_10304_kbe, method = "REML"))
+
+# Strahlung
+AIC(gam(formula = lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_airtmp, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps"), family = binomial(), data = hydro_winter_10304_kbe, method = "REML"))
+
+# Bodenfeuchte
+AIC(gam(formula = lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps")+ s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps"), family = binomial(), data = hydro_winter_10304_kbe, method = "REML"))
+
+# Schneespeicher
+AIC(gam(formula = lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_soilwater, bs = "ps") + s(groundwaterdepth, bs = "ps"), family = binomial(), data = hydro_winter_10304_kbe, method = "REML"))
+
+#Grundwasserstand
+AIC(gam(formula = lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps"), family = binomial(), data = hydro_winter_10304_kbe, method = "REML"))
+
+#Sommer 10304 
+## Niedschlag
+AIC(gam(formula = lowlevel ~ YY + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps"), family = binomial(), data = hydro_summer_10304_kbe, method = "REML"))
+
+# Lufttemp
+AIC(gam(formula = lowlevel ~ YY + s(avg_precip, bs = "ps")  + s(avg_glorad, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps"), family = binomial(), data = hydro_summer_10304_kbe, method = "REML"))
+
+# Strahlung
+AIC(gam(formula = lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_airtmp, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps"), family = binomial(), data = hydro_summer_10304_kbe, method = "REML"))
+
+# Bodenfeuchte
+AIC(gam(formula = lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps")+ s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps"), family = binomial(), data = hydro_summer_10304_kbe, method = "REML"))
+
+# Schneespeicher
+AIC(gam(formula = lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_soilwater, bs = "ps") + s(groundwaterdepth, bs = "ps"), family = binomial(), data = hydro_summer_10304_kbe, method = "REML"))
+
+#Grundwasserstand
+AIC(gam(formula = lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps"), family = binomial(), data = hydro_summer_10304_kbe, method = "REML"))
+
+#Winter 20203
+## Niedschlag
+AIC(gam(formula = lowlevel ~ YY + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps"), family = binomial(), data = hydro_winter_20203_kbe, method = "REML"))
+
+# Lufttemp
+AIC(gam(formula = lowlevel ~ YY + s(avg_precip, bs = "ps")  + s(avg_glorad, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps"), family = binomial(), data = hydro_winter_20203_kbe, method = "REML"))
+
+# Strahlung
+AIC(gam(formula = lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_airtmp, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps"), family = binomial(), data = hydro_winter_20203_kbe, method = "REML"))
+
+# Bodenfeuchte
+AIC(gam(formula = lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps")+ s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps"), family = binomial(), data = hydro_winter_20203_kbe, method = "REML"))
+
+# Schneespeicher
+AIC(gam(formula = lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_soilwater, bs = "ps") + s(groundwaterdepth, bs = "ps"), family = binomial(), data = hydro_winter_20203_kbe, method = "REML"))
+
+#Grundwasserstand
+AIC(gam(formula = lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps"), family = binomial(), data = hydro_winter_20203_kbe, method = "REML"))
+
+#Sommer 20203
+## Niedschlag
+AIC(gam(formula = lowlevel ~ YY + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps"), family = binomial(), data = hydro_summer_20203_kbe, method = "REML"))
+
+# Lufttemp
+AIC(gam(formula = lowlevel ~ YY + s(avg_precip, bs = "ps")  + s(avg_glorad, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps"), family = binomial(), data = hydro_summer_20203_kbe, method = "REML"))
+
+# Strahlung
+AIC(gam(formula = lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_airtmp, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps"), family = binomial(), data = hydro_summer_20203_kbe, method = "REML"))
+
+# Bodenfeuchte
+AIC(gam(formula = lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps")+ s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps"), family = binomial(), data = hydro_summer_20203_kbe, method = "REML"))
+
+# Schneespeicher
+AIC(gam(formula = lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_soilwater, bs = "ps") + s(groundwaterdepth, bs = "ps"), family = binomial(), data = hydro_summer_20203_kbe, method = "REML"))
+
+#Grundwasserstand
+AIC(gam(formula = lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps"), family = binomial(), data = hydro_summer_20203_kbe, method = "REML"))
+
+#Winter 11502
+## Niedschlag
+AIC(gam(formula = lowlevel ~ YY + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps"), family = binomial(), data = hydro_winter_11502_kbe, method = "REML"))
+
+# Lufttemp
+AIC(gam(formula = lowlevel ~ YY + s(avg_precip, bs = "ps")  + s(avg_glorad, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps"), family = binomial(), data = hydro_winter_11502_kbe, method = "REML"))
+
+# Strahlung
+AIC(gam(formula = lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_airtmp, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps"), family = binomial(), data = hydro_winter_11502_kbe, method = "REML"))
+
+# Bodenfeuchte
+AIC(gam(formula = lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps")+ s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps"), family = binomial(), data = hydro_winter_11502_kbe, method = "REML"))
+
+# Schneespeicher
+AIC(gam(formula = lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_soilwater, bs = "ps") + s(groundwaterdepth, bs = "ps"), family = binomial(), data = hydro_winter_11502_kbe, method = "REML"))
+
+#Grundwasserstand
+AIC(gam(formula = lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps"), family = binomial(), data = hydro_winter_11502_kbe, method = "REML"))
+
+#Sommer 11502
+## Niedschlag
+AIC(gam(formula = lowlevel ~ YY + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps"), family = binomial(), data = hydro_summer_11502_kbe, method = "REML"))
+
+# Lufttemp
+AIC(gam(formula = lowlevel ~ YY + s(avg_precip, bs = "ps")  + s(avg_glorad, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps"), family = binomial(), data = hydro_summer_11502_kbe, method = "REML"))
+
+# Strahlung
+AIC(gam(formula = lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_airtmp, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps"), family = binomial(), data = hydro_summer_11502_kbe, method = "REML"))
+
+# Bodenfeuchte
+AIC(gam(formula = lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps")+ s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps"), family = binomial(), data = hydro_summer_11502_kbe, method = "REML"))
+
+# Schneespeicher
+AIC(gam(formula = lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_soilwater, bs = "ps") + s(groundwaterdepth, bs = "ps"), family = binomial(), data = hydro_summer_11502_kbe, method = "REML"))
+
+#Grundwasserstand
+AIC(gam(formula = lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps"), family = binomial(), data = hydro_summer_11502_kbe, method = "REML"))
+``` 
+
+
+
 # Effect Plots
 
 ```{r}
@@ -1506,6 +1752,126 @@ concurvity(gam2_uni_selected_summer_20203)
 #plot(gam2_uni_selected_summer_20203, ylim = c(-7, 7))
 ```
 
+
+
+# AIC Vergleich 2. selektiertes Model
+``` {r}
+#Winter 10304
+## Infiltr. entfernt
+AIC(gam(formula = lowlevel ~ YY + s(avg_airtmp, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps"), family = binomial(), data = hydro_winter_10304_kbe, method = "REML"))
+
+## airtmp. entfernt
+AIC(gam(formula = lowlevel ~ YY + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps"), family = binomial(), data = hydro_winter_10304_kbe, method = "REML"))
+
+## rel. hum. entfernt
+AIC(gam(formula = lowlevel ~ YY + s(avg_airtmp, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps"), family = binomial(), data = hydro_winter_10304_kbe, method = "REML"))
+
+## soilwater entfernt
+AIC(gam(formula = lowlevel ~ YY + s(avg_airtmp, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps"), family = binomial(), data = hydro_winter_10304_kbe, method = "REML"))
+
+## snowstorage entfernt
+AIC(gam(formula = lowlevel ~ YY + s(avg_airtmp, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps"), family = binomial(), data = hydro_winter_10304_kbe, method = "REML"))
+
+## groundwaterdepth entfernt
+AIC(gam(formula = lowlevel ~ YY + s(avg_airtmp, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(avg_infiltration, bs = "ps"), family = binomial(), data = hydro_winter_10304_kbe, method = "REML"))
+
+#Sommer 10304
+## Infiltr. entfernt
+AIC(gam(formula = lowlevel ~ YY + s(avg_airtmp, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps"), family = binomial(), data = hydro_summer_10304_kbe, method = "REML"))
+
+## airtmp. entfernt
+AIC(gam(formula = lowlevel ~ YY + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps"), family = binomial(), data = hydro_summer_10304_kbe, method = "REML"))
+
+## rel. hum. entfernt
+AIC(gam(formula = lowlevel ~ YY + s(avg_airtmp, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps"), family = binomial(), data = hydro_summer_10304_kbe, method = "REML"))
+
+## soilwater entfernt
+AIC(gam(formula = lowlevel ~ YY + s(avg_airtmp, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps"), family = binomial(), data = hydro_summer_10304_kbe, method = "REML"))
+
+## snowstorage entfernt
+AIC(gam(formula = lowlevel ~ YY + s(avg_airtmp, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps"), family = binomial(), data = hydro_summer_10304_kbe, method = "REML"))
+
+## groundwaterdepth entfernt
+AIC(gam(formula = lowlevel ~ YY + s(avg_airtmp, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(avg_infiltration, bs = "ps"), family = binomial(), data = hydro_summer_10304_kbe, method = "REML"))
+
+#Winter 20203
+## Infiltr. entfernt
+AIC(gam(formula = lowlevel ~ YY + s(avg_airtmp, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps"), family = binomial(), data = hydro_winter_20203_kbe, method = "REML"))
+
+## airtmp. entfernt
+AIC(gam(formula = lowlevel ~ YY + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps"), family = binomial(), data = hydro_winter_20203_kbe, method = "REML"))
+
+## rel. hum. entfernt
+AIC(gam(formula = lowlevel ~ YY + s(avg_airtmp, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps"), family = binomial(), data = hydro_winter_20203_kbe, method = "REML"))
+
+## soilwater entfernt
+AIC(gam(formula = lowlevel ~ YY + s(avg_airtmp, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps"), family = binomial(), data = hydro_winter_20203_kbe, method = "REML"))
+
+## snowstorage entfernt
+AIC(gam(formula = lowlevel ~ YY + s(avg_airtmp, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps"), family = binomial(), data = hydro_winter_20203_kbe, method = "REML"))
+
+## groundwaterdepth entfernt
+AIC(gam(formula = lowlevel ~ YY + s(avg_airtmp, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(avg_infiltration, bs = "ps"), family = binomial(), data = hydro_winter_20203_kbe, method = "REML"))
+
+#Sommer 20203
+## Infiltr. entfernt
+AIC(gam(formula = lowlevel ~ YY + s(avg_airtmp, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps"), family = binomial(), data = hydro_summer_20203_kbe, method = "REML"))
+
+## airtmp. entfernt
+AIC(gam(formula = lowlevel ~ YY + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps"), family = binomial(), data = hydro_summer_20203_kbe, method = "REML"))
+
+## rel. hum. entfernt
+AIC(gam(formula = lowlevel ~ YY + s(avg_airtmp, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps"), family = binomial(), data = hydro_summer_20203_kbe, method = "REML"))
+
+## soilwater entfernt
+AIC(gam(formula = lowlevel ~ YY + s(avg_airtmp, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps"), family = binomial(), data = hydro_summer_20203_kbe, method = "REML"))
+
+## snowstorage entfernt
+AIC(gam(formula = lowlevel ~ YY + s(avg_airtmp, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps"), family = binomial(), data = hydro_summer_20203_kbe, method = "REML"))
+
+## groundwaterdepth entfernt
+AIC(gam(formula = lowlevel ~ YY + s(avg_airtmp, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(avg_infiltration, bs = "ps"), family = binomial(), data = hydro_summer_20203_kbe, method = "REML"))
+
+#Winter 11502
+## Infiltr. entfernt
+AIC(gam(formula = lowlevel ~ YY + s(avg_airtmp, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps"), family = binomial(), data = hydro_winter_11502_kbe, method = "REML"))
+
+## airtmp. entfernt
+AIC(gam(formula = lowlevel ~ YY + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps"), family = binomial(), data = hydro_winter_11502_kbe, method = "REML"))
+
+## rel. hum. entfernt
+AIC(gam(formula = lowlevel ~ YY + s(avg_airtmp, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps"), family = binomial(), data = hydro_winter_11502_kbe, method = "REML"))
+
+## soilwater entfernt
+AIC(gam(formula = lowlevel ~ YY + s(avg_airtmp, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps"), family = binomial(), data = hydro_winter_11502_kbe, method = "REML"))
+
+## snowstorage entfernt
+AIC(gam(formula = lowlevel ~ YY + s(avg_airtmp, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps"), family = binomial(), data = hydro_winter_11502_kbe, method = "REML"))
+
+## groundwaterdepth entfernt
+AIC(gam(formula = lowlevel ~ YY + s(avg_airtmp, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(avg_infiltration, bs = "ps"), family = binomial(), data = hydro_winter_10304_kbe, method = "REML"))
+
+#Sommer 11502
+## Infiltr. entfernt
+AIC(gam(formula = lowlevel ~ YY + s(avg_airtmp, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps"), family = binomial(), data = hydro_summer_11502_kbe, method = "REML"))
+
+## airtmp. entfernt
+AIC(gam(formula = lowlevel ~ YY + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps"), family = binomial(), data = hydro_summer_11502_kbe, method = "REML"))
+
+## rel. hum. entfernt
+AIC(gam(formula = lowlevel ~ YY + s(avg_airtmp, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps"), family = binomial(), data = hydro_summer_11502_kbe, method = "REML"))
+
+## soilwater entfernt
+AIC(gam(formula = lowlevel ~ YY + s(avg_airtmp, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps"), family = binomial(), data = hydro_summer_11502_kbe, method = "REML"))
+
+## snowstorage entfernt
+AIC(gam(formula = lowlevel ~ YY + s(avg_airtmp, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps"), family = binomial(), data = hydro_summer_11502_kbe, method = "REML"))
+
+## groundwaterdepth entfernt
+AIC(gam(formula = lowlevel ~ YY + s(avg_airtmp, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(avg_infiltration, bs = "ps"), family = binomial(), data = hydro_summer_11502_kbe, method = "REML"))
+
+
+``` 
 
 # Selektierte Modelle für alle Pregel und Halbjahre mit individuellen Interaktionen
 ```{r}
