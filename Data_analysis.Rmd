@@ -1738,11 +1738,3 @@ quantile(na.omit(max_precip),  c(0.25, 0.75))
 # IQA ca. 15, also führt Faktor 1 zu 15 1ner Schritten
 ```
 
-
-
-
-
-
-
-
-

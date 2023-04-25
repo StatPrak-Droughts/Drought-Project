@@ -1,5 +1,5 @@
 library(tidyverse)
-# Treiber Variabless
+# Treiber Variables
 filepath_list <- list(airtmp = "observed_data/Treiber/airtmp.txt",
                       glorad = "observed_data/Treiber/glorad.txt",
                       groundwaterdepth = "observed_data/Treiber/groundwaterdepth.txt",
