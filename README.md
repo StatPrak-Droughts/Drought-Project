@@ -37,7 +37,7 @@ low water characteristic)
 You will need access to the Climex-II data which is not publicly available. Access can be granted by the Geography Department from the LMU.
 ### Import the data
 1. Download the Data from LRZ Sync + Share
-2. Move the `data` folder to this cloned repository. (It should be as the same level as the R Project file)
+2. Move the `data` folder to this cloned repository. (It should be at the same level as the R Project file)
 3. Do not rename the folder or change the structure otherwise the setup will not work.
 
 ### Setup
