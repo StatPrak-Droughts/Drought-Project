@@ -6,33 +6,10 @@ output:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-library(tidyverse)
-library(mgcv)
-library(verification)
-library(ROCR)
-library(pROC)
+renv::restore()
 
- 
-hydro_summer <- readRDS(file = "./data/hydro_summer.RDS")
-hydro_winter <- readRDS(file = "./data/hydro_winter.RDS")
-hydro_total <- readRDS(file = "./data/hydro_total.RDS")
-pegel_prop <- readRDS(file = "./data/pegel_prop.RDS")
-
-hydro_summer_10304 <- readRDS("data/hydro_summer_10304.RDS")
-hydro_summer_11502 <- readRDS("data/hydro_summer_11502.RDS")
-hydro_summer_20203 <- readRDS("data/hydro_summer_20203.RDS")
-
-hydro_winter_10304 <- readRDS("data/hydro_winter_10304.RDS")
-hydro_winter_11502 <- readRDS("data/hydro_winter_11502.RDS")
-hydro_winter_20203 <- readRDS("data/hydro_winter_20203.RDS")
-
-hydro_summer_10304_kbe <- readRDS(file = "data/hydro_summer_10304_kbe.RDS")
-hydro_winter_10304_kbe <- readRDS(file = "data/hydro_winter_10304_kbe.RDS")
-hydro_summer_11502_kbe <- readRDS(file = "data/hydro_summer_11502_kbe.RDS")
-hydro_winter_11502_kbe <- readRDS(file = "data/hydro_winter_11502_kbe.RDS")
-hydro_summer_20203_kbe <- readRDS(file = "data/hydro_summer_20203_kbe.RDS")
-hydro_winter_20203_kbe <- readRDS(file = "data/hydro_winter_20203_kbe.RDS")
+# Read data
+source("data_read.R")
 ```
 
 # Volle Modelle für alle Pegel und Halbjahre

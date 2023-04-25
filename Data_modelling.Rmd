@@ -5,45 +5,10 @@ date: '2023-03-17'
 ---
 
 ```{r setup, include=FALSE}
-# Import packages
-library(tidyverse)
-library(lubridate)
-library(timetk)
-library(RcppRoll)
-library(dLagM)
-library(dlnm)
-library(zoo)
-theme_set(theme_gray())
-# Mapping imports
-library(sf)
-library(leaflet)
-library(tmap)
-library(gridExtra)
-library(js)
-library(sjPlot)
-tmap_options(check.and.fix = TRUE)
+renv::restore()
 
 # Read data
-hydro_summer_20203 <- readRDS(file = "./data/hydro_summer_20203.RDS")
-hydro_summer_11502 <- readRDS(file = "./data/hydro_summer_11502.RDS")
-hydro_summer_10304 <- readRDS(file = "./data/hydro_summer_10304.RDS")
-hydro_winter_20203 <- readRDS(file = "./data/hydro_winter_20203.RDS")
-hydro_winter_11502 <- readRDS(file = "./data/hydro_winter_11502.RDS")
-hydro_winter_10304 <- readRDS(file = "./data/hydro_winter_10304.RDS")
-hydro_total <- readRDS(file = "./data/hydro_total.RDS")
-pegel_prop <- readRDS(file = "./data/pegel_prop.RDS")
-
-# Read data
-hydro_summer_20203 <- readRDS(file = "./data/hydro_summer_20203.RDS")
-hydro_summer_11502 <- readRDS(file = "./data/hydro_summer_11502.RDS")
-hydro_summer_10304 <- readRDS(file = "./data/hydro_summer_10304.RDS")
-hydro_winter_20203 <- readRDS(file = "./data/hydro_winter_20203.RDS")
-hydro_winter_11502 <- readRDS(file = "./data/hydro_winter_11502.RDS")
-hydro_winter_10304 <- readRDS(file = "./data/hydro_winter_10304.RDS")
-hydro_total <- readRDS(file = "./data/hydro_total.RDS")
-pegel_prop <- readRDS(file = "./data/pegel_prop.RDS")
-
-
+source("data_read.R")
 ```
 
 # GLM Approaches 
