@@ -498,13 +498,13 @@ subset_hydro_summer_20203_kbe <- subset(hydro_summer_20203_kbe, select = c(avg_p
 colnames(subset_hydro_summer_20203_kbe) <- c("Mittlerer Niederschlag", "Mittlere Lufttemperatur", "Mittlere Strahlung", "Mittlere relative Luftfeuchte", "Mittlere Bodenfeuchte", "Mittlerer Schneespeicher", "Grundwasserstand", "Mittlere Versickerung", "Maximaler Niederschlag", "Mittlere Schneeschmelze")
 
 dir.create("./data/corrplots")
-saveRDS(subset_hydro_winter_10304_kbe, "./data/corrplots/subset_hydro_winter_10304.RDS")
-saveRDS(subset_hydro_winter_11502_kbe, "./data/corrplots/subset_hydro_winter_11502.RDS")
-saveRDS(subset_hydro_winter_20203_kbe, "./data/corrplots/subset_hydro_winter_20203.RDS")
+saveRDS(subset_hydro_winter_10304_kbe, "./data/corrplots/subset_hydro_winter_10304_kbe.RDS")
+saveRDS(subset_hydro_winter_11502_kbe, "./data/corrplots/subset_hydro_winter_11502_kbe.RDS")
+saveRDS(subset_hydro_winter_20203_kbe, "./data/corrplots/subset_hydro_winter_20203_kbe.RDS")
 
-saveRDS(subset_hydro_summer_10304_kbe, "./data/corrplots/subset_hydro_summer_10304.RDS")
-saveRDS(subset_hydro_summer_11502_kbe, "./data/corrplots/subset_hydro_summer_11502.RDS")
-saveRDS(subset_hydro_summer_20203_kbe, "./data/corrplots/subset_hydro_summer_20203.RDS")
+saveRDS(subset_hydro_summer_10304_kbe, "./data/corrplots/subset_hydro_summer_10304_kbe.RDS")
+saveRDS(subset_hydro_summer_11502_kbe, "./data/corrplots/subset_hydro_summer_11502_kbe.RDS")
+saveRDS(subset_hydro_summer_20203_kbe, "./data/corrplots/subset_hydro_summer_20203_kbe.RDS")
 
 
 
