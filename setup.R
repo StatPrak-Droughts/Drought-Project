@@ -1041,7 +1041,7 @@ dir.create("added_data/tables/driver_analysis/")
 saveRDS(object = table_yearly_avg_min_groundwaterdepth, 
         file = "added_data/tables/driver_analysis/table_yearly_avg_min_groundwaterdepth.RDS")
 saveRDS(object = table_yearly_avg_min_soilwater, 
-        file = "added_added_data/tables/driver_analysis/table_yearly_avg_min_soilwater.RDS")
+        file = "added_data/tables/driver_analysis/table_yearly_avg_min_soilwater.RDS")
 saveRDS(object = table_yearly_avg_min_snowstorage, 
         file = "added_data/tables/driver_analysis/table_yearly_avg_min_snowstorage.RDS")
 saveRDS(object = table_yearly_avg_min_airtmp, 
