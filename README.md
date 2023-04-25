@@ -32,3 +32,8 @@ low water characteristic)
 * Are drivers of an extreme event themselves extreme? Or is it a combination of moderately pronounced drivers that leads to extreme low water?
   - Differences between variables
   - Extreme events seem relevant for: Precipitation, relative near-surface soil moisture, infiltration, and groundwater level.
+
+## Contributing, reproducibility and setup
+
+
+
