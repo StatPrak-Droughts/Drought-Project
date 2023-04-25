@@ -15,17 +15,20 @@ low water characteristic)
 
 * How can the occurrence of low water events be explained/predicted?
 * Which drivers are relevant? 
-* Does the significance of the drivers differ between the gauges?
+* Are drivers of an extreme event themselves extreme? Or is it a combination of moderately pronounced drivers that leads to extreme low water?
 
-## Analysis
 
-For each of the three levels:
+## Findings 
+* How can the occurrence of low water events be explained/predicted?
+  - GAMs with binomial distribution assumption
+  - Modeling drivers as splines and individual explanatory interactions
+  - Variable-specific quantile distribution analysis
+  
+* Which drivers are relevant? 
+  - Groundwater level, precipitation group, and soilwater appear important
+  - Clear differences between north and south, e.g., in influence of snow and air temperature
+  - Grouping of southern and northern areas seems reasonable
 
-* Adjustment and improvement of the modelling approach (e.g.: can
-the relationship between individual drivers and low water be better modelled by smooth effects or a lag structure.)
-* Processing and interpretation of the results
-* Evaluation of the model approach on observed data
-
-## Goal 
-Process understanding for the occurrence of low water and
-reality comparison.
+* Are drivers of an extreme event themselves extreme? Or is it a combination of moderately pronounced drivers that leads to extreme low water?
+  - Differences between variables
+  - Extreme events seem relevant for: Precipitation, relative near-surface soil moisture, infiltration, and groundwater level.
