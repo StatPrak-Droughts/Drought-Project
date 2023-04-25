@@ -1,4 +1,5 @@
 library(sf)
+library(tidyverse)
 hydro_summer_20203 <- readRDS(file = "data/hydro_summer_20203.RDS")
 hydro_summer_11502 <- readRDS(file = "./data/hydro_summer_11502.RDS")
 hydro_summer_10304 <- readRDS(file = "./data/hydro_summer_10304.RDS")
@@ -236,3 +237,4 @@ hydro_winter_20203_test$lowlevel <- as.logical(hydro_winter_20203_test$lowlevel)
 
 hydro_summer_20203_test <- hydro_summer_20203 %>% filter(member != "kbe")
 hydro_summer_20203_test$lowlevel <- as.logical(hydro_summer_20203_test$lowlevel)
+
