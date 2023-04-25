@@ -1,6 +1,31 @@
 renv::restore()
 # Import packages
 library(tidyverse)
+library(mgcv)
+library(lubridate)
+library(timetk)
+library(RcppRoll)
+library(dLagM)
+library(dlnm)
+library(zoo)
+theme_set(theme_gray())
+library(knitr)
+library(kableExtra)
+library(sf)
+library(tmap)
+library(gridExtra)
+library(lubridate)
+library(timetk)
+library(RcppRoll)
+library(dLagM)
+library(dlnm)
+library(zoo)
+theme_set(theme_gray())
+library(js)
+library(sjPlot)
+library(verification)
+library(ROCR)
+library(pROC)
 
 ## Data import
 pegel_eigen <- read_csv2(file = "data/Geo-Daten_Uebersicht/Eigenschaften_Pegel.csv")
@@ -472,14 +497,14 @@ colnames(subset_hydro_summer_11502_kbe) <- c("Mittlerer Niederschlag", "Mittlere
 subset_hydro_summer_20203_kbe <- subset(hydro_summer_20203_kbe, select = c(avg_precip, avg_airtmp, avg_glorad, avg_relhum, avg_soilwater, avg_snowstorage, groundwaterdepth, avg_infiltration, max_precip, avg_snowstorage_drain))
 colnames(subset_hydro_summer_20203_kbe) <- c("Mittlerer Niederschlag", "Mittlere Lufttemperatur", "Mittlere Strahlung", "Mittlere relative Luftfeuchte", "Mittlere Bodenfeuchte", "Mittlerer Schneespeicher", "Grundwasserstand", "Mittlere Versickerung", "Maximaler Niederschlag", "Mittlere Schneeschmelze")
 
+dir.create("./data/corrplots")
+saveRDS(subset_hydro_winter_10304_kbe, "./data/corrplots/subset_hydro_winter_10304.RDS")
+saveRDS(subset_hydro_winter_11502_kbe, "./data/corrplots/subset_hydro_winter_11502.RDS")
+saveRDS(subset_hydro_winter_20203_kbe, "./data/corrplots/subset_hydro_winter_20203.RDS")
 
-saveRDS(subset_hydro_winter_10304, "./data/corrplots/subset_hydro_winter_10304.RDS")
-saveRDS(subset_hydro_winter_11502, "./data/corrplots/subset_hydro_winter_11502.RDS")
-saveRDS(subset_hydro_winter_20203, "./data/corrplots/subset_hydro_winter_20203.RDS")
-
-saveRDS(subset_hydro_summer_10304, "./data/corrplots/subset_hydro_summer_10304.RDS")
-saveRDS(subset_hydro_summer_11502, "./data/corrplots/subset_hydro_summer_11502.RDS")
-saveRDS(subset_hydro_summer_20203, "./data/corrplots/subset_hydro_summer_20203.RDS")
+saveRDS(subset_hydro_summer_10304_kbe, "./data/corrplots/subset_hydro_summer_10304.RDS")
+saveRDS(subset_hydro_summer_11502_kbe, "./data/corrplots/subset_hydro_summer_11502.RDS")
+saveRDS(subset_hydro_summer_20203_kbe, "./data/corrplots/subset_hydro_summer_20203.RDS")
 
 
 

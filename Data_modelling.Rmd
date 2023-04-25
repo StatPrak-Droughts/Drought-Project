@@ -6,7 +6,32 @@ date: '2023-03-17'
 
 ```{r setup, include=FALSE}
 renv::restore()
-
+library(tidyverse)
+library(mgcv)
+library(lubridate)
+library(timetk)
+library(RcppRoll)
+library(dLagM)
+library(dlnm)
+library(zoo)
+theme_set(theme_gray())
+library(knitr)
+library(kableExtra)
+library(sf)
+library(tmap)
+library(gridExtra)
+library(lubridate)
+library(timetk)
+library(RcppRoll)
+library(dLagM)
+library(dlnm)
+library(zoo)
+theme_set(theme_gray())
+library(js)
+library(sjPlot)
+library(verification)
+library(ROCR)
+library(pROC)
 # Read data
 source("data_read.R")
 ```
