@@ -1739,15 +1739,7 @@ quantile(na.omit(max_precip),  c(0.25, 0.75))
 ```
 
 
-```{r}
-rf_summer_11502 <- randomForest::randomForest(lowlevel ~ YY + avg_precip + avg_airtmp+ avg_glorad + avg_relhum + avg_soilwater + avg_snowstorage + groundwaterdepth + avg_infiltration + max_precip_scaled, data= hydro_summer_11502_kbe, proximity=TRUE, na.action = na.omit, importance = TRUE)
 
-rf_winter_11502 <- randomForest::randomForest(lowlevel ~ YY + avg_precip + avg_airtmp+ avg_glorad + avg_relhum + avg_soilwater + avg_snowstorage + groundwaterdepth + avg_infiltration + max_precip_scaled, data= hydro_summer_11502_kbe, proximity=TRUE, na.action = na.omit, importance = TRUE)
-
-
-rfPermute::plotImportance(rf_summer_11502)
-rfPermute::plotImportance(rf_winter_11502)
-```
 
 
 
