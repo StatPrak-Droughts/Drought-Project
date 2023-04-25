@@ -1,6 +1,31 @@
 renv::restore()
 # Import packages
 library(tidyverse)
+library(mgcv)
+library(lubridate)
+library(timetk)
+library(RcppRoll)
+library(dLagM)
+library(dlnm)
+library(zoo)
+theme_set(theme_gray())
+library(knitr)
+library(kableExtra)
+library(sf)
+library(tmap)
+library(gridExtra)
+library(lubridate)
+library(timetk)
+library(RcppRoll)
+library(dLagM)
+library(dlnm)
+library(zoo)
+theme_set(theme_gray())
+library(js)
+library(sjPlot)
+library(verification)
+library(ROCR)
+library(pROC)
 
 ## Data import
 pegel_eigen <- read_csv2(file = "data/Geo-Daten_Uebersicht/Eigenschaften_Pegel.csv")
@@ -472,14 +497,14 @@ colnames(subset_hydro_summer_11502_kbe) <- c("Mittlerer Niederschlag", "Mittlere
 subset_hydro_summer_20203_kbe <- subset(hydro_summer_20203_kbe, select = c(avg_precip, avg_airtmp, avg_glorad, avg_relhum, avg_soilwater, avg_snowstorage, groundwaterdepth, avg_infiltration, max_precip, avg_snowstorage_drain))
 colnames(subset_hydro_summer_20203_kbe) <- c("Mittlerer Niederschlag", "Mittlere Lufttemperatur", "Mittlere Strahlung", "Mittlere relative Luftfeuchte", "Mittlere Bodenfeuchte", "Mittlerer Schneespeicher", "Grundwasserstand", "Mittlere Versickerung", "Maximaler Niederschlag", "Mittlere Schneeschmelze")
 
+dir.create("./data/corrplots")
+saveRDS(subset_hydro_winter_10304_kbe, "./data/corrplots/subset_hydro_winter_10304_kbe.RDS")
+saveRDS(subset_hydro_winter_11502_kbe, "./data/corrplots/subset_hydro_winter_11502_kbe.RDS")
+saveRDS(subset_hydro_winter_20203_kbe, "./data/corrplots/subset_hydro_winter_20203_kbe.RDS")
 
-saveRDS(subset_hydro_winter_10304, "./data/corrplots/subset_hydro_winter_10304.RDS")
-saveRDS(subset_hydro_winter_11502, "./data/corrplots/subset_hydro_winter_11502.RDS")
-saveRDS(subset_hydro_winter_20203, "./data/corrplots/subset_hydro_winter_20203.RDS")
-
-saveRDS(subset_hydro_summer_10304, "./data/corrplots/subset_hydro_summer_10304.RDS")
-saveRDS(subset_hydro_summer_11502, "./data/corrplots/subset_hydro_summer_11502.RDS")
-saveRDS(subset_hydro_summer_20203, "./data/corrplots/subset_hydro_summer_20203.RDS")
+saveRDS(subset_hydro_summer_10304_kbe, "./data/corrplots/subset_hydro_summer_10304_kbe.RDS")
+saveRDS(subset_hydro_summer_11502_kbe, "./data/corrplots/subset_hydro_summer_11502_kbe.RDS")
+saveRDS(subset_hydro_summer_20203_kbe, "./data/corrplots/subset_hydro_summer_20203_kbe.RDS")
 
 
 
@@ -912,3 +937,316 @@ save(le_gam_uni_selected_interac_winter_10304, file = "added_data/le_models/le_g
 save(le_gam_uni_selected_interac_winter_11502, file = "added_data/le_models/le_gam_uni_selected_interac_winter_11502.Rdata")
 save(gam_uni_selected_interac_winter_20203, file = "added_data/le_models/le_gam_uni_selected_interac_winter_20203.Rdata")
 
+
+# Table prep
+# seasonal
+table_yearly_avg_min_groundwaterdepth <- hydro_total %>%
+  group_by(waterlevel, YY, hydro_year, member) %>%
+  summarise(min_groundwaterdepth = min(groundwaterdepth)) %>% 
+  group_by(waterlevel, YY, hydro_year) %>%
+  summarise(avg_min_groundwaterdepth = mean(min_groundwaterdepth))
+
+table_yearly_avg_min_soilwater <- hydro_total %>%
+  group_by(waterlevel, YY, hydro_year, member) %>%
+  summarise(min_soilwater = min(soilwater)) %>%
+  group_by(waterlevel, YY, hydro_year) %>%
+  summarise(avg_min_soilwater = mean(min_soilwater)) 
+
+table_yearly_avg_min_snowstorage <- hydro_total %>%
+  group_by(waterlevel, YY, hydro_year, member) %>%
+  summarise(min_snowstorage = min(snowstorage)) %>%
+  group_by(waterlevel, YY, hydro_year) %>%
+  summarise(avg_min_snowstorage = mean(min_snowstorage)) 
+
+table_yearly_avg_min_airtmp <- hydro_total %>%
+  group_by(waterlevel, YY, hydro_year, member) %>%
+  summarise(min_airtmp = min(airtmp)) %>%
+  group_by(waterlevel, YY, hydro_year) %>%
+  summarise(avg_min_airtmp = mean(min_airtmp)) 
+
+table_yearly_avg_max_precip <- hydro_total %>%
+  group_by(waterlevel, YY, hydro_year, member) %>%
+  summarise(max_precip = max(precip)) %>%
+  group_by(waterlevel, YY, hydro_year) %>%
+  summarise(avg_max_precip = mean(max_precip)) 
+
+table_yearly_avg_max_glorad <- hydro_total %>%
+  group_by(waterlevel, YY, hydro_year, member) %>%
+  summarise(max_glorad = max(glorad)) %>%
+  group_by(waterlevel, YY, hydro_year) %>%
+  summarise(avg_max_glorad = mean(max_glorad)) 
+
+table_yearly_avg_max_relhum <- hydro_total %>%
+  group_by(waterlevel, YY, hydro_year, member) %>%
+  summarise(max_relhum = max(relhum)) %>%
+  group_by(waterlevel, YY, hydro_year) %>%
+  summarise(avg_max_relhum = mean(max_relhum)) 
+
+table_yearly_avg_max_infiltration <- hydro_total %>%
+  group_by(waterlevel, YY, hydro_year, member) %>%
+  summarise(max_infiltration = max(infiltration)) %>%
+  group_by(waterlevel, YY, hydro_year) %>%
+  summarise(avg_max_infiltration = mean(max_infiltration)) 
+
+table_yearly_avg_max_groundwaterdepth <- hydro_total %>%
+  group_by(waterlevel, YY, hydro_year, member) %>%
+  summarise(max_groundwaterdepth = max(groundwaterdepth)) %>% 
+  group_by(waterlevel, YY, hydro_year) %>%
+  summarise(avg_max_groundwaterdepth = mean(max_groundwaterdepth))
+
+table_yearly_avg_max_soilwater <- hydro_total %>%
+  group_by(waterlevel, YY, hydro_year, member) %>%
+  summarise(max_soilwater = max(soilwater)) %>%
+  group_by(waterlevel, YY, hydro_year) %>%
+  summarise(avg_max_soilwater = mean(max_soilwater)) 
+
+table_yearly_avg_max_snowstorage <- hydro_total %>%
+  group_by(waterlevel, YY, hydro_year, member) %>%
+  summarise(max_snowstorage = max(snowstorage)) %>%
+  group_by(waterlevel, YY, hydro_year) %>%
+  summarise(avg_max_snowstorage = mean(max_snowstorage)) 
+
+table_yearly_avg_max_airtmp <- hydro_total %>%
+  group_by(waterlevel, YY, hydro_year, member) %>%
+  summarise(max_airtmp = max(airtmp)) %>%
+  group_by(waterlevel, YY, hydro_year) %>%
+  summarise(avg_max_airtmp = mean(max_airtmp)) 
+
+table_yearly_avg_min_precip <- hydro_total %>%
+  group_by(waterlevel, YY, hydro_year, member) %>%
+  summarise(min_precip = min(precip)) %>%
+  group_by(waterlevel, YY, hydro_year) %>%
+  summarise(avg_min_precip = mean(min_precip)) 
+
+table_yearly_avg_min_glorad <- hydro_total %>%
+  group_by(waterlevel, YY, hydro_year, member) %>%
+  summarise(min_glorad = min(glorad)) %>%
+  group_by(waterlevel, YY, hydro_year) %>%
+  summarise(avg_min_glorad = mean(min_glorad)) 
+
+table_yearly_avg_min_relhum <- hydro_total %>%
+  group_by(waterlevel, YY, hydro_year, member) %>%
+  summarise(min_relhum = min(relhum)) %>%
+  group_by(waterlevel, YY, hydro_year) %>%
+  summarise(avg_min_relhum = mean(min_relhum)) 
+
+table_yearly_avg_min_infiltration <- hydro_total %>%
+  group_by(waterlevel, YY, hydro_year, member) %>%
+  summarise(min_infiltration = min(infiltration)) %>%
+  group_by(waterlevel, YY, hydro_year) %>%
+  summarise(avg_min_infiltration = mean(min_infiltration)) 
+dir.create("added_data/tables/")
+dir.create("added_data/tables/driver_analysis/")
+
+saveRDS(object = table_yearly_avg_min_groundwaterdepth, 
+        file = "added_data/tables/driver_analysis/table_yearly_avg_min_groundwaterdepth.RDS")
+saveRDS(object = table_yearly_avg_min_soilwater, 
+        file = "added_data/tables/driver_analysis/table_yearly_avg_min_soilwater.RDS")
+saveRDS(object = table_yearly_avg_min_snowstorage, 
+        file = "added_data/tables/driver_analysis/table_yearly_avg_min_snowstorage.RDS")
+saveRDS(object = table_yearly_avg_min_airtmp, 
+        file = "added_data/tables/driver_analysis/table_yearly_avg_min_airtmp.RDS")
+saveRDS(object = table_yearly_avg_max_precip, 
+        file = "added_data/tables/driver_analysis/table_yearly_avg_max_precip.RDS")
+saveRDS(object = table_yearly_avg_max_glorad, 
+        file = "added_data/tables/driver_analysis/table_yearly_avg_max_glorad.RDS")
+saveRDS(object = table_yearly_avg_max_relhum, 
+        file = "added_data/tables/driver_analysis/table_yearly_avg_max_relhum.RDS")
+saveRDS(object = table_yearly_avg_max_infiltration, 
+        file = "added_data/tables/driver_analysis/table_yearly_avg_max_infiltration.RDS")
+saveRDS(object = table_yearly_avg_max_groundwaterdepth, 
+        file = "added_data/tables/driver_analysis/table_yearly_avg_max_groundwaterdepth.RDS")
+saveRDS(object = table_yearly_avg_max_soilwater, 
+        file = "added_data/tables/driver_analysis/table_yearly_avg_max_soilwater.RDS")
+saveRDS(object = table_yearly_avg_max_snowstorage, 
+        file = "added_data/tables/driver_analysis/table_yearly_avg_max_snowstorage.RDS")
+saveRDS(object = table_yearly_avg_max_airtmp, 
+        file = "added_data/tables/driver_analysis/table_yearly_avg_max_airtmp.RDS")
+saveRDS(object = table_yearly_avg_min_precip, 
+        file = "added_data/tables/driver_analysis/table_yearly_avg_min_precip.RDS")
+saveRDS(object = table_yearly_avg_min_glorad, 
+        file = "added_data/tables/driver_analysis/table_yearly_avg_min_glorad.RDS")
+saveRDS(object = table_yearly_avg_min_relhum, 
+        file = "added_data/tables/driver_analysis/table_yearly_avg_min_relhum.RDS")
+saveRDS(object = table_yearly_avg_min_infiltration, 
+        file = "added_data/tables/driver_analysis/table_yearly_avg_min_infiltration.RDS")
+
+# yearly
+
+table_yearly_avg_max_groundwaterdepth_yearly <- hydro_total %>%
+  group_by(waterlevel, YY, member) %>%
+  summarise(max_groundwaterdepth = max(groundwaterdepth)) %>% 
+  group_by(waterlevel, YY) %>%
+  summarise(avg_max_groundwaterdepth = mean(max_groundwaterdepth))
+
+table_yearly_avg_min_groundwaterdepth_yearly <- hydro_total %>%
+  group_by(waterlevel, YY, member) %>%
+  summarise(min_groundwaterdepth = min(groundwaterdepth)) %>% 
+  group_by(waterlevel, YY) %>%
+  summarise(avg_min_groundwaterdepth = mean(min_groundwaterdepth))
+
+table_yearly_avg_max_soilwater_yearly <- hydro_total %>%
+  group_by(waterlevel, YY, member) %>%
+  summarise(max_soilwater = max(soilwater)) %>%
+  group_by(waterlevel, YY) %>%
+  summarise(avg_max_soilwater = mean(max_soilwater)) 
+
+table_yearly_avg_min_soilwater_yearly <- hydro_total %>%
+  group_by(waterlevel, YY, member) %>%
+  summarise(min_soilwater = min(soilwater)) %>%
+  group_by(waterlevel, YY) %>%
+  summarise(avg_min_soilwater = mean(min_soilwater)) 
+
+table_yearly_avg_max_snowstorage_yearly <- hydro_total %>%
+  group_by(waterlevel, YY, member) %>%
+  summarise(max_snowstorage = max(snowstorage)) %>%
+  group_by(waterlevel, YY) %>%
+  summarise(avg_max_snowstorage = mean(max_snowstorage)) 
+
+table_yearly_avg_min_snowstorage_yearly <- hydro_total %>%
+  group_by(waterlevel, YY, member) %>%
+  summarise(min_snowstorage = min(snowstorage)) %>%
+  group_by(waterlevel, YY) %>%
+  summarise(avg_min_snowstorage = mean(min_snowstorage)) 
+
+table_yearly_avg_max_airtmp_yearly <- hydro_total %>%
+  group_by(waterlevel, YY, member) %>%
+  summarise(max_airtmp = max(airtmp)) %>%
+  group_by(waterlevel, YY) %>%
+  summarise(avg_max_airtmp = mean(max_airtmp)) 
+
+table_yearly_avg_min_airtmp_yearly <- hydro_total %>%
+  group_by(waterlevel, YY, member) %>%
+  summarise(min_airtmp = min(airtmp)) %>%
+  group_by(waterlevel, YY) %>%
+  summarise(avg_min_airtmp = mean(min_airtmp)) 
+
+table_yearly_avg_min_precip_yearly <- hydro_total %>%
+  group_by(waterlevel, YY, member) %>%
+  summarise(min_precip = min(precip)) %>%
+  group_by(waterlevel, YY) %>%
+  summarise(avg_min_precip = mean(min_precip))
+
+table_yearly_avg_max_precip_yearly <- hydro_total %>%
+  group_by(waterlevel, YY, member) %>%
+  summarise(max_precip = max(precip)) %>%
+  group_by(waterlevel, YY) %>%
+  summarise(avg_max_precip = mean(max_precip))
+
+table_yearly_avg_min_glorad_yearly <- hydro_total %>%
+  group_by(waterlevel, YY, member) %>%
+  summarise(min_glorad = min(glorad)) %>%
+  group_by(waterlevel, YY) %>%
+  summarise(avg_min_glorad = mean(min_glorad)) 
+
+table_yearly_avg_max_glorad_yearly <- hydro_total %>%
+  group_by(waterlevel, YY, member) %>%
+  summarise(max_glorad = max(glorad)) %>%
+  group_by(waterlevel, YY) %>%
+  summarise(avg_max_glorad = mean(max_glorad)) 
+
+table_yearly_avg_min_relhum_yearly <- hydro_total %>%
+  group_by(waterlevel, YY, member) %>%
+  summarise(min_relhum = min(relhum)) %>%
+  group_by(waterlevel, YY) %>%
+  summarise(avg_min_relhum = mean(min_relhum)) 
+
+table_yearly_avg_max_relhum_yearly <- hydro_total %>%
+  group_by(waterlevel, YY, member) %>%
+  summarise(max_relhum = max(relhum)) %>%
+  group_by(waterlevel, YY) %>%
+  summarise(avg_max_relhum = mean(max_relhum)) 
+
+table_yearly_avg_min_infiltration_yearly <- hydro_total %>%
+  group_by(waterlevel, YY, member) %>%
+  summarise(min_infiltration = min(infiltration)) %>%
+  group_by(waterlevel, YY) %>%
+  summarise(avg_min_infiltration = mean(min_infiltration))
+
+table_yearly_avg_max_infiltration_yearly <- hydro_total %>%
+  group_by(waterlevel, YY, member) %>%
+  summarise(max_infiltration = max(infiltration)) %>%
+  group_by(waterlevel, YY) %>%
+  summarise(avg_max_infiltration = mean(max_infiltration))
+
+
+saveRDS(object = table_yearly_avg_max_groundwaterdepth_yearly, 
+        file = "added_data/tables/driver_analysis/table_yearly_avg_max_groundwaterdepth_yearly.RDS")
+saveRDS(object = table_yearly_avg_max_soilwater_yearly, 
+        file = "added_data/tables/driver_analysis/table_yearly_avg_max_soilwater_yearly.RDS")
+saveRDS(object = table_yearly_avg_max_snowstorage_yearly, 
+        file = "added_data/tables/driver_analysis/table_yearly_avg_max_snowstorage_yearly.RDS")
+saveRDS(object = table_yearly_avg_max_airtmp_yearly, 
+        file = "added_data/tables/driver_analysis/table_yearly_avg_max_airtmp_yearly.RDS")
+saveRDS(object = table_yearly_avg_min_precip_yearly, 
+        file = "added_data/tables/driver_analysis/table_yearly_avg_min_precip_yearly.RDS")
+saveRDS(object = table_yearly_avg_min_glorad_yearly, 
+        file = "added_data/tables/driver_analysis/table_yearly_avg_min_glorad_yearly.RDS")
+saveRDS(object = table_yearly_avg_min_relhum_yearly, 
+        file = "added_data/tables/driver_analysis/table_yearly_avg_min_relhum_yearly.RDS")
+saveRDS(object = table_yearly_avg_min_infiltration_yearly, 
+        file = "added_data/tables/driver_analysis/table_yearly_avg_min_infiltration_yearly.RDS")
+
+saveRDS(object = table_yearly_avg_min_groundwaterdepth_yearly, 
+        file = "added_data/tables/driver_analysis/table_yearly_avg_min_groundwaterdepth_yearly.RDS")
+saveRDS(object = table_yearly_avg_min_soilwater_yearly, 
+        file = "added_data/tables/driver_analysis/table_yearly_avg_min_soilwater_yearly.RDS")
+saveRDS(object = table_yearly_avg_min_snowstorage_yearly, 
+        file = "added_data/tables/driver_analysis/table_yearly_avg_min_snowstorage_yearly.RDS")
+saveRDS(object = table_yearly_avg_min_airtmp_yearly, 
+        file = "added_data/tables/driver_analysis/table_yearly_avg_min_airtmp_yearly.RDS")
+saveRDS(object = table_yearly_avg_max_precip_yearly, 
+        file = "added_data/tables/driver_analysis/table_yearly_avg_max_precip_yearly.RDS")
+saveRDS(object = table_yearly_avg_max_glorad_yearly, 
+        file = "added_data/tables/driver_analysis/table_yearly_avg_max_glorad_yearly.RDS")
+saveRDS(object = table_yearly_avg_max_relhum_yearly, 
+        file = "added_data/tables/driver_analysis/table_yearly_avg_max_relhum_yearly.RDS")
+saveRDS(object = table_yearly_avg_max_infiltration_yearly, 
+        file = "added_data/tables/driver_analysis/table_yearly_avg_max_infiltration_yearly.RDS")
+
+dir.create("added_data/tables/extreme_values")
+pegel_list <- list(hydro_summer_20203, hydro_summer_11502, hydro_summer_10304, 
+                   hydro_winter_20203, hydro_winter_11502, hydro_winter_10304)
+pegel_names <- c("hydro_summer_20203", "hydro_summer_11502", "hydro_summer_10304", 
+                 "hydro_winter_20203", "hydro_winter_11502", "hydro_winter_10304")
+counter_names <- 1
+
+# Define the quantiles for which you want to calculate the percentage of the target variable
+quantiles_ranges <- seq(0, 1, by=0.1)
+colum_names <- c("avg_precip", "avg_airtmp", "avg_glorad", "avg_relhum", "avg_soilwater", "avg_snowstorage", 
+                 "groundwaterdepth", "avg_infiltration", "max_precip")#, "avg_snowstorage_drain")
+colum_names_long <- c("Mittlerer\nNiederschlag", "Mittlere\nLufttemperatur", 
+                      "Mittlere\neinfallende\nkurzwellige Strahlung", "Mittlere\nrelative\nLuftfeuchte", 
+                      "Mittlere\noberflächennahe\nrelative\nBodenfeuchte", "Mittlerer\nSchneespeicher", 
+                      "Grundwasserstand", "Mittlere\nVersickerung", "Maximaler\nNiederschlag")
+for (pegel in pegel_list) {
+  i = 1
+  
+  # Create an empty matrix to store the percentage values
+  quantile_percents_ranges <- matrix(nrow=length(quantiles_ranges)-1, ncol=length(colum_names))
+  
+  # Loop over each predictor variable and calculate the percentage of the target variable for each range
+  for (col_name in colum_names) {
+    # Get the quantile values for the current predictor variable
+    quantile_values <- quantile(pegel[, col_name], probs=quantiles_ranges, na.rm = TRUE)
+    for (j in 1:(length(quantiles_ranges)-1)) {
+      # Calculate the percentage of the target variable for the current range and predictor variable
+      quantile_percents_ranges[j, i] <- 
+        sum((pegel[pegel[, col_name] >= quantile_values[j] & pegel[, col_name] < quantile_values[j+1],
+                   "lowlevel"]) == "TRUE", na.rm = TRUE)/sum((pegel[, "lowlevel"]) == "TRUE", na.rm = TRUE)
+    }
+    i = i + 1
+  }
+  
+  # Print the results
+  colnames(quantile_percents_ranges) <- colum_names_long
+  rownames(quantile_percents_ranges) <- paste0(
+    quantiles_ranges[-length(quantiles_ranges)]*100, "% - ", quantiles_ranges[-1]*100, "%")
+  quantile_percents_ranges <- round(quantile_percents_ranges, digits = 3)
+  
+  # Save as table
+  saveRDS(object = quantile_percents_ranges, 
+          file = paste0("added_data/tables/extreme_values/quantile_percents_ranges_", pegel_names[counter_names], ".RDS"))
+  
+  counter_names = counter_names + 1
+}

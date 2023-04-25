@@ -8,6 +8,9 @@ output:
 ---
 
 ```{r setup, include=FALSE}
+
+# !!! Dient nur der generierung der summary statistic
+
 # library(memisc)
 # library(tidyverse)
 # hydro_summer_20203 <- readRDS(file = "./data/hydro_summer_20203.RDS")
