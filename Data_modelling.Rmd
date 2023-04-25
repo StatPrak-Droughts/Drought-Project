@@ -32,107 +32,6 @@ hydro_winter_11502 <- readRDS(file = "./data/hydro_winter_11502.RDS")
 hydro_winter_10304 <- readRDS(file = "./data/hydro_winter_10304.RDS")
 hydro_total <- readRDS(file = "./data/hydro_total.RDS")
 pegel_prop <- readRDS(file = "./data/pegel_prop.RDS")
-# Add rescaled soilwater
-hydro_summer$soilwater100 <- hydro_summer$soilwater * 100
-hydro_summer_20203$soilwater100 <- hydro_summer_20203$soilwater * 100
-hydro_summer_11502$soilwater100 <- hydro_summer_11502$soilwater * 100
-hydro_summer_10304$soilwater100 <- hydro_summer_10304$soilwater * 100
-hydro_winter$soilwater100 <- hydro_winter$soilwater * 100
-hydro_winter_20203$soilwater100 <- hydro_winter_20203$soilwater * 100
-hydro_winter_11502$soilwater100 <- hydro_winter_11502$soilwater * 100
-hydro_winter_10304$soilwater100 <- hydro_winter_10304$soilwater * 100
-
-
-## add column max_precip
-# winter
-max_precip <- as.numeric(rep(NA, length = nrow(hydro_winter)))
-for(k in 7:length(max_precip)) {
-  if (all(hydro_winter$member[(k - 6):(k - 1)] == hydro_winter$member[k]) &&
-      all(hydro_winter$name_waterlevel[(k - 6):(k - 1)] == hydro_winter$name_waterlevel[k])) {
-    if (hydro_winter$MM[k] == 11) {
-      if (all(hydro_winter$MM[(k - 6):(k - 1)] == 11)) {
-        max_precip[k] <- max(hydro_winter$precip[(k - 6):k])
-      }
-    } else {
-      max_precip[k] <- max(hydro_winter$precip[(k - 6):k])
-    }
-  }
-}
-hydro_winter <- cbind(hydro_winter, max_precip)
-
-# summer
-max_precip <- as.numeric(rep(NA, length = nrow(hydro_summer)))
-for(k in 7:length(max_precip)) {
-  if (all(hydro_summer$member[(k - 6):(k - 1)] == hydro_summer$member[k]) &&
-      all(hydro_summer$name_waterlevel[(k - 6):(k - 1)] == hydro_summer$name_waterlevel[k])) {
-    if (hydro_summer$MM[k] == 5) {
-      if (all(hydro_summer$MM[(k - 6):(k - 1)] == 5)) {
-        max_precip[k] <- max(hydro_summer$precip[(k - 6):k])
-      }
-    } else {
-      max_precip[k] <- max(hydro_summer$precip[(k - 6):k])
-    }
-  }
-}
-hydro_summer <- cbind(hydro_summer, max_precip)
-
-
-##Rescaling avg variables
-hydro_winter$max_precip_scaled <- hydro_winter$max_precip * 1.25
-hydro_summer$max_precip_scaled <- hydro_summer$max_precip * 1.25
-
-hydro_summer_10304$avg_soilwater_scaled <- hydro_summer_10304$avg_soilwater * 6
-hydro_summer_10304$avg_snowstorage_scaled <- hydro_summer_10304$avg_snowstorage * 2
-hydro_summer_10304$avg_airtmp_scaled <- hydro_summer_10304$avg_airtmp * 3
-hydro_summer_10304$avg_precip_scaled <- hydro_summer_10304$avg_precip * 4.5
-hydro_summer_10304$avg_glorad_scaled <- hydro_summer_10304$avg_glorad * 0.062
-hydro_summer_10304$avg_relhum_scaled<- hydro_summer_10304$avg_relhum * 1.4
-hydro_summer_10304$avg_infiltration_scaled <- hydro_summer_10304$avg_infiltration * 43
-
-
-hydro_summer_11502$avg_soilwater_scaled <- hydro_summer_11502$avg_soilwater * 6
-hydro_summer_11502$avg_snowstorage_scaled <- hydro_summer_11502$avg_snowstorage * 2
-hydro_summer_11502$avg_airtmp_scaled <- hydro_summer_11502$avg_airtmp * 3
-hydro_summer_11502$avg_precip_scaled <- hydro_summer_11502$avg_precip  * 4.5
-hydro_summer_11502$avg_glorad_scaled <- hydro_summer_11502$avg_glorad * 0.062
-hydro_summer_11502$avg_relhum_scaled <- hydro_summer_11502$avg_relhum * 1.4
-hydro_summer_11502$avg_infiltration_scaled <- hydro_summer_11502$avg_infiltration * 43
-
-
-hydro_summer_20203$avg_soilwater_scaled <- hydro_summer_20203$avg_soilwater * 6
-hydro_summer_20203$avg_snowstorage_scaled <- hydro_summer_20203$avg_snowstorage * 2
-hydro_summer_20203$avg_airtmp_scaled <- hydro_summer_20203$avg_airtmp * 3
-hydro_summer_20203$avg_precip_scaled <- hydro_summer_20203$avg_precip * 4.5
-hydro_summer_20203$avg_glorad_scaled <- hydro_summer_20203$avg_glorad * 0.062
-hydro_summer_20203$avg_relhum_scaled <- hydro_summer_20203$avg_relhum * 1.4
-hydro_summer_20203$avg_infiltration_scaled <- hydro_summer_20203$avg_infiltration * 43
-
-
-hydro_winter_10304$avg_soilwater_scaled <- hydro_winter_10304$avg_soilwater * 6
-hydro_winter_10304$avg_snowstorage_scaled <- hydro_winter_10304$avg_snowstorage * 2
-hydro_winter_10304$avg_airtmp_scaled <- hydro_winter_10304$avg_airtmp * 3
-hydro_winter_10304$avg_precip_scaled <- hydro_winter_10304$avg_precip * 4.5
-hydro_winter_10304$avg_glorad_scaled <- hydro_winter_10304$avg_glorad * 0.062
-hydro_winter_10304$avg_relhum_scaled <- hydro_winter_10304$avg_relhum * 1.4
-hydro_winter_10304$avg_infiltration_scaled <- hydro_winter_10304$avg_infiltration * 43
-
-
-hydro_winter_11502$avg_soilwater_scaled <- hydro_winter_11502$avg_soilwater * 6
-hydro_winter_11502$avg_snowstorage_scaled <- hydro_winter_11502$avg_snowstorage * 2
-hydro_winter_11502$avg_airtmp_scaled <- hydro_winter_11502$avg_airtmp * 3
-hydro_winter_11502$avg_precip_scaled <- hydro_winter_11502$avg_precip  * 4.5
-hydro_winter_11502$avg_glorad_scaled <- hydro_winter_11502$avg_glorad * 0.062
-hydro_winter_11502$avg_relhum_scaled <- hydro_winter_11502$avg_relhum * 1.4
-hydro_winter_11502$avg_infiltration_scaled <- hydro_winter_11502$avg_infiltration * 43
-
-
-hydro_winter_11502$avg_soilwater_scaled <- hydro_winter_11502$avg_soilwater * 6
-hydro_winter_11502$avg_snowstorage_scaled <- hydro_winter_11502$avg_snowstorage * 2
-hydro_winter_11502$avg_airtmp_scaled <- hydro_winter_11502$avg_airtmp * 3
-hydro_winter_11502$avg_precip_scaled <- hydro_winter_11502$avg_precip * 4.5
-hydro_winter_11502$avg_glorad_scaled <- hydro_winter_11502$avg_glorad * 0.062
-hydro_winter_11502$avg_relhum_scaled <- hydro_winter_11502$avg_relhum * 1.4
-hydro_winter_11502$avg_infiltration_scaled <- hydro_winter_11502$avg_infiltration * 43
 
 # Read data
 hydro_summer_20203 <- readRDS(file = "./data/hydro_summer_20203.RDS")
@@ -143,568 +42,13 @@ hydro_winter_11502 <- readRDS(file = "./data/hydro_winter_11502.RDS")
 hydro_winter_10304 <- readRDS(file = "./data/hydro_winter_10304.RDS")
 hydro_total <- readRDS(file = "./data/hydro_total.RDS")
 pegel_prop <- readRDS(file = "./data/pegel_prop.RDS")
-# Add rescaled soilwater
-hydro_summer$soilwater100 <- hydro_summer$soilwater * 100
-hydro_summer_20203$soilwater100 <- hydro_summer_20203$soilwater * 100
-hydro_summer_11502$soilwater100 <- hydro_summer_11502$soilwater * 100
-hydro_summer_10304$soilwater100 <- hydro_summer_10304$soilwater * 100
-hydro_winter$soilwater100 <- hydro_winter$soilwater * 100
-hydro_winter_20203$soilwater100 <- hydro_winter_20203$soilwater * 100
-hydro_winter_11502$soilwater100 <- hydro_winter_11502$soilwater * 100
-hydro_winter_10304$soilwater100 <- hydro_winter_10304$soilwater * 100
-
-# Rolling means longer duration
-# 10304
-# Winter
-hydro_winter_10304$avg12_precip <- zoo::rollmean(hydro_winter_10304$precip, k = 12, fill = NA)
-hydro_winter_10304$avg12_soilwater <- zoo::rollmean(hydro_winter_10304$soilwater, k = 12, fill = NA)
-hydro_winter_10304$avg12_snowstorage <- zoo::rollmean(hydro_winter_10304$snowstorage, k = 12, fill = NA)
-hydro_winter_10304$avg30_snowstorage <- zoo::rollmean(hydro_winter_10304$snowstorage, k = 30, fill = mean(hydro_winter_10304$snowstorage))
-hydro_winter_10304$med_precpip <- zoo::rollmedian(hydro_winter_10304$precip, k = 7, fill = NA)
-hydro_winter_10304$med_soilwater <- zoo::rollmedian(hydro_winter_10304$soilwater, k = 7, fill = NA)
-hydro_winter_10304$med_snowstorage <- zoo::rollmedian(hydro_winter_10304$snowstorage, k = 7, fill = NA)
-# Summer
-hydro_summer_10304$avg12_precip <- zoo::rollmean(hydro_summer_10304$precip, k = 12, fill = NA)
-hydro_summer_10304$avg12_soilwater <- zoo::rollmean(hydro_summer_10304$soilwater, k = 12, fill = NA)
-hydro_summer_10304$avg12_snowstorage <- zoo::rollmean(hydro_summer_10304$snowstorage, k = 12, fill = NA)
-hydro_summer_10304$avg30_snowstorage <- zoo::rollmean(hydro_summer_10304$snowstorage, k = 30, fill = mean(hydro_summer_10304$snowstorage))
-hydro_summer_10304$med_precpip <- zoo::rollmedian(hydro_summer_10304$precip, k = 7, fill = NA)
-hydro_summer_10304$med_soilwater <- zoo::rollmedian(hydro_summer_10304$soilwater, k = 7, fill = NA)
-hydro_summer_10304$med_snowstorage <- zoo::rollmedian(hydro_summer_10304$snowstorage, k = 7, fill = NA)
-
-# 11502
-# Winter
-hydro_winter_11502$avg12_precip <- zoo::rollmean(hydro_winter_11502$precip, k = 12, fill = NA)
-hydro_winter_11502$avg12_soilwater <- zoo::rollmean(hydro_winter_11502$soilwater, k = 12, fill = NA)
-hydro_winter_11502$avg12_snowstorage <- zoo::rollmean(hydro_winter_11502$snowstorage, k = 12, fill = NA)
-hydro_winter_11502$med_precpip <- zoo::rollmedian(hydro_winter_11502$precip, k = 7 , fill = NA)
-hydro_winter_11502$med_soilwater <- zoo::rollmedian(hydro_winter_11502$soilwater, k = 7, fill = NA)
-hydro_winter_11502$med_snowstorage <- zoo::rollmedian(hydro_winter_11502$snowstorage, k = 7, fill = NA)
-#Summer
-hydro_summer_11502$avg12_precip <- zoo::rollmean(hydro_summer_11502$precip, k = 12, fill = NA)
-hydro_summer_11502$avg12_soilwater <- zoo::rollmean(hydro_summer_11502$soilwater, k = 12, fill = NA)
-hydro_summer_11502$avg12_snowstorage <- zoo::rollmean(hydro_summer_11502$snowstorage, k = 12, fill = NA)
-hydro_summer_11502$med_precpip <- zoo::rollmedian(hydro_summer_11502$precip, k = 7, fill = NA)
-hydro_summer_11502$med_soilwater <- zoo::rollmedian(hydro_summer_11502$soilwater, k = 7, fill = NA)
-hydro_summer_11502$med_snowstorage <- zoo::rollmedian(hydro_summer_11502$snowstorage, k = 7, fill = NA)
-
-# 20203
-hydro_winter_20203$avg12_precip <- zoo::rollmean(hydro_winter_20203$precip, k = 12, fill = NA)
-hydro_winter_20203$avg12_soilwater <- zoo::rollmean(hydro_winter_20203$soilwater, k = 12, fill = NA)
-hydro_winter_20203$avg12_snowstorage <- zoo::rollmean(hydro_winter_20203$snowstorage, k = 12, fill = NA)
-hydro_winter_20203$med_precpip <- zoo::rollmedian(hydro_winter_20203$precip, k = 7, fill = NA)
-hydro_winter_20203$med_soilwater <- zoo::rollmedian(hydro_winter_20203$soilwater, k = 7, fill = NA)
-hydro_winter_20203$med_snowstorage <- zoo::rollmedian(hydro_winter_20203$snowstorage, k = 7, fill = NA)
-#Summer
-hydro_summer_20203$avg12_precip <- zoo::rollmean(hydro_summer_20203$precip, k = 12, fill = NA)
-hydro_summer_20203$avg12_soilwater <- zoo::rollmean(hydro_summer_20203$soilwater, k = 12, fill = NA)
-hydro_summer_20203$avg12_snowstorage <- zoo::rollmean(hydro_summer_20203$snowstorage, k = 12, fill = NA)
-hydro_summer_20203$med_precpip <- zoo::rollmedian(hydro_summer_20203$precip, k = 7, fill = NA)
-hydro_summer_20203$med_soilwater <- zoo::rollmedian(hydro_summer_20203$soilwater, k = 7, fill = NA)
-hydro_summer_20203$med_snowstorage <- zoo::rollmedian(hydro_summer_20203$snowstorage, k = 7, fill = NA)
-
-
-# separate datasets for each waterlevel, season and member
-# winter
-for (i in pegel_ids) {
-  for (j in levels(hydro_total$member)) {
-    assign(paste0("hydro_winter_", i, "_", j), hydro_winter %>% filter(name_waterlevel %in% i) %>% filter(member %in% j))
-  }
-}
-
-# summer
-for (i in pegel_ids) {
-  for (j in levels(hydro_total$member)) {
-    assign(paste0("hydro_summer_", i, "_", j), hydro_summer %>% filter(name_waterlevel %in% i) %>% filter(member %in% j))
-  }
-}
-
-# add column snowstorage_diff
-# winter
-for (i in pegel_ids) {
-  for (j in levels(hydro_total$member)) {
-    snowstorage_diff <- as.numeric(rep(NA, length = nrow(get(paste0("hydro_winter_", i, "_", j)))))
-    for (k in 2:length(snowstorage_diff)) {
-      if (!is.na(get(paste0("hydro_winter_", i, "_", j))$snowstorage[k]) &&
-          !(is.na(get(paste0("hydro_winter_", i, "_", j))$snowstorage[k - 1]))) {
-        if (get(paste0("hydro_winter_", i, "_", j))$MM[k] == 11) {
-          if (get(paste0("hydro_winter_", i, "_", j))$MM[k - 1] == 11) {
-            snowstorage_diff[k] <- get(paste0("hydro_winter_", i, "_", j))$snowstorage[k] -
-              get(paste0("hydro_winter_", i, "_", j))$snowstorage[k - 1]
-          }
-        } else {
-          snowstorage_diff[k] <- get(paste0("hydro_winter_", i, "_", j))$snowstorage[k] -
-            get(paste0("hydro_winter_", i, "_", j))$snowstorage[k - 1]
-        }
-      }
-      
-    }
-    assign(paste0("hydro_winter_", i, "_", j), cbind(get(paste0("hydro_winter_", i, "_", j)), snowstorage_diff))  
-  }
-}
-
-# summer
-for (i in pegel_ids) {
-  for (j in levels(hydro_total$member)) {
-    snowstorage_diff <- as.numeric(rep(NA, length = nrow(get(paste0("hydro_summer_", i, "_", j)))))
-    for (k in 2:length(snowstorage_diff)) {
-      if (!is.na(get(paste0("hydro_summer_", i, "_", j))$snowstorage[k]) &&
-          !(is.na(get(paste0("hydro_summer_", i, "_", j))$snowstorage[k - 1]))) {
-        if (get(paste0("hydro_summer_", i, "_", j))$MM[k] == 5) {
-          if (get(paste0("hydro_summer_", i, "_", j))$MM[k - 1] == 5) {
-            snowstorage_diff[k] <- get(paste0("hydro_summer_", i, "_", j))$snowstorage[k] -
-              get(paste0("hydro_summer_", i, "_", j))$snowstorage[k - 1]
-          }
-        } else {
-          snowstorage_diff[k] <- get(paste0("hydro_summer_", i, "_", j))$snowstorage[k] -
-            get(paste0("hydro_summer_", i, "_", j))$snowstorage[k - 1]
-        }
-      }
-      
-    }
-    assign(paste0("hydro_summer_", i, "_", j), cbind(get(paste0("hydro_summer_", i, "_", j)), snowstorage_diff))     
-  }
-}
-
-# add column snowstorage_drain
-# winter
-for (i in pegel_ids) {
-  for (j in levels(hydro_total$member)) {
-    snowstorage_drain <- get(paste0("hydro_winter_", i, "_", j))$snowstorage_diff
-    for (k in 1:length(snowstorage_drain)) {
-      if (!is.na(snowstorage_drain[k])) {
-        if (snowstorage_drain[k] >= 0) {
-        snowstorage_drain[k] <- NA
-        }
-      }
-    }
-    assign(paste0("hydro_winter_", i, "_", j), cbind(get(paste0("hydro_winter_", i, "_", j)), snowstorage_drain))  
-  }
-}
-
-# summer
-for (i in pegel_ids) {
-  for (j in levels(hydro_total$member)) {
-    snowstorage_drain <- get(paste0("hydro_summer_", i, "_", j))$snowstorage_diff
-    for (k in 1:length(snowstorage_drain)) {
-      if (!is.na(snowstorage_drain[k])) {
-        if (snowstorage_drain[k] >= 0) {
-        snowstorage_drain[k] <- NA
-        }
-      }
-    }
-    assign(paste0("hydro_summer_", i, "_", j), cbind(get(paste0("hydro_summer_", i, "_", j)), snowstorage_drain)) 
-  }
-}
-
-# add column avg_snowstorage_drain
-# winter
-for (i in pegel_ids) {
-  for (j in levels(hydro_total$member)) {
-    avg_snowstorage_drain <- as.numeric(rep(NA, length = nrow(get(paste0("hydro_winter_", i, "_", j)))))
-    for (k in 7:length(avg_snowstorage_drain)) {
-      if (get(paste0("hydro_winter_", i, "_", j))$MM[k] == 11) {
-        if (all(get(paste0("hydro_winter_", i, "_", j))$MM[(k - 6):k] == 11)) {
-           avg_snowstorage_drain[k] <- mean(get(paste0("hydro_winter_", i, "_", j))$snowstorage_drain[(k - 6):k],
-                                             na.rm = TRUE)
-        }
-      } else {
-        avg_snowstorage_drain[k] <- mean(get(paste0("hydro_winter_", i, "_", j))$snowstorage_drain[(k - 6):k],
-                                             na.rm = TRUE)
-      }
-    }
-    assign(paste0("hydro_winter_", i, "_", j), cbind(get(paste0("hydro_winter_", i, "_", j)), avg_snowstorage_drain))  
-  }
-}
-
-# summer
-for (i in pegel_ids) {
-  for (j in levels(hydro_total$member)) {
-    avg_snowstorage_drain <- as.numeric(rep(NA, length = nrow(get(paste0("hydro_summer_", i, "_", j)))))
-    for (k in 7:length(avg_snowstorage_drain)) {
-      if (get(paste0("hydro_summer_", i, "_", j))$MM[k] == 5) {
-        if (all(get(paste0("hydro_summer_", i, "_", j))$MM[(k - 6):k] == 5)) {
-           avg_snowstorage_drain[k] <- mean(get(paste0("hydro_summer_", i, "_", j))$snowstorage_drain[(k - 6):k],
-                                             na.rm = TRUE)
-        }
-      } else {
-        avg_snowstorage_drain[k] <- mean(get(paste0("hydro_summer_", i, "_", j))$snowstorage_drain[(k - 6):k],
-                                             na.rm = TRUE)
-      }
-    }
-    assign(paste0("hydro_summer_", i, "_", j), cbind(get(paste0("hydro_summer_", i, "_", j)), avg_snowstorage_drain))  
-  }
-}
-
-
-## add coulmn lowlevel_first
-# winter
-for (i in pegel_ids) {
-  for (j in levels(hydro_total$member)) {
-    lowlevel_first <- as.logical(rep(NA, length = nrow(get(paste0("hydro_winter_", i, "_", j)))))
-    for (k in 1:length(lowlevel_first)) {
-      if (!is.na(get(paste0("hydro_winter_", i, "_", j))$lowlevel_days[k])) {
-        if (get(paste0("hydro_winter_", i, "_", j))$lowlevel_days[k] == 1) {
-          lowlevel_first[k] <- TRUE
-        } else {
-          lowlevel_first[k] <- FALSE
-        }
-      }
-    }
-    assign(paste0("hydro_winter_", i, "_", j), cbind(get(paste0("hydro_winter_", i, "_", j)), lowlevel_first))
-  }
-}
-
-# summer
-for (i in pegel_ids) {
-  for (j in levels(hydro_total$member)) {
-    lowlevel_first <- as.logical(rep(NA, length = nrow(get(paste0("hydro_summer_", i, "_", j)))))
-    for (k in 1:length(lowlevel_first)) {
-      if (!is.na(get(paste0("hydro_summer_", i, "_", j))$lowlevel_days[k])) {
-        if (get(paste0("hydro_summer_", i, "_", j))$lowlevel_days[k] == 1) {
-          lowlevel_first[k] <- TRUE
-        } else {
-          lowlevel_first[k] <- FALSE
-        }
-      }
-    }
-    assign(paste0("hydro_summer_", i, "_", j), cbind(get(paste0("hydro_summer_", i, "_", j)), lowlevel_first))
-  }
-}
-
-```
-
-
-###### Basic linear models (might not be appropriate)
-### ZV: Drainage
-
-## Temp
-``` {r}
-# Summer
-summary(lm(hydro_summer_10304$airtmp ~ hydro_summer_10304$drainage))
-summer_temp_10304 <- ggplot(hydro_summer_10304, aes(airtmp, drainage)) +
-  geom_point() +
-  geom_smooth(method = "lm", formular = y~x)
-summary(lm(hydro_summer_11502$airtmp ~ hydro_summer_11502$drainage))
-summer_temp_11502 <- ggplot(hydro_summer_11502, aes(airtmp, drainage)) +
-  geom_point() +
-  geom_smooth(method = "lm", formular = y~x)
-summary(lm(hydro_summer_20203$airtmp ~ hydro_summer_20203$drainage))
-summer_temp_20203 <- ggplot(hydro_summer_20203, aes(airtmp, drainage)) +
-  geom_point() +
-  geom_smooth(method = "lm", formular = y~x)
-grid.arrange(summer_temp_10304, summer_temp_11502, summer_temp_20203, ncol = 2)
-
-
-## Nach membern differenziert ein Testplot
-ggplot(data = hydro_summer_10304, aes(x = airtmp, y = drainage, color = member)) +
-  geom_point() +
-  geom_smooth(method = "lm", se = FALSE) +
-  theme_bw()
-
-# Winter
-summary(lm(hydro_winter_10304$airtmp ~ hydro_winter_10304$drainage))
-winter_temp_10304 <- ggplot(hydro_winter_10304, aes(airtmp, drainage)) +
-  geom_point() +
-  geom_smooth(method = "lm", formular = y~x)
-summary(lm(hydro_winter_11502$airtmp ~ hydro_winter_11502$drainage))
-winter_temp_11502 <- ggplot(hydro_winter_11502, aes(airtmp, drainage)) +
-  geom_point() +
-  geom_smooth(method = "lm", formular = y~x)
-summary(lm(hydro_winter_20203$airtmp ~ hydro_winter_20203$drainage))
-winter_temp_20203 <- ggplot(hydro_winter_20203, aes(airtmp, drainage)) +
-  geom_point() +
-  geom_smooth(method = "lm", formular = y~x)
-grid.arrange(winter_temp_10304, winter_temp_11502, winter_temp_20203, ncol = 2)
-grid.arrange(winter_temp_10304, winter_temp_11502, winter_temp_20203, 
-             summer_temp_10304, summer_temp_11502, summer_temp_20203,ncol = 2)
-
-## Nach membern differenziert ein Testplot
-ggplot(data = hydro_winter_10304, aes(x = airtmp, y = drainage, color = member)) +
-  geom_point() +
-  geom_smooth(method = "lm", se = FALSE) +
-  theme_bw()
-```
-
-## precip
-```{r}
-summary(lm(hydro_summer_10304$precip ~ hydro_summer_10304$drainage))
-summer_precip_10304 <- ggplot(hydro_summer_10304, aes(precip, drainage)) +
-  geom_point() +
-  geom_smooth(method = "lm", formular = y~x)
-summary(lm(hydro_summer_11502$precip ~ hydro_summer_11502$drainage))
-summer_precip_11502 <- ggplot(hydro_summer_11502, aes(precip, drainage)) +
-  geom_point() +
-  geom_smooth(method = "lm", formular = y~x)
-summary(lm(hydro_summer_20203$precip ~ hydro_summer_20203$drainage))
-summer_precip_20203 <- ggplot(hydro_summer_20203, aes(precip, drainage)) +
-  geom_point() +
-  geom_smooth(method = "lm", formular = y~x)
-grid.arrange(summer_precip_10304, summer_precip_11502, summer_precip_20203, ncol = 2)
-## Nach membern differenziert ein Testplot
-ggplot(data = hydro_summer_10304, aes(x = precip, y = drainage, color = member)) +
-  geom_point() +
-  geom_smooth(method = "lm", se = FALSE) +
-  theme_bw()
-# Winter
-summary(lm(hydro_winter_10304$precip ~ hydro_winter_10304$drainage))
-winter_precip_10304 <- ggplot(hydro_winter_10304, aes(precip, drainage)) +
-  geom_point() +
-  geom_smooth(method = "lm", formular = y~x)
-summary(lm(hydro_winter_11502$precip ~ hydro_winter_11502$drainage))
-winter_precip_11502 <- ggplot(hydro_winter_11502, aes(precip, drainage)) +
-  geom_point() +
-  geom_smooth(method = "lm", formular = y~x)
-summary(lm(hydro_winter_20203$precip ~ hydro_winter_20203$drainage))
-winter_precip_20203 <- ggplot(hydro_winter_20203, aes(precip, drainage)) +
-  geom_point() +
-  geom_smooth(method = "lm", formular = y~x)
-grid.arrange(winter_precip_10304, winter_precip_11502, winter_precip_20203, ncol = 2)
-grid.arrange(winter_precip_10304, winter_precip_11502, winter_precip_20203, 
-             summer_precip_10304, summer_precip_11502, summer_precip_20203, ncol = 3)
-## Nach membern differenziert ein Testplot
-ggplot(data = hydro_winter_10304, aes(x = precip, y = drainage, color = member)) +
-  geom_point() +
-  geom_smooth(method = "lm", se = FALSE) +
-  theme_bw()
-```
-
-## radiation
-```{r}
-summary(lm(hydro_summer_10304$glorad ~ hydro_summer_10304$drainage))
-summer_glorad_10304 <- ggplot(hydro_summer_10304, aes(glorad, drainage)) +
-  geom_point() +
-  geom_smooth(method = "lm", formular = y~x)
-summary(lm(hydro_summer_11502$glorad ~ hydro_summer_11502$drainage))
-summer_glorad_11502 <- ggplot(hydro_summer_11502, aes(glorad, drainage)) +
-  geom_point() +
-  geom_smooth(method = "lm", formular = y~x)
-summary(lm(hydro_summer_20203$glorad ~ hydro_summer_20203$drainage))
-summer_glorad_20203 <- ggplot(hydro_summer_20203, aes(glorad, drainage)) +
-  geom_point() +
-  geom_smooth(method = "lm", formular = y~x)
-grid.arrange(summer_glorad_10304, summer_glorad_11502, summer_glorad_20203, ncol = 2)
-
-## Nach membern differenziert ein Testplot
-ggplot(data = hydro_summer_10304, aes(x = glorad, y = drainage, color = member)) +
-  geom_point() +
-  geom_smooth(method = "lm", se = FALSE) +
-  theme_bw()
-# Winter
-summary(lm(hydro_winter_10304$glorad ~ hydro_winter_10304$drainage))
-winter_glorad_10304 <- ggplot(hydro_winter_10304, aes(glorad, drainage)) +
-  geom_point() +
-  geom_smooth(method = "lm", formular = y~x)
-summary(lm(hydro_winter_11502$glorad ~ hydro_winter_11502$drainage))
-winter_glorad_11502 <- ggplot(hydro_winter_11502, aes(glorad, drainage)) +
-  geom_point() +
-  geom_smooth(method = "lm", formular = y~x)
-summary(lm(hydro_winter_20203$glorad ~ hydro_winter_20203$drainage))
-winter_glorad_20203 <- ggplot(hydro_winter_20203, aes(glorad, drainage)) +
-  geom_point() +
-  geom_smooth(method = "lm", formular = y~x)
-grid.arrange(winter_glorad_10304, winter_glorad_11502, winter_glorad_20203, ncol = 2)
-grid.arrange(winter_glorad_10304, winter_glorad_11502, winter_glorad_20203, 
-             summer_glorad_10304, summer_glorad_11502, summer_glorad_20203, ncol = 3)
-
-## Nach membern differenziert ein Testplot
-ggplot(data = hydro_winter_10304, aes(x = glorad, y = drainage, color = member)) +
-  geom_point() +
-  geom_smooth(method = "lm", se = FALSE) +
-  theme_bw()
-```
-
-# rel. Humidity
-``` {r}
-summary(lm(hydro_summer_10304$relhum ~ hydro_summer_10304$drainage))
-summer_relhum_10304 <- ggplot(hydro_summer_10304, aes(relhum, drainage)) +
-  geom_point() +
-  geom_smooth(method = "lm", formular = y~x)
-summary(lm(hydro_summer_11502$relhum ~ hydro_summer_11502$drainage))
-summer_relhum_11502 <- ggplot(hydro_summer_11502, aes(relhum, drainage)) +
-  geom_point() +
-  geom_smooth(method = "lm", formular = y~x)
-summary(lm(hydro_summer_20203$relhum ~ hydro_summer_20203$drainage))
-summer_relhum_20203 <- ggplot(hydro_summer_20203, aes(relhum, drainage)) +
-  geom_point() +
-  geom_smooth(method = "lm", formular = y~x)
-grid.arrange(summer_relhum_10304, summer_relhum_11502, summer_relhum_20203, ncol = 2)
-
-## Nach membern differenziert ein Testplot
-ggplot(data = hydro_summer_10304, aes(x = relhum, y = drainage, color = member)) +
-  geom_point() +
-  geom_smooth(method = "lm", se = FALSE) +
-  theme_bw()
-# Winter
-summary(lm(hydro_winter_10304$relhum ~ hydro_winter_10304$drainage))
-winter_relhum_10304 <- ggplot(hydro_winter_10304, aes(relhum, drainage)) +
-  geom_point() +
-  geom_smooth(method = "lm", formular = y~x)
-summary(lm(hydro_winter_11502$relhum ~ hydro_winter_11502$drainage))
-winter_relhum_11502 <- ggplot(hydro_winter_11502, aes(relhum, drainage)) +
-  geom_point() +
-  geom_smooth(method = "lm", formular = y~x)
-summary(lm(hydro_winter_20203$relhum ~ hydro_winter_20203$drainage))
-winter_relhum_20203 <- ggplot(hydro_winter_20203, aes(relhum, drainage)) +
-  geom_point() +
-  geom_smooth(method = "lm", formular = y~x)
-grid.arrange(winter_relhum_10304, winter_relhum_11502, winter_relhum_20203, ncol = 2)
-grid.arrange(winter_relhum_10304, winter_relhum_11502, winter_relhum_20203, 
-             summer_relhum_10304, summer_relhum_11502, summer_relhum_20203, ncol = 3)
-
-## Nach membern differenziert ein Testplot
-ggplot(data = hydro_winter_10304, aes(x = relhum, y = drainage, color = member)) +
-  geom_point() +
-  geom_smooth(method = "lm", se = FALSE) +
-  theme_bw()
-
 
 
 ```
 
-# Groundwater depth
-``` {r}
-summary(lm(hydro_summer_10304$groundwaterdepth ~ hydro_summer_10304$drainage))
-summer_groundwaterdepth_10304 <- ggplot(hydro_summer_10304, aes(groundwaterdepth, drainage)) +
-  geom_point() +
-  geom_smooth(method = "lm", formular = y~x)
-summary(lm(hydro_summer_11502$groundwaterdepth ~ hydro_summer_11502$drainage))
-summer_groundwaterdepth_11502 <- ggplot(hydro_summer_11502, aes(groundwaterdepth, drainage)) +
-  geom_point() +
-  geom_smooth(method = "lm", formular = y~x)
-summary(lm(hydro_summer_20203$groundwaterdepth ~ hydro_summer_20203$drainage))
-summer_groundwaterdepth_20203 <- ggplot(hydro_summer_20203, aes(groundwaterdepth, drainage)) +
-  geom_point() +
-  geom_smooth(method = "lm", formular = y~x)
-grid.arrange(summer_groundwaterdepth_10304, summer_groundwaterdepth_11502, summer_groundwaterdepth_20203, ncol = 2)
-
-## Nach membern differenziert ein Testplot
-ggplot(data = hydro_summer_10304, aes(x = groundwaterdepth, y = drainage, color = member)) +
-  geom_point() +
-  geom_smooth(method = "lm", se = FALSE) +
-  theme_bw()
-
-# Winter
-summary(lm(hydro_winter_10304$groundwaterdepth ~ hydro_winter_10304$drainage))
-winter_groundwaterdepth_10304 <- ggplot(hydro_winter_10304, aes(groundwaterdepth, drainage)) +
-  geom_point() +
-  geom_smooth(method = "lm", formular = y~x)
-summary(lm(hydro_winter_11502$groundwaterdepth ~ hydro_winter_11502$drainage))
-winter_groundwaterdepth_11502 <- ggplot(hydro_winter_11502, aes(groundwaterdepth, drainage)) +
-  geom_point() +
-  geom_smooth(method = "lm", formular = y~x)
-summary(lm(hydro_winter_20203$groundwaterdepth ~ hydro_winter_20203$drainage))
-winter_groundwaterdepth_20203 <- ggplot(hydro_winter_20203, aes(groundwaterdepth, drainage)) +
-  geom_point() +
-  geom_smooth(method = "lm", formular = y~x)
-grid.arrange(winter_groundwaterdepth_10304, winter_groundwaterdepth_11502, winter_groundwaterdepth_20203, ncol = 2)
-grid.arrange(winter_groundwaterdepth_10304, winter_groundwaterdepth_11502, winter_groundwaterdepth_20203, 
-             summer_groundwaterdepth_10304, summer_groundwaterdepth_11502, summer_groundwaterdepth_20203, ncol = 3)
-
-## Nach membern differenziert ein Testplot
-ggplot(data = hydro_winter_10304, aes(x = groundwaterdepth, y = drainage, color = member)) +
-  geom_point() +
-  geom_smooth(method = "lm", se = FALSE) +
-  theme_bw()
-```
-
-# Soilwater
-``` {r}
-summary(lm(hydro_summer_10304$soilwater ~ hydro_summer_10304$drainage))
-summer_soilwater_10304 <- ggplot(hydro_summer_10304, aes(soilwater, drainage)) +
-  geom_point() +
-  geom_smooth(method = "lm", formular = y~x)
-summary(lm(hydro_summer_11502$soilwater ~ hydro_summer_11502$drainage))
-summer_soilwater_11502 <- ggplot(hydro_summer_11502, aes(soilwater, drainage)) +
-  geom_point() +
-  geom_smooth(method = "lm", formular = y~x)
-summary(lm(hydro_summer_20203$soilwater ~ hydro_summer_20203$drainage))
-summer_soilwater_20203 <- ggplot(hydro_summer_20203, aes(soilwater, drainage)) +
-  geom_point() +
-  geom_smooth(method = "lm", formular = y~x)
-grid.arrange(summer_soilwater_10304, summer_soilwater_11502, summer_soilwater_20203, ncol = 2)
-
-## Nach membern differenziert ein Testplot
-ggplot(data = hydro_summer_10304, aes(x = soilwater, y = drainage, color = member)) +
-  geom_point() +
-  geom_smooth(method = "lm", se = FALSE) +
-  theme_bw()
-
-# Winter
-summary(lm(hydro_winter_10304$soilwater ~ hydro_winter_10304$drainage))
-winter_soilwater_10304 <- ggplot(hydro_winter_10304, aes(soilwater, drainage)) +
-  geom_point() +
-  geom_smooth(method = "lm", formular = y~x)
-summary(lm(hydro_winter_11502$soilwater ~ hydro_winter_11502$drainage))
-winter_soilwater_11502 <- ggplot(hydro_winter_11502, aes(soilwater, drainage)) +
-  geom_point() +
-  geom_smooth(method = "lm", formular = y~x)
-summary(lm(hydro_winter_20203$soilwater ~ hydro_winter_20203$drainage))
-winter_soilwater_20203 <- ggplot(hydro_winter_20203, aes(soilwater, drainage)) +
-  geom_point() +
-  geom_smooth(method = "lm", formular = y~x)
-grid.arrange(winter_soilwater_10304, winter_soilwater_11502, winter_soilwater_20203, ncol = 2)
-grid.arrange(winter_soilwater_10304, winter_soilwater_11502, winter_soilwater_20203, 
-             summer_soilwater_10304, summer_soilwater_11502, summer_soilwater_20203, ncol = 3)
-
-## Nach membern differenziert ein Testplot
-ggplot(data = hydro_winter_10304, aes(x = soilwater, y = drainage, color = member)) +
-  geom_point() +
-  geom_smooth(method = "lm", se = FALSE) +
-  theme_bw()
-```
-
-# snow
-``` {r}
-summary(lm(hydro_summer_10304$snowstorage ~ hydro_summer_10304$drainage))
-summer_snowstorage_10304 <-  ggplot(hydro_summer_10304, aes(snowstorage, drainage)) +
-  geom_point() +
-  geom_smooth(method = "lm", formular = y~x)
-summary(lm(hydro_summer_11502$snowstorage ~ hydro_summer_11502$drainage))
-summer_snowstorage_11502 <- ggplot(hydro_summer_11502, aes(snowstorage, drainage)) +
-  geom_point() +
-  geom_smooth(method = "lm", formular = y~x)
-summary(lm(hydro_summer_20203$snowstorage ~ hydro_summer_20203$drainage))
-summer_snowstorage_20203 <- ggplot(hydro_summer_20203, aes(snowstorage, drainage)) +
-  geom_point() +
-  geom_smooth(method = "lm", formular = y~x)
-grid.arrange(summer_snowstorage_10304, summer_snowstorage_11502, summer_snowstorage_20203, ncol = 2)
-
-## Nach membern differenziert ein Testplot
-ggplot(data = hydro_summer_10304, aes(x = snowstorage, y = drainage, color = member)) +
-  geom_point() +
-  geom_smooth(method = "lm", se = FALSE) +
-  theme_bw()
-
-# Winter
-summary(lm(hydro_winter_10304$snowstorage ~ hydro_winter_10304$drainage))
-winter_snowstorage_10304 <- ggplot(hydro_winter_10304, aes(snowstorage, drainage)) +
-  geom_point() +
-  geom_smooth(method = "lm", formular = y~x)
-summary(lm(hydro_winter_11502$snowstorage ~ hydro_winter_11502$drainage))
-winter_snowstorage_11502 <- ggplot(hydro_winter_11502, aes(snowstorage, drainage)) +
-  geom_point() +
-  geom_smooth(method = "lm", formular = y~x)
-summary(lm(hydro_winter_20203$snowstorage ~ hydro_winter_20203$drainage))
-winter_snowstorage_20203 <- ggplot(hydro_winter_20203, aes(snowstorage, drainage)) +
-  geom_point() +
-  geom_smooth(method = "lm", formular = y~x)
-grid.arrange(winter_snowstorage_10304, winter_snowstorage_11502, winter_snowstorage_20203, ncol = 2)
-grid.arrange(winter_snowstorage_10304, winter_snowstorage_11502, winter_snowstorage_20203, 
-             summer_snowstorage_10304, summer_snowstorage_11502, summer_snowstorage_20203, ncol = 3)
-
-## Nach membern differenziert ein Testplot
-ggplot(data = hydro_winter_10304, aes(x = snowstorage, y = drainage, color = member)) +
-  geom_point() +
-  geom_smooth(method = "lm", se = FALSE) +
-  theme_bw()
-
-```
-
-
-### ZV: LowLevel
-
-##temp
+# GLM Approaches 
+## ZV: LowLevel (Binary)
+## temp
 ``` {r}
 # summer
 
@@ -816,7 +160,7 @@ grid.arrange(grid_event_summer_10304_tmp, grid_event_summer_11502_tmp, grid_even
 
 ```
 
-##precip
+## precip
 ``` {r}
 # summer
 
@@ -1266,7 +610,7 @@ grid.arrange(grid_event_summer_10304_groundwaterdepth, grid_event_summer_11502_g
 
 ```
 
-##soilwater
+## soilwater
 ``` {r}
 # summer
 
@@ -1377,7 +721,7 @@ grid.arrange(grid_event_summer_10304_soilwater, grid_event_summer_11502_soilwate
 
 ```
 
-##Snow
+## Snow
 ``` {r}
 
 # summer
@@ -1489,7 +833,7 @@ grid.arrange(grid_event_summer_10304_snowstorage, grid_event_summer_11502_snowst
 
 ```
 
-# Forst plot
+## Forst plot
 ``` {r}
 ## Sommer
 
@@ -1547,7 +891,7 @@ p <- last_plot() +
 
 print(p)
 ```
-# Rescaled forest plot
+## Rescaled forest plot
 ``` {r}
 ## Sommer
 
@@ -1681,7 +1025,8 @@ glmer_1 <- glmer(lowlevel ~ precip + airtmp + glorad + relhum + soilwater + snow
 summary(glmer_1)
 ```
 
-# GAM for lowlevel with "normal" drivers
+# First GAM Approaches ----
+## GAM for lowlevel with "normal" drivers
 ```{r}
 library(mgcv)
 gam_1 <- gam(lowlevel ~ date + s(avg_airtmp) + s(avg_soilwater) + s(avg_precip) + avg_precip * avg_soilwater + avg_snowstorage + s(avg_glorad) + s(avg_infiltration), data = hydro_summer_10304_kbe, family = binomial(), method = "REML")
@@ -1739,7 +1084,7 @@ summary(gam_2)
 
 ```
 
-# GAM for lowlevel with only one avg/max driver
+## GAM for lowlevel with only one avg/max driver
 ```{r}
 library(mgcv)
 ## which drivers have a high explanatory power per water level and per season 
@@ -1781,7 +1126,7 @@ summary(gam_kbe_avg_20203_summer_test)
 # wenig Erklärungskraft alleine: avg_precip, avg_airtmp, avg_glorad, avg_relhum, avg_snowstorage, groundwaterdepth, avg_infiltration, max_precip
 ```
 
-# GAM for lowlevel with avg/max drivers: full models without interactions etc.
+## GAM for lowlevel with avg/max drivers: full models without interactions etc.
 ```{r}
 ## gam mit avg/max drivers glatten Effekten (penalized B-splines) für member kbe
 # 10304, winter
@@ -1917,7 +1262,7 @@ gam_kbe_avg_20203_summer_wo_avg_glorad_wo_avg_airtmp_wo_max_precip_wo_avg_precip
 summary(gam_kbe_avg_20203_summer_wo_avg_glorad_wo_avg_airtmp_wo_max_precip_wo_avg_precip)
 ```
 
-# Variable selection of full models
+## Variable selection of full models
 ```{r}
 # 10304, winter
 # NAs durch Mittelwert der Spalte imputieren
@@ -1961,20 +1306,7 @@ gam_kbe_avg_11502_winter_select <- gam(lowlevel ~ YY + s(avg_precip, bs = "ps") 
 summary(gam_kbe_avg_11502_winter_select)
 plot(gam_kbe_avg_11502_winter_select)
 ```
-# Lasso gam approach
-```{r}
-hydro_winter_10304_kbe$X <- model.matrix( ~ avg_precip + avg_airtmp + avg_glorad + avg_relhum + avg_soilwater + avg_snowstorage + groundwaterdepth + avg_infiltration + YY + max_precip,
-                                          data=hydro_winter_10304_kbe)[,-1]
-
-gamlasso_fit <- gamlasso(lowlevel ~  YY + s(avg_precip, bs = "ps") + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps") + s(max_precip, bs = "ps"),
-                         data = hydro_winter_10304_kbe, 
-                         smooth.penalty = "l1", 
-                         linear.penalty = "l1", 
-                         family = "binomial")
-```
-
-
-# GAM for lowlevel_first with avg drivers
+## GAM for lowlevel_first with avg drivers
 ```{r}
 library(mgcv)
 
@@ -2018,7 +1350,7 @@ plot(gam_kbe_avg_first_20203_summer)
 
 ```
 
-# P Splines
+## P Splines
 ```{r}
 gam_1_ps <- gam(lowlevel ~ date  + s(avg_airtmp, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_precip, bs = "ps") + avg_precip * avg_soilwater + avg_snowstorage + s(avg_glorad, bs = "ps")  + s(avg_infiltration, bs = "ps"), data = hydro_summer_10304_kbe, family = binomial(), method = "REML")
 summary(gam_1_ps)
@@ -2028,7 +1360,43 @@ gam_2_ps <- gam(lowlevel ~ date + s(airtmp, bs = "ps") + s(soilwater, bs = "ps")
 summary(gam_2_ps)
 ```
 
-# ARIMA-Models
+## Case Study on Catchment 10304 Isar Mittenwald
+```{r}
+glm_all_10304 <- glm(formula = lowlevel ~ YY + avg_precip + avg_airtmp+ avg_glorad + avg_relhum + avg_soilwater + avg_snowstorage + groundwaterdepth + avg_infiltration, family = binomial(), data = hydro_winter_10304_kbe)
+
+stepAIC(object = glm_all_10304, direction = "both",
+k = log(nrow(hydro_winter_10304_kbe)), trace = FALSE)
+```
+
+```{r}
+gam_1_10304 <- gam(lowlevel ~ YY + avg_precip + avg_airtmp+ avg_glorad + avg_relhum + avg_soilwater + avg_snowstorage + groundwaterdepth + avg_infiltration, data = hydro_winter_10304_kbe, family = binomial())
+gam_2_10304 <- gam(lowlevel ~ YY + avg_precip + avg_airtmp + avg_glorad + avg_relhum + avg_soilwater + avg30_snowstorage + groundwaterdepth + avg_infiltration, data = hydro_winter_10304_kbe, family = binomial())
+gam_3_10304 <- gam(lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_airtmp, bs = "ps") + avg_glorad + avg_relhum + avg_soilwater + avg_snowstorage + groundwaterdepth + avg_infiltration, data = hydro_winter_10304_kbe, family = binomial())
+gam_4_10304 <- gam(lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_airtmp, bs = "ps") + avg_glorad + avg_relhum + avg_soilwater + s(avg30_snowstorage, bs = "ps") + groundwaterdepth + avg_infiltration, data = hydro_winter_10304_kbe, family = binomial())
+gam_5_10304 <- gam(lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_airtmp, bs = "ps") + avg_glorad + avg_relhum + s(avg_soilwater, bs = "ps") + s(avg30_snowstorage, bs = "ps") + groundwaterdepth + avg_infiltration, data = hydro_winter_10304_kbe, family = binomial())
+gam_6_10304 <- gam(lowlevel ~ YY + s(avg_precip, bs = "ps") + avg_airtmp + avg_glorad + avg_relhum + s(avg_soilwater, bs = "ps") + s(avg30_snowstorage, bs = "ps") + groundwaterdepth + avg_infiltration, data = hydro_winter_10304_kbe, family = binomial())
+gam_7_10304 <- gam(lowlevel ~ YY + s(avg_precip, bs = "ps") + avg_airtmp + avg_relhum + s(avg_soilwater, bs = "ps") + s(avg30_snowstorage, bs = "ps") + groundwaterdepth + avg_infiltration, data = hydro_winter_10304_kbe, family = binomial())
+gam_8_10304 <- gam(lowlevel ~ s(avg_precip, bs = "ps") + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps"), data = hydro_winter_10304_kbe, family = binomial())
+
+gam_9_10304 <- gam(lowlevel ~ s(avg_precip, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps"), data = hydro_winter_10304_kbe, family = binomial())
+
+gam_10_10304 <- gam(lowlevel ~ s(avg_precip, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg30_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps"), data = hydro_winter_10304_kbe, family = binomial())
+
+gam_11_10304 <- gam(lowlevel ~ s(avg_precip, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg30_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps") + s(avg_soilwater, by = avg_precip) , data = hydro_winter_10304_kbe, family = binomial())
+
+gam_12_10304 <- gam(lowlevel ~ s(avg_precip, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg30_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps") + ti(avg_precip, airtmp), data = hydro_winter_10304_kbe, family = binomial())
+
+gam_13_10304 <- gam(lowlevel ~ s(avg_precip, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg30_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps") + s(YY, bs = "re"), data = hydro_winter_10304_kbe, family = binomial())
+
+model_10304 <- list(model_1 = gam_1_10304, model_2 = gam_2_10304, model_3 = gam_3_10304, model_4 = gam_4_10304, model_5 = gam_5_10304, model_6 = gam_6_10304, model_7 = gam_7_10304, model_8 = gam_8_10304, model_9 = gam_9_10304, model_10 = gam_10_10304, model_11 = gam_11_10304, model_12 = gam_12_10304, model_13 = gam_13_10304)
+
+lapply(model_10304, AIC)
+```
+
+
+
+# Autoregressive Approaches ----
+## ARIMA-Models
 ```{r}
 library(forecast)
 
@@ -2038,8 +1406,7 @@ summary(model_Arima)
 acf(resid(model_Arima))
 ```
 
-https://online.stat.psu.edu/stat501/book/export/html/996#:~:text=The%20order%20of%20an%20autoregression,written%20as%20AR(1)
-# Lag DF
+## Lag DF Visualization
 ```{r}
 lag_df <- function(dat, lag) {
   data.frame(unclass(dat[c(rep(NA, lag), 1:(nrow(dat)-lag)),]))
@@ -2058,39 +1425,13 @@ ggplot(aes(x = (lag(hydro_summer_10304_kbe$avg_precip, 0)), y = hydro_summer_103
   geom_point(alpha = 0.2)
 ```
 
-# ARDLM
+## ARDLM
 ```{r}
 ardlDlm_1 <- ardlDlm(formula = drainage ~ soilwater + precip + snowstorage + airtmp + glorad, data = hydro_summer_10304_kbe, p = 2, q = 2)
 
 summary(ardlDlm_1)
 ```
-
-
-```{r}
-
-results_ardldlm_10304 <- list()
-i <- 1
-for (member in unique(hydro_summer_10304$member)){
-  data <- hydro_summer_10304[hydro_summer_10304["member"] == member,]
-  results_ardldlm_10304[i] <- ardlDlm(formula = drainage ~ soilwater + precip + snowstorage + airtmp, data = data, p = 3, q = 2)
-  i <- i+ 1
-}
-
-lapply(results_ardldlm_10304, summary)
-
-```
-```{r}
-results_ardldlm_11502 <- list()
-i <- 1
-for (member in unique(hydro_summer_10304$member)){
-  data <- hydro_summer_11502[hydro_summer_11502["member"] == member,]
-  results_ardldlm_11502[i] <- ardlDlm(formula = drainage ~ soilwater + precip + snowstorage + airtmp, data = data, p = 3, q = 2)
-  i <- i+ 1
-}
-
-lapply(results_ardldlm_11502, summary)
-```
-
+## Fit_ardlm_across all members
 ```{r}
 fit_ardlm_across <- function(formula, data, p, q, summary_output = TRUE) {
   results <- list()
@@ -2104,7 +1445,7 @@ fit_ardlm_across <- function(formula, data, p, q, summary_output = TRUE) {
   lapply(results, summary)
 }
 ```
-# Summer
+##  Summer
 ```{r}
 fit_ardlm_across(drainage ~ soilwater + precip + snowstorage + airtmp, data = hydro_summer_10304, p = 3, q = 4)
 fit_ardlm_across(drainage ~ soilwater + precip + snowstorage + airtmp, data = hydro_summer_11502, p = 3, q = 4)
@@ -2113,14 +1454,14 @@ fit_ardlm_across(drainage ~ soilwater + precip + snowstorage + airtmp + glorad, 
 
 lapply(fit_ardlm_across(drainage ~ soilwater + precip + snowstorage + airtmp, data = hydro_summer_20203, p = 2, q = 2), "[[", "adj.r.squared")
 ```
-# Winter
+## Winter
 ```{r}
 fit_ardlm_across(drainage ~ soilwater + precip + snowstorage + airtmp, data = hydro_winter_10304, p = 3, q = 2)
 fit_ardlm_across(drainage ~ soilwater + precip + snowstorage + airtmp, data = hydro_winter_11502, p = 3, q = 2)
 fit_ardlm_across(drainage ~ soilwater + precip + snowstorage + airtmp, data = hydro_winter_20203, p = 3, q = 2)
 ```
 
-# Distributed lag on Perception
+## Distributed lag on Perception
 ```{r}
 library(dlnm)
 cb1.precip <- crossbasis(hydro_summer_10304_kbe$precip, lag= c(1,15), argvar=list(fun = "bs"),
@@ -2154,64 +1495,5 @@ for (member in hydro_winter_10304$member) {
 
 lapply(model_list, summary)
 ```
-# AIC comparison for member kbe
-```{r}
-hydro_summer_10304_kbe <- hydro_summer_10304 %>% filter(member %in% "kbe")
-hydro_summer_11502_kbe <- hydro_summer_11502 %>% filter(member %in% "kbe")
-hydro_summer_20203_kbe <- hydro_summer_20203 %>% filter(member %in% "kbe")
 
-hydro_summer_10304_kbe$avg30_snowstorage <- zoo::rollmean(hydro_summer_10304_kbe$snowstorage, k = 30, fill = mean(hydro_summer_10304_kbe$snowstorage))
-hydro_summer_11502_kbe$avg30_snowstorage <- zoo::rollmean(hydro_summer_11502_kbe$snowstorage, k = 30, fill = mean(hydro_summer_11502_kbe$snowstorage))
-hydro_summer_20203_kbe$avg30_snowstorage <- zoo::rollmean(hydro_summer_20203_kbe$snowstorage, k = 30, fill = mean(hydro_summer_20203_kbe$snowstorage))
-```
-
-```{r}
-hydro_winter_10304_kbe <- hydro_winter_10304 %>% filter(member %in% "kbe")
-hydro_winter_11502_kbe <- hydro_winter_11502 %>% filter(member %in% "kbe")
-hydro_winter_20203_kbe <- hydro_winter_20203 %>% filter(member %in% "kbe")
-
-hydro_winter_10304_kbe$avg30_snowstorage <- zoo::rollmean(hydro_winter_10304_kbe$snowstorage, k = 30, fill = mean(hydro_winter_10304_kbe$snowstorage))
-hydro_winter_11502_kbe$avg30_snowstorage <- zoo::rollmean(hydro_winter_11502_kbe$snowstorage, k = 30, fill = mean(hydro_winter_11502_kbe$snowstorage))
-hydro_winter_20203_kbe$avg30_snowstorage <- zoo::rollmean(hydro_winter_20203_kbe$snowstorage, k = 30, fill = mean(hydro_winter_20203_kbe$snowstorage))
-```
-
-## Winter
-### Mittenwald
-# GLM
-```{r}
-glm_all_10304 <- glm(formula = lowlevel ~ YY + avg_precip + avg_airtmp+ avg_glorad + avg_relhum + avg_soilwater + avg_snowstorage + groundwaterdepth + avg_infiltration, family = binomial(), data = hydro_winter_10304_kbe)
-
-stepAIC(object = glm_all_10304, direction = "both",
-k = log(nrow(hydro_winter_10304_kbe)), trace = FALSE)
-```
-
-```{r}
-gam_1_10304 <- gam(lowlevel ~ YY + avg_precip + avg_airtmp+ avg_glorad + avg_relhum + avg_soilwater + avg_snowstorage + groundwaterdepth + avg_infiltration, data = hydro_winter_10304_kbe, family = binomial())
-gam_2_10304 <- gam(lowlevel ~ YY + avg_precip + avg_airtmp + avg_glorad + avg_relhum + avg_soilwater + avg30_snowstorage + groundwaterdepth + avg_infiltration, data = hydro_winter_10304_kbe, family = binomial())
-gam_3_10304 <- gam(lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_airtmp, bs = "ps") + avg_glorad + avg_relhum + avg_soilwater + avg_snowstorage + groundwaterdepth + avg_infiltration, data = hydro_winter_10304_kbe, family = binomial())
-gam_4_10304 <- gam(lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_airtmp, bs = "ps") + avg_glorad + avg_relhum + avg_soilwater + s(avg30_snowstorage, bs = "ps") + groundwaterdepth + avg_infiltration, data = hydro_winter_10304_kbe, family = binomial())
-gam_5_10304 <- gam(lowlevel ~ YY + s(avg_precip, bs = "ps") + s(avg_airtmp, bs = "ps") + avg_glorad + avg_relhum + s(avg_soilwater, bs = "ps") + s(avg30_snowstorage, bs = "ps") + groundwaterdepth + avg_infiltration, data = hydro_winter_10304_kbe, family = binomial())
-gam_6_10304 <- gam(lowlevel ~ YY + s(avg_precip, bs = "ps") + avg_airtmp + avg_glorad + avg_relhum + s(avg_soilwater, bs = "ps") + s(avg30_snowstorage, bs = "ps") + groundwaterdepth + avg_infiltration, data = hydro_winter_10304_kbe, family = binomial())
-gam_7_10304 <- gam(lowlevel ~ YY + s(avg_precip, bs = "ps") + avg_airtmp + avg_relhum + s(avg_soilwater, bs = "ps") + s(avg30_snowstorage, bs = "ps") + groundwaterdepth + avg_infiltration, data = hydro_winter_10304_kbe, family = binomial())
-gam_8_10304 <- gam(lowlevel ~ s(avg_precip, bs = "ps") + s(avg_airtmp, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps"), data = hydro_winter_10304_kbe, family = binomial())
-
-gam_9_10304 <- gam(lowlevel ~ s(avg_precip, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps"), data = hydro_winter_10304_kbe, family = binomial())
-
-gam_10_10304 <- gam(lowlevel ~ s(avg_precip, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg30_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps"), data = hydro_winter_10304_kbe, family = binomial())
-
-gam_11_10304 <- gam(lowlevel ~ s(avg_precip, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg30_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps") + s(avg_soilwater, by = avg_precip) , data = hydro_winter_10304_kbe, family = binomial())
-
-gam_12_10304 <- gam(lowlevel ~ s(avg_precip, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg30_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps") + ti(avg_precip, airtmp), data = hydro_winter_10304_kbe, family = binomial())
-
-gam_13_10304 <- gam(lowlevel ~ s(avg_precip, bs = "ps") + s(avg_glorad, bs = "ps") + s(avg_relhum, bs = "ps") + s(avg_soilwater, bs = "ps") + s(avg30_snowstorage, bs = "ps") + s(groundwaterdepth, bs = "ps") + s(avg_infiltration, bs = "ps") + s(YY, bs = "re"), data = hydro_winter_10304_kbe, family = binomial())
-
-model_10304 <- list(model_1 = gam_1_10304, model_2 = gam_2_10304, model_3 = gam_3_10304, model_4 = gam_4_10304, model_5 = gam_5_10304, model_6 = gam_6_10304, model_7 = gam_7_10304, model_8 = gam_8_10304, model_9 = gam_9_10304, model_10 = gam_10_10304, model_11 = gam_11_10304, model_12 = gam_12_10304, model_13 = gam_13_10304)
-
-lapply(model_10304, AIC)
-```
-
-## Summer
-```{r}
-
-```
 

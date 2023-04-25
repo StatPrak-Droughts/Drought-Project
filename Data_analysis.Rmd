@@ -34,7 +34,7 @@ hydro_total <- readRDS(file = "./data/hydro_total.RDS")
 pegel_prop <- readRDS(file = "./data/pegel_prop.RDS")
 ```
 
-## Geo Data (Map data)
+# Geo Data Mapping ----
 ```{r}
 # Read in shape file
 hydro_bavaria <- read_sf("./data/Geo-Daten_Uebersicht/shapefile/EZG_OHNE_Reservoir_UTM32.shp", ) 
@@ -69,9 +69,63 @@ hydro_bavaria_three <- hydro_bavaria %>% filter(gridcode %in% c(10304, 11502, 20
 
 ```
 
-## Chris: Analysis
+```{r Spatial analysis}
+theme_map <- theme_bw()+
+  theme(panel.grid.major = element_line(colour = "transparent"))
 
-```{r Chris: Analysis of low flow events}
+plot(st_geometry(hydro_bavaria))
+
+ggplot()+
+  geom_sf(data = hydro_bavaria)
+
+
+
+# Plot with catchment points
+ggplot()+
+  geom_sf(data = hydro_bavaria, fill = "transparent") +
+  geom_sf(data = pegel_prop_sf, aes(color = as.factor(unique(ID))), size = 3)+
+  labs(color = "Catchment ID")+
+  scale_color_viridis_d()+
+  theme_map
+ggsave("./graphics/Max/Catchments_hydro_bavaria_dots.png", width = 12, height = 9)
+
+# Plot hydrobavaria and admin bavaria
+ggplot()+
+  geom_sf(data = hydro_bavaria, fill = "white")+
+  geom_sf(data = admin_bavaria, fill = "transparent", color = "red")+
+  geom_sf(data = pegel_prop_sf, aes(color = as.factor(unique(ID))), size = 3)+
+  labs(color = "Catchment ID")+
+  scale_color_viridis_d()+
+  theme_map
+ggsave("./graphics/Max/hydro_admin_bavaria.png", width = 12, height = 9)
+
+# Catchments with rivers and Donau/Main for orientation
+waterways_three %>% 
+  ggplot()+
+  geom_sf(data = hydro_bavaria, fill = "transparent")+
+  geom_sf(data = waterways_three, color = "blue", size = 1.5)+
+  geom_sf(data = pegel_prop_sf, aes(color = as.factor(unique(ID))), size = 3)+
+  labs(color = "Catchment ID")+
+  scale_color_viridis_d()+
+  theme_map
+
+ggsave("./graphics/Max/map_rivers_catchments.png", width = 12, height = 9)
+
+```
+
+### tmap geographical overview
+```{r}
+tmap_mode("view")
+tm_shape(hydro_bavaria)+
+  tm_polygons(id = "NameString")+
+  tm_shape(waterways_three)+
+  tm_lines(col = "blue")+
+  tm_shape(pegel_prop_sf)+
+  tm_markers(size = 0.3)
+```
+
+# Low flow analysis ----
+```{r Analysis of low flow events}
 # First visualizations
 plot_drainage <- function(dataset, year = c(2000), member_input = "kbe") {
   dataset %>% filter(YY %in% year, member == member_input) %>%
@@ -195,10 +249,8 @@ ggsave("Plots/Chris/analysis/yearly_avg_number_of_low_flow_days_per_season.png",
 
 
 ```
-
-# Chris: Analysis of drivers
-
-```{r Chris: Analysis of drivers}
+# Analysis of drivers ----
+```{r Analysis of drivers}
 # Tables for futher plots
 table_yearly_max_prec_by_member <- hydro_total %>%
   group_by(waterlevel, YY, hydro_year, member) %>%
@@ -454,7 +506,7 @@ ggplot(data = table_yearly_avg_max_infiltration, mapping = aes(x = YY, y = avg_m
 ggsave("Plots/Chris/analysis/driver_plots/yearly_avg_max_infiltration.png", width = 12, height = 9)
 ```
 
-## Table prep for shiny app
+# Table prep for shiny app
 ```{r Table prep for shiny app}
 
 # seasonal
@@ -864,165 +916,7 @@ stationary_lowlevel_mean_p("20203", "summer")
 
 ```
 
-## Max: Analysis
 
-```{r Max analysis}
-theme_map <- theme_bw()+
-  theme(panel.grid.major = element_line(colour = "transparent"))
-
-plot(st_geometry(hydro_bavaria))
-
-ggplot()+
-  geom_sf(data = hydro_bavaria)
-
-
-
-# Plot with catchment points
-ggplot()+
-  geom_sf(data = hydro_bavaria, fill = "transparent") +
-  geom_sf(data = pegel_prop_sf, aes(color = as.factor(unique(ID))), size = 3)+
-  labs(color = "Catchment ID")+
-  scale_color_viridis_d()+
-  theme_map
-ggsave("./graphics/Max/Catchments_hydro_bavaria_dots.png", width = 12, height = 9)
-
-# Plot hydrobavaria and admin bavaria
-ggplot()+
-  geom_sf(data = hydro_bavaria, fill = "white")+
-  geom_sf(data = admin_bavaria, fill = "transparent", color = "red")+
-  geom_sf(data = pegel_prop_sf, aes(color = as.factor(unique(ID))), size = 3)+
-  labs(color = "Catchment ID")+
-  scale_color_viridis_d()+
-  theme_map
-ggsave("./graphics/Max/hydro_admin_bavaria.png", width = 12, height = 9)
-
-# Catchments with rivers and Donau/Main for orientation
-waterways_three %>% 
-  ggplot()+
-  geom_sf(data = hydro_bavaria, fill = "transparent")+
-  geom_sf(data = waterways_three, color = "blue", size = 1.5)+
-  geom_sf(data = pegel_prop_sf, aes(color = as.factor(unique(ID))), size = 3)+
-  labs(color = "Catchment ID")+
-  scale_color_viridis_d()+
-  theme_map
-
-ggsave("./graphics/Max/map_rivers_catchments.png", width = 12, height = 9)
-
-```
-
-### tmap geographical overview
-```{r}
-tmap_mode("view")
-tm_shape(hydro_bavaria)+
-  tm_polygons(id = "NameString")+
-  tm_shape(waterways_three)+
-  tm_lines(col = "blue")+
-  tm_shape(pegel_prop_sf)+
-  tm_markers(size = 0.3)
-```
-
-## Average plots
-```{r}
-# boxplots for member distributions in 5 years intervals
-plot_avg_member_boxplot <- function(data, var, startYY = 1990, endYY = 2020, by = 5, ...) {
-  data %>% 
-  group_by(YY, member) %>% 
-  filter(YY %in% seq(startYY, endYY, by)) %>% 
-  summarise(avg_var= mean(get(var))) %>% 
-  mutate(YY = as.factor(YY)) %>% 
-  ggplot(aes(x = YY, y = avg_var))+
-  geom_boxplot()+
-    labs(...)
-}
-
-plot_avg_member_boxplot(hydro_winter_10304, var = "drainage", x = "Year", y = "Avg drainage", title = "Winter 10304 (Isar Mittenwald) Average drainage")
-plot_avg_member_boxplot(hydro_winter_10304, var = "airtmp", x = "Year", y = "Avg airtmp", title = "Winter 10304 (Isar Mittenwald) Average airtmp")
-plot_avg_member_boxplot(hydro_winter_10304, var = "soilwater", x = "Year", y = "Avg soilwater", title = "Winter 10304 (Isar Mittenwald) Average soilwater")
-plot_avg_member_boxplot(hydro_winter_10304, var = "precip", x = "Year", y = "Avg precip", title = "Winter 10304 (Isar Mittenwald) Average precip")
-
-plot_avg_member_boxplot(hydro_summer_10304, var = "drainage", y = "Avg drainage", title = "Summer 10304 (Isar Mittenwald) Average drainage")
-plot_avg_member_boxplot(hydro_summer_10304, var = "airtmp", y = "Avg airtmp", title = "Summer 10304 (Isar Mittenwald) Average airtmp")
-plot_avg_member_boxplot(hydro_summer_10304, var = "soilwater", y = "Avg soilwater", title = "Summer 10304 (Isar Mittenwald) Average soilwater")
-plot_avg_member_boxplot(hydro_summer_10304, var = "precip", y = "Avg precip", title = "Summerr 10304 (Isar Mittenwald) Average precip")
-
-plot_avg_member_boxplot(hydro_winter_11502, var = "drainage", y = "Avg drainage", title = "Winter 11502 (Iller Kempten) Average drainage")
-plot_avg_member_boxplot(hydro_winter_11502, var = "airtmp", y = "Avg airtmp", title = "Winter 11502 (Iller Kempten) Average airtmp")
-plot_avg_member_boxplot(hydro_winter_11502, var = "soilwater", y = "Avg soilwater", title = "Winter 11502 (Iller Kempten) Average soilwater")
-plot_avg_member_boxplot(hydro_winter_11502, var = "precip", y = "Avg precip", title = "Winter 11502 (Iller Kempten) Average precip")
-
-plot_avg_member_boxplot(hydro_summer_11502, var = "drainage", y = "Avg drainage", title = "Summer 11502 (Iller Kempten) Average drainage")
-plot_avg_member_boxplot(hydro_summer_11502, var = "airtmp", y = "Avg airtmp", title = "Summer 11502 (Iller Kempten) Average airtmp")
-plot_avg_member_boxplot(hydro_summer_11502, var = "soilwater", y = "Avg soilwater", title = "Summer 11502 (Iller Kempten) Average soilwater")
-plot_avg_member_boxplot(hydro_summer_11502, var = "precip", y = "Avg precip", title = "Summer 11502 (Iller Kempten) Average precip")
-
-plot_avg_member_boxplot(hydro_winter_20203, var = "drainage", y = "Avg drainage", title = "Winter 20203 (Fränkische Saale Salz) Average drainage")
-plot_avg_member_boxplot(hydro_winter_20203, var = "airtmp", y = "Avg airtmp", title = "Winter 20203 (Fränkische Saale Salz) Average airtmp")
-plot_avg_member_boxplot(hydro_winter_20203, var = "soilwater", y = "Avg soilwater", title = "Winter 20203 (Fränkische Saale Salz) Average soilwater")
-plot_avg_member_boxplot(hydro_winter_20203, var = "precip", y = "Avg precip", title = "Winter 20203 (Fränkische Saale Salz) Average precip")
-
-plot_avg_member_boxplot(hydro_summer_20203, var = "drainage", y = "Avg drainage", title = "Summer 20203 (Fränkische Saale Salz) Average drainage")
-plot_avg_member_boxplot(hydro_summer_20203, var = "airtmp", y = "Avg airtmp", title = "Summer 20203 (Fränkische Saale Salz) Average airtmp")
-plot_avg_member_boxplot(hydro_summer_20203, var = "soilwater", y = "Avg soilwater", title = "Summer 20203 (Fränkische Saale Salz) Average soilwater")
-plot_avg_member_boxplot(hydro_summer_20203, var = "precip", y = "Avg precip", title = "Summer 20203 (Fränkische Saale Salz) Average precip")
-
-
-# average of averages across all members for whole time
-plot_averages_across_members <- function(data, var, ...) {
-  data %>%
-  group_by(YY, member) %>%
-  summarise(avg_var = mean(get(var))) %>%
-  summarise(avg_var_per_year = mean(avg_var)) %>%
-  ggplot(aes(x = YY, y = avg_var_per_year)) +
-  geom_point() +
-  geom_line() +
-    labs(...)
-}
-
-plot_averages_across_members(hydro_winter_10304, var = "drainage", y = "Avg drainage across all members", title = "Winter 10304 (Isar Mittenwald) Avg drainage")
-plot_averages_across_members(hydro_winter_10304, var = "airtmp", y = "Avg airtmp across all members", title = "Winter 10304 (Isar Mittenwald) Avg airtmp")
-plot_averages_across_members(hydro_winter_10304, var = "soilwater", y = "Avg soilwater across all members", title = "Winter 10304 (Isar Mittenwald) Avg soilwater")
-plot_averages_across_members(hydro_winter_10304, var = "precip", y = "Avg precip across all members", title = "Winter 10304 (Isar Mittenwald) Avg precip")
-
-plot_averages_across_members(hydro_summer_10304, var = "drainage", y = "Avg drainage across all members", title = "Summer 10304 (Isar Mittenwald) Avg drainage")
-plot_averages_across_members(hydro_summer_10304, var = "airtmp", y = "Avg airtmp across all members", title = "Summer 10304 (Isar Mittenwald) Avg airtmp")
-plot_averages_across_members(hydro_summer_10304, var = "soilwater", y = "Avg soilwater across all members", title = "Summer 10304 (Isar Mittenwald) Avg soilwater")
-plot_averages_across_members(hydro_summer_10304, var = "precip", y = "Avg precip across all members", title = "Summer 10304 (Isar Mittenwald) Avg precip")
-
-plot_averages_across_members(hydro_winter_11502, var = "drainage", y = "Avg drainage across all members", title = "Winter 11502 (Iller Kempten) Avg drainage")
-plot_averages_across_members(hydro_winter_11502, var = "airtmp", y = "Avg airtmp across all members", title = "Winter 11502 (Iller Kempten) Avg airtmp")
-plot_averages_across_members(hydro_winter_11502, var = "soilwater", y = "Avg soilwater across all members", title = "Winter 11502 (Iller Kempten) Avg soilwater")
-plot_averages_across_members(hydro_winter_11502, var = "precip", y = "Avg precip across all members", title = "Winter 11502 (Iller Kempten) Avg precip")
-
-plot_averages_across_members(hydro_summer_11502, var = "drainage", y = "Avg drainage across all members", title = "Summer 11502 (Iller Kempten) Avg drainage")
-plot_averages_across_members(hydro_summer_11502, var = "airtmp", y = "Avg airtmp across all members", title = "Summer 11502 (Iller Kempten) Avg airtmp")
-plot_averages_across_members(hydro_summer_11502, var = "soilwater", y = "Avg soilwater across all members", title = "Summer 11502 (Iller Kempten) Avg soilwater")
-plot_averages_across_members(hydro_summer_11502, var = "precip", y = "Avg precip across all members", title = "Summer 11502 (Iller Kempten) Avg precip")
-
-plot_averages_across_members(hydro_winter_20203, var = "drainage", y = "Avg drainage across all members", title = "Winter 20203 (Fränkische Saale Salz) Avg drainage")
-plot_averages_across_members(hydro_winter_20203, var = "airtmp", y = "Avg airtmp across all members", title = "Winter 20203 (Fränkische Saale Salz) Avg airtmp")
-plot_averages_across_members(hydro_winter_20203, var = "soilwater", y = "Avg soilwater across all members", title = "Winter 20203 (Fränkische Saale Salz) Avg soilwater")
-plot_averages_across_members(hydro_winter_20203, var = "precip", y = "Avg precip across all members", title = "Winter 20203 (Fränkische Saale Salz) Avg precip")
-
-plot_averages_across_members(hydro_summer_20203, var = "drainage", y = "Avg drainage across all members", title = "Summer 20203 (Fränkische Saale Salz) Avg drainage")
-plot_averages_across_members(hydro_summer_20203, var = "airtmp", y = "Avg airtmp across all members", title = "Summer 20203 (Fränkische Saale Salz) Avg airtmp")
-plot_averages_across_members(hydro_summer_20203, var = "soilwater", y = "Avg soilwater across all members", title = "Summer 20203 (Fränkische Saale Salz) Avg soilwater")
-plot_averages_across_members(hydro_summer_20203, var = "precip", y = "Avg precip across all members", title = "Summer 20203 (Fränkische Saale Salz) Avg precip")
-
-```
-
-# Time Series analysis for member kbe and one catchment (should later be genralised)
-```{r}
-hydro_summer_10304_kbe <- hydro_summer_10304 %>% 
-  filter(member %in% "kbe") %>% 
-  filter(name_waterlevel == 10304)
-
-ts_hydro_summer_10304_kbe <- zoo(hydro_summer_10304_kbe[5:ncol(hydro_summer_10304_kbe)], hydro_summer_10304_kbe[["date"]])
-
-plot.ts(ts_hydro_summer_10304_kbe$drainage)
-plot.ts(window(ts_hydro_summer_10304_kbe$precip, start = '2015-4-01', end = '2015-09-30'))
-plot.ts(window(ts_hydro_summer_10304_kbe$soilwater, start = '2015-4-01', end = '2015-09-30'))
-plot.ts(window(ts_hydro_summer_10304_kbe$drainage, start = '2015-4-01', end = '2015-09-30'))
-```
 # Several member visualization
 ```{r}
 hydro_summer_10304 %>% 
@@ -1058,20 +952,6 @@ plot_ts_facet("avg_glorad", hydro_summer_11502, period = 5, title = 11502)
 plot_ts_facet("avg_glorad", hydro_summer_20203, period = 5, title = 20203)
 ```
 
-# Winter (needs work on the axis)
-```{r}
-plot_ts_facet("avg_airtmp", hydro_winter_10304, period = 5, title = 10304)
-plot_ts_facet("avg_airtmp", hydro_winter_11502, period = 5, title = 11502)
-plot_ts_facet("avg_airtmp", hydro_winter_20203, period = 5, title = 20203)
-
-plot_ts_facet("avg_relhum", hydro_winter_10304, period = 5, title = 10304)
-plot_ts_facet("avg_relhum", hydro_winter_11502, period = 5, title = 11502)
-plot_ts_facet("avg_relhum", hydro_winter_20203, period = 5, title = 20203)
-
-plot_ts_facet("avg_glorad", hydro_winter_10304, period = 5, title = 10304)
-plot_ts_facet("avg_glorad", hydro_winter_11502, period = 5, title = 11502)
-plot_ts_facet("avg_glorad", hydro_winter_20203, period = 5, title = 20203)
-```
 
 
 ### Auto corr
@@ -1804,7 +1684,7 @@ corrplot(correlationm_spearman_total_kbe, method = "number", type = "lower", tl.
 
 
 
-IQA bestimmen
+# IQA bestimmen
 ```{r}
 avg_soilwater <- c(hydro_winter_20203$avg_soilwater, hydro_winter_10304$avg_soilwater, hydro_winter_11502$avg_soilwater, hydro_summer_10304$avg_soilwater, hydro_summer_11502$avg_soilwater, hydro_summer_20203$avg_soilwater)
 quantile(na.omit(avg_soilwater),  c(0.25, 0.75))
@@ -1856,16 +1736,18 @@ quantile(na.omit(avg_snowstorage_drain_scaled),  c(0.25, 0.75))
 max_precip <- c(hydro_summer$max_precip, hydro_winter$max_precip_winter)
 quantile(na.omit(max_precip),  c(0.25, 0.75))
 # IQA ca. 15, also führt Faktor 1 zu 15 1ner Schritten
-
-
-
-
-
-
 ```
 
 
+```{r}
+rf_summer_11502 <- randomForest::randomForest(lowlevel ~ YY + avg_precip + avg_airtmp+ avg_glorad + avg_relhum + avg_soilwater + avg_snowstorage + groundwaterdepth + avg_infiltration + max_precip_scaled, data= hydro_summer_11502_kbe, proximity=TRUE, na.action = na.omit, importance = TRUE)
 
+rf_winter_11502 <- randomForest::randomForest(lowlevel ~ YY + avg_precip + avg_airtmp+ avg_glorad + avg_relhum + avg_soilwater + avg_snowstorage + groundwaterdepth + avg_infiltration + max_precip_scaled, data= hydro_summer_11502_kbe, proximity=TRUE, na.action = na.omit, importance = TRUE)
+
+
+rfPermute::plotImportance(rf_summer_11502)
+rfPermute::plotImportance(rf_winter_11502)
+```
 
 
 
