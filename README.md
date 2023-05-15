@@ -49,7 +49,7 @@ renv::restore()
 source('setup.R')
 ```
 #### Folder structure explanation and dictionary
-* added_data: Additonal data added such as geodata as well as generated data such as models
+* added_data: Additonal data added such as geodata as well as generated data such as models will be saved here
 * attic: Folder for notes and pictures for github readme.
 * data: Imported data folder. For more info see "Import the data" section
 * Data_analysis.Rmd: File with all data analysis code. Sources `data_read.R`
