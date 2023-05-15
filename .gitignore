@@ -40,5 +40,5 @@ vignettes/*.pdf
 
 # R Environment Variables
 .Renviron
-
+.Rdata
 .RDS
